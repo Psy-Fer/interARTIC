@@ -7,10 +7,10 @@
   <body>
     {% extends "page_template.html" %}
     {% block content %}
-    
+
     <h1> Home Page </h1>
     <p> I love ARTIC! xoxo </p>
-    
+    <a href="{{ url_for('output') }}">Output</a>
     {% endblock %}
   </body>
 </html>

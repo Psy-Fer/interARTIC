@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Home</title>
+  </head>
+  <body>
+    {% extends "page_template.html" %}
+    {% block content %}
+
+    <h1> Output </h1>
+    <h2> Files produced </h2>
+    <text> These are the files produced from {{ job_name }}. They have been saved into the selected folder {{ output_folder }}. </text><br>
+    <h2> Data Visualisation </h2>
+    <form method=POST>
+      <input type="checkbox" id="barplot" name="barplot" value="yes">
+      <label for="barplot"> Bar plot </label><br>
+      <input type="checkbox" id="boxplot" name="boxplot" value="yes">
+      <label for="boxplot"> Box plot </label><br>
+      <br>
+      <text id="preview" display=none> Previewing plots: {{preview_plots}} </text>
+      <br>
+      <text id="preview" display=none> Downloading plots: {{download_plots}} </text>
+      <br>
+      <br><input type="submit" name="submit_button" value="Preview">
+      <input type="submit" name="submit_button" value="Download">
+    </form>
+
+  {% endblock %}
+  </body>
+</html>
