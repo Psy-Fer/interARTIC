@@ -7,10 +7,23 @@
   <body>
     {% extends "page_template.html" %}
     {% block content %}
-    
-    <h1> About Out Web App </h1>
-    <p> Blah blah...</p>
-      
+    <div class="hero-body">
+      <div class="container is-fluid">
+        <h1 class="title is-4"> About Out Web App </h1>
+        <div class="content">
+          <p> This web app allows users to run the ARTIC pipeline using default parameters by selecting the exsisting protocols available.
+            In addition to this the user can modify these settings to their own preferences if they want to.
+          </p>
+          <p> These are the folowing protocols:</p>
+          <ol type="1">
+            <li>Arctic primers & Native BC</li>
+            <li>Kirby primers & Native BC</li>
+            <li>Kirby primers & Rapid BC</li>
+            <li>Other</li>
+          </ol>
+        </div>
+      </div>  
+    </div>
     {% endblock %}
   </body>
 </html>

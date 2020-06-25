@@ -8,33 +8,27 @@
   <body>
     {% extends "page_template.html" %}
     {% block content %}
-    
-    <h1>interARTIC</h1>
     <div class="hero-body">
-      <form action="upload.php" method="post" enctype="multipart/form-data">
-        <input type="file" title="Folder Select" webkitdirectory directory multiple />
-      </form>
+      <div class="container is-fluid ">
+        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis</h1>
+        <div class="content">
+          <p>This is a web application designed to run the Nanopore Analysis using the ARTIC pipeline.</p>
+        </div>
+      </div>
+      <br>
+      <div class="container is-fluid">
+        <div class="columns">
+          <div class="column">
+            <h1 class="is-title-5">My Jobs Queue</h1>
   
-      <form action="upload.php" method="post" enctype="multipart/form-data">
-        <input type="file"/>
-      </form>
-      <p>Please select nanopolish or mendaka or both</p>
-      <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
-      <label for="male">nanopolish</label><br>
-      <input type="radio" id="mendaka" name="pipeline" value="mendaka">
-      <label for="female">mendaka</label><br>
-      <input type="radio" id="both" name="pipeline" value="both">
-      <label for="other">both</label>
-      <p>Select parameters</p>
-      
-  
-      <p>Select output folder</p>
-      <form action="upload.php" method="post" enctype="multipart/form-data">
-        <input class="button" type="file" title="Folder Select" webkitdirectory directory multiple />
-      </form>
-
+            <a class="button" href="/parameters">Add Job</a>
+          </div>
+          <div class="column">
+            Completed Jobs
+          </div>
+        </div>
+      </div>
     </div>
-    
 
     {% endblock %}
   </body>

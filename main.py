@@ -9,6 +9,10 @@ def home():
 @app.route("/about")
 def about():
 	return render_template("about.html")
+
+@app.route("/paramters")
+def parameters():
+	return render_template("parameters.html")
     
 if __name__ == "__main__":
     app.run(debug=True)
