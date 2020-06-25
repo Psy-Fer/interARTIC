@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/css/bulma.min.css" />
     <title>Home</title>
   </head>
   <body>
@@ -9,28 +10,31 @@
     {% block content %}
     
     <h1>interARTIC</h1>
+    <div class="hero-body">
+      <form action="upload.php" method="post" enctype="multipart/form-data">
+        <input type="file" title="Folder Select" webkitdirectory directory multiple />
+      </form>
+  
+      <form action="upload.php" method="post" enctype="multipart/form-data">
+        <input type="file"/>
+      </form>
+      <p>Please select nanopolish or mendaka or both</p>
+      <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
+      <label for="male">nanopolish</label><br>
+      <input type="radio" id="mendaka" name="pipeline" value="mendaka">
+      <label for="female">mendaka</label><br>
+      <input type="radio" id="both" name="pipeline" value="both">
+      <label for="other">both</label>
+      <p>Select parameters</p>
+      
+  
+      <p>Select output folder</p>
+      <form action="upload.php" method="post" enctype="multipart/form-data">
+        <input class="button" type="file" title="Folder Select" webkitdirectory directory multiple />
+      </form>
 
-    <form action="upload.php" method="post" enctype="multipart/form-data">
-      <input type="file" title="Folder Select" webkitdirectory directory multiple />
-    </form>
-
-    <form action="upload.php" method="post" enctype="multipart/form-data">
-      <input type="file"/>
-    </form>
-    <p>Please select nanopolish or mendaka or both</p>
-    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
-    <label for="male">nanopolish</label><br>
-    <input type="radio" id="mendaka" name="pipeline" value="mendaka">
-    <label for="female">mendaka</label><br>
-    <input type="radio" id="both" name="pipeline" value="both">
-    <label for="other">both</label>
-    <p>Select parameters</p>
+    </div>
     
-
-    <p>Select output folder</p>
-    <form action="upload.php" method="post" enctype="multipart/form-data">
-      <input type="file" title="Folder Select" webkitdirectory directory multiple />
-    </form>
 
     {% endblock %}
   </body>
