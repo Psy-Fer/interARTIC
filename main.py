@@ -26,5 +26,13 @@ def outputFormHandler():
     if request.form['submit_button'] == 'Download':
         return render_template("output.html", job_name='Job 1', output_folder='/my_ouput_folder', download_plots=plots)
 
+@app.route("/progress")
+def progress():
+	return render_template("progress.html")
+
+@app.route("/parameters")
+def parameters():
+	return render_template("parameters.html")
+    
 if __name__ == "__main__":
     app.run(debug=True)

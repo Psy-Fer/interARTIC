@@ -2,15 +2,35 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/css/bulma.min.css" />
     <title>Home</title>
   </head>
   <body>
     {% extends "page_template.html" %}
     {% block content %}
+    <div class="hero-body">
+      <div class="container is-fluid ">
+        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis</h1>
+        <div class="content">
+          <p>This is a web application designed to run the Nanopore Analysis using the ARTIC pipeline.</p>
+        </div>
+      </div>
+      <br>
+      <div class="container is-fluid">
+        <div class="columns">
+          <div class="column">
+            <h1 class="title is-6">My Jobs Queue</h1>
+            <a class="button" href="/parameters">Add Job</a><br>
+            <a href="{{ url_for('progress') }}">Progress</a>
+          </div>
+          <div class="column">
+            <h1 class="title is-6">Completed Jobs</h1>
+            <a href="{{ url_for('output') }}">Output</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <h1> Home Page </h1>
-    <p> I love ARTIC! xoxo </p>
-    <a href="{{ url_for('output') }}">Output</a>
     {% endblock %}
   </body>
 </html>

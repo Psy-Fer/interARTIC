@@ -2,22 +2,26 @@
 <html lang="en" dir="ltr">
  <head>
    <meta charset="utf-8">
+   <link rel="stylesheet" href="/static/css/bulma.min.css" />
    <title>Page Parent Template</title>
-   <link rel="stylesheet" href="{{ url_for('static',     filename='css/page_template.css') }}">
  </head>
  <body>
-    <header>
-      <div class="container">
-        <h1 class="logo">ARTIC Pipeline for SARS-CoV-2 Nanopore Analysis</h1>
-        <strong><nav>
-          <ul class="menu">
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="{{ url_for('about') }}">About</a></li>
-          </ul>
-        </nav></strong>
-      </div>
-    </header>
-
+   <br>
+    <div class="container"></div>
+      <nav class="level">
+        <p class="level-item has-text-centered">
+          <a class="link is-info" href="/">Home</a>
+        </p>
+        <p class="level-item has-text-centered">
+          <img src="/static/logo.png">
+        </p>
+        <p class="level-item has-text-centered">
+          <a class="link is-info" href="/about">About</a>
+        </p>
+      </nav>
+    </div>
+    <br>
+    
     {% block content %}
     {% endblock %}
 

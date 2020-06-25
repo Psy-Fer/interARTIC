@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/css/bulma.min.css" />
+    <title>Home</title>
+</head>
+<body>
+    {% extends "page_template.html" %}
+    {% block content %}
+    <div class="hero-body">
+      <div class="container is-fluid">
+        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis</h1> <br>
+        </div>
+        <div class="container is-fluid">
+          <div class="columns">
+            <div class="column is-one-quarter">
+              <h1 class="subtitle">My Jobs Queue</h1>
+            </div>
+            <div class="column">
+              <div class="field">
+                <div class="control">
+                  <input class="input is-info" type="text" placeholder="Job Name">
+                </div>
+              </div>
+              <form action="upload.php" method="post" enctype="multipart/form-data">
+                <input type="file" title="Folder Select" webkitdirectory directory multiple />
+              </form>
+          
+              <form action="upload.php" method="post" enctype="multipart/form-data">
+                <input type="file"/>
+              </form>
+              <div class="field">
+                <div class="control">
+                  <h1 class="subtitle">Please select pipeline to run:</h1>
+                  <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
+                  <label for="male">Nanopolish</label><br>
+                  <input type="radio" id="mendaka" name="pipeline" value="mendaka">
+                  <label for="female">Mendaka</label><br>
+                  <input type="radio" id="both" name="pipeline" value="both">
+                  <label for="other">Both</label>
+                </div>
+              </div>
+              
+              <div class="field">
+                <div class="control">
+                  <h1 class="subtitle">Select parameters:</h1>
+                </div>
+              </div>
+              
+              
+              <div class="field">
+                <div class="control">
+                  <h1 class="subtitle">Select output folder:</h1>
+                  <form action="upload.php" method="post" enctype="multipart/form-data">
+                    <input class="button" type="file" title="Folder Select" webkitdirectory directory multiple />
+                  </form>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+            
+          </div>
+    </div>
+    {% endblock %}
+</body>
+</html>
