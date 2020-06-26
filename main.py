@@ -10,7 +10,7 @@ def home():
 def about():
 	return render_template("about.html")
 
-@app.route("/parameters", methods = [GET])
+@app.route("/parameters", methods = ["POST","GET"])
 def parameters():
     if request.method == "POST":
         input_folder = request.form.get('inputFolder')
@@ -35,8 +35,8 @@ def parameters():
         
         if request.form.get('overRideDate') == "yes":
             overRide = True
-
-	return render_template("parameters.html")
+        return render_template("progress.html")
+    return render_template("parameters.html")
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])
