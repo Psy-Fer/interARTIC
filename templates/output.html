@@ -9,23 +9,32 @@
     {% block content %}
     <div class="hero-body">
       <div class="container is-fluid">
-        <h1> Output </h1>
-        <h2> Files produced </h2>
-        <text> These are the files produced from {{ job_name }}. They have been saved into the selected folder {{ output_folder }}. </text><br>
-        <h2> Data Visualisation </h2>
-        <form method=POST>
-          <input type="checkbox" id="barplot" name="barplot" value="yes">
-          <label for="barplot"> Bar plot </label><br>
-          <input type="checkbox" id="boxplot" name="boxplot" value="yes">
-          <label for="boxplot"> Box plot </label><br>
-          <br>
-          <text id="preview" display=none> Previewing plots: {{preview_plots}} </text>
-          <br>
-          <text id="preview" display=none> Downloading plots: {{download_plots}} </text>
-          <br>
-          <br><input type="submit" name="submit_button" value="Preview">
-          <input type="submit" name="submit_button" value="Download">
-        </form>
+        <h1 class="title is-4"> Output </h1>
+        <div class="container is-fluid">
+          <div class="columns">
+            <div class="column">
+              <h1 class="title is-6"> Files produced </h1>
+              <text> These are the files produced from "</text><text style="color:#0066cc">{{ job_name }}</text><text>".</text>
+              <text> They have been saved into the selected folder "</text><text style="color:#0066cc">{{ output_folder }}</text><text>".</text><br>
+            </div>
+            <div claSS="column">
+              <h1 class="title is-6"> Data Visualisation </h1>
+              <form method=POST>
+                <input type="checkbox" id="barplot" name="barplot" value="yes">
+                <label for="barplot"> Bar plot </label><br>
+                <input type="checkbox" id="boxplot" name="boxplot" value="yes">
+                <label for="boxplot"> Box plot </label><br>
+                <br>
+                <text id="preview" display=none> Previewing plots: {{preview_plots}} </text>
+                <br>
+                <text id="preview" display=none> Downloading plots: {{download_plots}} </text>
+                <br>
+                <br><input type="submit" name="submit_button" value="Preview">
+                <input type="submit" name="submit_button" value="Download">
+              </form>
+            </div>
+          </div>
+        </div>
     </div>
     </div>
 
