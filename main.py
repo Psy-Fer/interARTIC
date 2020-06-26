@@ -10,6 +10,34 @@ def home():
 def about():
 	return render_template("about.html")
 
+@app.route("/parameters", methods = [GET])
+def parameters():
+    if request.method == "POST":
+        input_folder = request.form.get('inputFolder')
+        csv_file = request.form.get('csvFile')
+            
+        pipeline = []
+        if request.form.get('nanopolish') == "yes":
+            pipeline.append("nanopolish")
+        if request.form.get('mendaka') == "yes":
+            pipeline.append("mendaka")
+        if request.form.get('both') == "yes":
+            pipeline.append("nanopolish")
+            pipeline.append("mendaka")
+        
+        numThreads = request.form.get('numThreads')
+        minLength = request.form.get('minLength')
+        maxLength = request.form.get('maxLength')
+        normaliseNano = request.form.get('normaliseNanopolish')
+        normaliseMendaka = request.form.get('normaliseMendaka')
+        
+        output_folder = request.form.get('outputFolder')
+        
+        if request.form.get('overRideDate') == "yes":
+            overRide = True
+
+	return render_template("parameters.html")
+
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])
 def output():
