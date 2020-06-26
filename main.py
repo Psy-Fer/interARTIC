@@ -15,8 +15,6 @@ def about():
 def output():
     job_name = request.args.get('job_name')
     output_folder = request.args.get('output_folder')
-#@app.route("/output", methods = ["POST"])
-#def outputFormHandler():
     if request.method == "POST":
         plots = []
         if request.form.get('barplot') == "yes":
