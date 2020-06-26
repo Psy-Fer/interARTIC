@@ -61,9 +61,5 @@ def output():
 def progress():
 	return render_template("progress.html")
 
-@app.route("/parameters")
-def parameters():
-	return render_template("parameters.html")
-
 if __name__ == "__main__":
     app.run(debug=True)
