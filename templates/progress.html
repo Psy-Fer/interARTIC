@@ -2,17 +2,54 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Home</title>
+    <title>Progress</title>
+	<link rel="stylesheet" href="/static/css/bulma.min.css"/>
+	<link rel="stylesheet" href="/static/css/confirm_modal.css"/>
   </head>
   <body>
     {% extends "page_template.html" %}
     {% block content %}
-    <div class="hero-body">
-        <div class="container is-fluid">
-            <h1> JOB NAME </h1>
-        </div>
-    </div>
+    
+    <h1> Progress </h1>
+    <p> Blah blah...</p>
+	<label for="file">Pipeline progress:</label>
+	<progress id="file" value="32" max="100"> 32% </progress>
 
-  {% endblock %}
+
+	<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button>
+
+	<div id="confirmModal" class="modal">
+		<!-- Modal content -->
+		<div class="modal-content">
+			<h1>Abort Job</h1>
+			<p>You are about to abort a job which is currently running. This action is irreversible.
+				Continue?</p>
+			<button id="cancelAbortBtn" onclick="cancel()">No</button>
+			<button id="confirmAbortBtn" onclick="confirm()">Yes</button>
+		</div>
+
+	</div>
+
+	<script>
+		var abortBtn = document.getElementById("abortBtn");
+		var confirmModal = document.getElementById("confirmModal");
+		var cancelAbort = document.getElementById("cancelAbortBtn");
+		var confirmAbort = document.getElementById("confirmAbortBtn");
+
+
+		function showConfirmModal() {
+			confirmModal.style.display = "block";
+		}
+		function cancel() {
+  			confirmModal.style.display = "none";
+		}
+		function confirm() {
+  			
+		}
+
+	</script>
+
+    {% endblock %}
+
   </body>
 </html>
