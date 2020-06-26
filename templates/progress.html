@@ -9,14 +9,17 @@
   <body>
     {% extends "page_template.html" %}
     {% block content %}
-    
-    <h1> Progress </h1>
-    <p> Blah blah...</p>
-	<label for="file">Pipeline progress:</label>
-	<progress id="file" value="32" max="100"> 32% </progress>
-
-
-	<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button>
+    <div class="hero-body">
+		<div class="container is-fluid">
+			<h1> Progress </h1>
+			<p> Blah blah...</p>
+			<label for="file">Pipeline progress:</label>
+			<progress id="file" value="32" max="100"> 32% </progress>
+		
+		
+			<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button>
+		</div>
+	</div>
 
 	<div id="confirmModal" class="modal">
 		<!-- Modal content -->
