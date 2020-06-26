@@ -23,16 +23,16 @@
                   <input class="input is-info" type="text" placeholder="Job Name">
                 </div>
               </div>
-              <form action="upload.php" method="post" enctype="multipart/form-data">
+              <h1 class="subtitle">Please select an input folder and .csv file:</h1>
+              <label for="inputFolder">Select an input folder:</label>
+              <form action="upload.php" id="inputFolder" method="post" enctype="multipart/form-data">
                 <input type="file" title="Folder Select" webkitdirectory directory multiple />
               </form>
-          
-              <form action="upload.php" method="post" enctype="multipart/form-data">
-                <input type="file"/>
-              </form>
+              <label for="csvFile">Select a file:</label><p>
+              <input type="file" accept=".csv" id="csvFile" name="myfile">
               <div class="field">
                 <div class="control">
-                  <h1 class="subtitle">Please select pipeline to run:</h1>
+                  <h1 class="subtitle">Please select a pipeline to run:</h1>
                   <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
                   <label for="male">Nanopolish</label><br>
                   <input type="radio" id="mendaka" name="pipeline" value="mendaka">
@@ -45,6 +45,28 @@
               <div class="field">
                 <div class="control">
                   <h1 class="subtitle">Select parameters:</h1>
+                    <h2>Thread usage</h2>
+                      <form action="/action_page.php">
+                        <label for="numThreads">Number of threads:</label>
+                        <input type="number" id="numThreads" name="numThreads" value="4"><br>
+                      </form>
+                    <h2>Gather command:</h2>
+                    <form action="/action_page.php">
+                      <label for="minLength">Minimum Length:</label>
+                      <input type="number" id="minLength" name="minLength"><br>
+                      <label for="maxLength">Maximum Length:</label>
+                      <input type="number" id="maxLength" name="maxLength"><br>
+                    </form>
+                    <h2>Nanopolish:</h2>
+                    <form action="/action_page.php">
+                      <label for="normaliseNanopolish">Normalise:</label>
+                      <input type="number" id="normaliseNanopolish" name="normaliseNanopolish" value="200"><br>
+                    </form>
+                    <h2>Mendaka:</h2>
+                    <form action="/action_page.php">
+                      <label for="normaliseMendaka">Mendaka:</label>
+                      <input type="number" id="normaliseMendaka" name="normaliseMendaka" value="200"><br>
+                    </form>
                 </div>
               </div>
               
@@ -55,6 +77,11 @@
                   <form action="upload.php" method="post" enctype="multipart/form-data">
                     <input class="button" type="file" title="Folder Select" webkitdirectory directory multiple />
                   </form>
+                  <form action="/action_page.php">
+                    <input type="checkbox" id="overRideData" name="overRideData">
+                    <label for="overRideData">Override existing data?</label><br>
+                  </form>
+
                 </div>
               </div>
               
