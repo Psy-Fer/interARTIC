@@ -15,28 +15,37 @@ def parameters():
     if request.method == "POST":
         input_folder = request.form.get('inputFolder')
         csv_file = request.form.get('csvFile')
-            
-        pipeline = []
-        if request.form.get('nanopolish') == "yes":
-            pipeline.append("nanopolish")
-        if request.form.get('mendaka') == "yes":
-            pipeline.append("mendaka")
-        if request.form.get('both') == "yes":
-            pipeline.append("nanopolish")
-            pipeline.append("mendaka")
-        
+        test = request.form.get('test')
+
+        #parameters
+        sampleName = request.form.get('sample_name')
         numThreads = request.form.get('numThreads')
         minLength = request.form.get('minLength')
         maxLength = request.form.get('maxLength')
         normaliseNano = request.form.get('normaliseNanopolish')
         normaliseMendaka = request.form.get('normaliseMendaka')
-        
+        #print(request.form.get('val'))
+
         output_folder = request.form.get('outputFolder')
+            
+        gather_cmd = ""
+        demul_cmd = ""
+        #only doing minion cmd for first sprint
+        minion_cmd = "artic minion --minimap2 --medaka --normalise 200 --threads 4 --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"
+        if request.form.get('nanopolish') == "yes":
+            #run nanopolish cmd
+            minion_cmd = "blah"
+        elif request.form.get('mendaka') == "yes":
+            #run mendaka cmd
+            minion_cmd = "artic minion --minimap2 --medaka --normalise " + normaliseMendaka + " --threads " + numThreads + " --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"
+        elif request.form.get('both') == "yes":
+            minion_cmd = "blah"
         
-        if request.form.get('overRideDate') == "yes":
+        if request.form.get('overRideData') == "yes":
             overRide = True
-        return render_template("progress.html")
+        return render_template("progress.html", min_cmd = minion_cmd)
     return render_template("parameters.html")
+
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])
@@ -57,7 +66,7 @@ def output():
             return render_template("output.html", job_name=job_name, output_folder=output_folder, download_plots=plots)
     return render_template("output.html", job_name=job_name, output_folder=output_folder)
 
-@app.route("/progress")
+@app.route("/progress", methods = ["GET", "POST"])
 def progress():
 	return render_template("progress.html")
 
