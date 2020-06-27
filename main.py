@@ -24,6 +24,7 @@ def parameters():
         maxLength = request.form.get('maxLength')
         normaliseNano = request.form.get('normaliseNanopolish')
         normaliseMendaka = request.form.get('normaliseMendaka')
+        #print(request.form.get('val'))
 
         output_folder = request.form.get('outputFolder')
             
