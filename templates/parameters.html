@@ -23,94 +23,73 @@
           </div>
           <div class="column">
             
-              <!-- Start parameter input -->
+              <!-- Start parameter input <enctype="multipart/form-data"> -->
               <form method=POST>
                 <div class="field">
                   <div class="control">
                     <!-- Job name input -->
+                    <h1 class="subtitle">Sample/ job name:</h1>
                     <input class="input is-info" id="sample_name" type="text" placeholder="Job Name">
                   </div>
                 </div>
-                <!-- input folder input -->
-                <h1 class="subtitle">Please select an input folder and .csv file:</h1>
-                <label for="inputFolder">Select an input folder:</label>
 
-                <!-- file upload button -->
-                <input type="file" id="input_folder" name="input_folder" webkitdirectory mozdirectory>
-
-                <!--<form action="upload.php" id="inputFolder" method="post" enctype="multipart/form-data">
-                  <input type="file" title="Folder Select" webkitdirectory directory multiple />
-                  <input type="hidden" id="test" name="test" value="test_val">
-                </form> -->
-
-                <!-- csv file select -->
-                <label for="csvFile">Select a file:</label><p>
-                <input type="file" accept=".csv" id="csvFile" name="myfile">
                 <div class="field">
                   <div class="control">
                     <!-- pipeline select -->
-                    <h1 class="subtitle">Please select a pipeline to run:</h1>
+                    <h1 class="subtitle">Select a pipeline to run:</h1>
                     <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
                     <label for="male">Nanopolish</label><br>
-                    <input type="radio" id="mendaka" name="pipeline" value="mendaka">
-                    <label for="female">Mendaka</label><br>
+                    <input type="radio" id="medaka" name="pipeline" value="medaka">
+                    <label for="female">Medaka</label><br>
                     <input type="radio" id="both" name="pipeline" value="both">
                     <label for="other">Both</label>
                   </div>
                 </div>
+
+                <!-- file path input -->
+                <h1 class="subtitle">Provide file paths:</h1>
+
+                <!-- input folder file path -->
+                <label for="input_folder">File path to input folder:</label>
+                <input type="text" id="input_folder" name="input_folder" size="60"><br>
+
+                <!-- csv file path -->
+                <label for="csvFile">File path for csv file:</label>
+                <input type="text" id="csvFile" name="csvFile" size="60"><br><br>
+
+                <!-- output folder file path -->
+                <label for="csvFile">File path for output:</label>
+                <input type="text" id="output_folder" name="output_folder" size="60"><br>
+                <!-- override output data?-->
+                <input type="checkbox" id="overRideData" name="overRideData">
+                <label for="overRideData">Override existing data?</label><br><br>
+                
                 
                 <div class="field">
                   <div class="control">
                     <!-- Parameter selection -->
+                    <!-- threads - Medaka + Nanopolish -->
                     <h1 class="subtitle">Select parameters:</h1>
-                    <h2>Thread usage</h2>
-                    <label for="numThreads">Number of threads:</label>
+                    <label for="numThreads">Thread usage:</label>
                     <input type="number" id="numThreads" name="numThreads" value="4"><br>
-                    <br>
 
-                    <h2>Gather command:</h2>
+                    <!--<h2>Gather command:</h2>
 
                     <label for="minLength">Minimum Length:</label>
                     <input type="number" id="minLength" name="minLength"><br>
                     <label for="maxLength">Maximum Length:</label>
                     <input type="number" id="maxLength" name="maxLength"><br>
-                    <br>
+                    <br>-->
 
-                    <h2>Nanopolish:</h2>
-
+                    <!-- normalise - M + N -->
                     <label for="normaliseNanopolish">Normalise:</label>
                     <input type="number" id="normaliseNanopolish" name="normaliseNanopolish" value="200"><br>
 
-                    <br>
-                    <h2>Mendaka:</h2>
-
-                    <label for="normaliseMendaka">Normalise:</label>
-                    <input type="number" id="normaliseMendaka" name="normaliseMendaka" value="200"><br>
-
+                    
                     
                   </div>
                 </div>
-                
-                
-                <div class="field">
-                  <div class="control">
-                    <h1 class="subtitle">Select output folder:&nbsp<input type="file" id="output_folder" name="output_folder" webkitdirectory mozdirectory><br></h1>
-                    
-                    <input type="checkbox" id="overRideData" name="overRideData">
-                    <label for="overRideData">Override existing data?</label><br>
-
-                    <!--<form action="upload.php" method="post" enctype="multipart/form-data">
-                      <input class="button" type="file" id="ouputFolder" title="Folder Select" webkitdirectory directory multiple />
-
-                    </form>
-                    <form action="/action_page.php">
-                      <input type="checkbox" id="overRideData" name="overRideData">
-                      <label for="overRideData">Override existing data?</label><br>
-                    </form>-->
-
-
-                  </div>
-                </div>
+                <br>
                 <div class="field">
                   <input class="button" name="submit_job" type="submit" value="Submit Job(s)"><br>
                 </div>

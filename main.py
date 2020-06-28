@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import os
 
 app = Flask(__name__)
 
@@ -23,7 +24,7 @@ def parameters():
         minLength = request.form.get('minLength')
         maxLength = request.form.get('maxLength')
         normaliseNano = request.form.get('normaliseNanopolish')
-        normaliseMendaka = request.form.get('normaliseMendaka')
+        normaliseMedaka = request.form.get('normaliseMedaka')
 
         output_folder = request.form.get('outputFolder')
             
@@ -31,12 +32,20 @@ def parameters():
         demul_cmd = ""
         #only doing minion cmd for first sprint
         minion_cmd = "artic minion --minimap2 --medaka --normalise 200 --threads 4 --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"
+
+        #get files
+        #filename = request.form.getlist('input_folder')
+        #print(request.form)
+        #file = request.files['file']
+        #print(os.system('pwd'))
+
+
         if request.form.get('nanopolish') == "yes":
             #run nanopolish cmd
             minion_cmd = "blah"
-        elif request.form.get('mendaka') == "yes":
-            #run mendaka cmd
-            minion_cmd = "artic minion --minimap2 --medaka --normalise " + normaliseMendaka + " --threads " + numThreads + " --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"
+        elif request.form.get('medaka') == "yes":
+            #run medaka cmd
+            minion_cmd = "artic minion --minimap2 --medaka --normalise " + normaliseMedaka + " --threads " + numThreads + " --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"
         elif request.form.get('both') == "yes":
             minion_cmd = "blah"
         
