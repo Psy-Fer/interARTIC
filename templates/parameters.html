@@ -14,7 +14,7 @@
     <!-- Titles -->
     <div class="hero-body">
       <div class="container is-fluid">
-        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis</h1> <br>
+        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis - ONLY FOR MEDAKA CURRENTLY</h1> <br>
       </div>
       <div class="container is-fluid">
         <div class="columns">
@@ -29,7 +29,7 @@
                   <div class="control">
                     <!-- Job name input -->
                     <h1 class="subtitle">Sample/ job name:</h1>
-                    <input class="input is-info" id="sample_name" type="text" placeholder="Job Name">
+                    <input class="input is-info" id="sample_name" name="sample_name" type="text" placeholder="Job Name">
                   </div>
                 </div>
 
@@ -49,17 +49,30 @@
                 <!-- file path input -->
                 <h1 class="subtitle">Provide file paths:</h1>
 
-                <!-- input folder file path -->
-                <label for="input_folder">File path to input folder:</label>
+                <!-- input folder file path - Medaka/ Nanopolish-->
+                <label for="input_folder">File path for input folder:</label>
                 <input type="text" id="input_folder" name="input_folder" size="60"><br>
 
-                <!-- csv file path -->
-                <label for="csvFile">File path for csv file:</label>
-                <input type="text" id="csvFile" name="csvFile" size="60"><br><br>
+                <!-- csv file path - Medaka/ Nanopolish-->
+                <!--<label for="csvFile">File path for csv file:</label>
+                <input type="text" id="csvFile" name="csvFile" size="60"><br>-->
 
-                <!-- output folder file path -->
-                <label for="csvFile">File path for output:</label>
+                <!-- scheme directory file path - Medaka/ Nanopolish-->
+                <label for="scheme_folder">File path for scheme directory:</label>
+                <input type="text" id="scheme_folder" name="scheme_folder" size="60"><br>
+
+                <!-- read file path - Medaka/ Nanopolish-->
+                <label for="scheme_folder">File path for read file:</label>
+                <input type="text" id="read_file" name="read_file" size="60"><br><br>
+
+                <!-- primer scheme name - Medaka/ Nanopolish-->
+                <label for="primer_scheme">Name of primer scheme:</label>
+                <input type="text" id="primer_scheme" name="primer_scheme" size="30"><br><br>
+
+                <!-- output folder file path - Medaka/ Nanopolish-->
+                <label for="output_folder">File path for output:</label>
                 <input type="text" id="output_folder" name="output_folder" size="60"><br>
+
                 <!-- override output data?-->
                 <input type="checkbox" id="overRideData" name="overRideData">
                 <label for="overRideData">Override existing data?</label><br><br>
@@ -68,7 +81,7 @@
                 <div class="field">
                   <div class="control">
                     <!-- Parameter selection -->
-                    <!-- threads - Medaka + Nanopolish -->
+                    <!-- threads - Medaka/ Nanopolish-->
                     <h1 class="subtitle">Select parameters:</h1>
                     <label for="numThreads">Thread usage:</label>
                     <input type="number" id="numThreads" name="numThreads" value="4"><br>
@@ -81,9 +94,9 @@
                     <input type="number" id="maxLength" name="maxLength"><br>
                     <br>-->
 
-                    <!-- normalise - M + N -->
-                    <label for="normaliseNanopolish">Normalise:</label>
-                    <input type="number" id="normaliseNanopolish" name="normaliseNanopolish" value="200"><br>
+                    <!-- normalise - Medaka/ Nanopolish-->
+                    <label for="normalise">Normalise:</label>
+                    <input type="number" id="normalise" name="normalise" value="200"><br>
 
                     
                     

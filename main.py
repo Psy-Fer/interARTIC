@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import os
 
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -14,43 +15,52 @@ def about():
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
     if request.method == "POST":
-        input_folder = request.form.get('inputFolder')
-        csv_file = request.form.get('csvFile')
-        test = request.form.get('test')
 
-        #parameters
+        #get parameters
         sampleName = request.form.get('sample_name')
+        input_folder = request.form.get('input_folder')
+        scheme_dir = request.form.get('scheme_folder')
+        read_file = request.form.get('read_file')
+        primer_scheme = request.form.get('primer_scheme')
+        output_folder = request.form.get('output_folder')
+        normalise = request.form.get('normalise')
         numThreads = request.form.get('numThreads')
-        minLength = request.form.get('minLength')
-        maxLength = request.form.get('maxLength')
-        normaliseNano = request.form.get('normaliseNanopolish')
-        normaliseMedaka = request.form.get('normaliseMedaka')
 
-        output_folder = request.form.get('outputFolder')
+        #these are for gather cmd
+        #minLength = request.form['minLength']
+        #maxLength = request.form['maxLength']
+        #csv_file = request.form['csvFile']
             
+        #initialise variables
         gather_cmd = ""
         demul_cmd = ""
+        minion_cmd = ""
+        overRide = False
+
         #only doing minion cmd for first sprint
-        minion_cmd = "artic minion --minimap2 --medaka --normalise 200 --threads 4 --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"
+        #below is a sample cmd
+        minion_cmd = "artic minion --minimap2 --medaka --normalise 200 --threads 4 --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"`
 
-        #get files
-        #filename = request.form.getlist('input_folder')
-        #print(request.form)
-        #file = request.files['file']
-        #print(os.system('pwd'))
-
-
-        if request.form.get('nanopolish') == "yes":
-            #run nanopolish cmd
+        #if nanopolish selected
+        if request.form.get('pipeline') == "nanopolish":
+            #run nanopolish cmd - to be fixed
             minion_cmd = "blah"
-        elif request.form.get('medaka') == "yes":
+        #if medaka selected
+        elif request.form.get('pipeline') == "medaka":
             #run medaka cmd
-            minion_cmd = "artic minion --minimap2 --medaka --normalise " + normaliseMedaka + " --threads " + numThreads + " --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"
-        elif request.form.get('both') == "yes":
+            minion_cmd = "artic minion --minimap2 --medaka --normalise " + normalise + " --threads " + numThreads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " " + primer_scheme + " " + sampleName
+        #if both nano and medaka are selected
+        elif request.form.get('pipeline') == "both":
+            #will be nanopolish then medaka cmds separated by ';'
             minion_cmd = "blah"
         
-        if request.form.get('overRideData') == "yes":
+        #if user agrees output can override files with the same name in output folder
+        if request.form.get('overRideData'):
             overRide = True
+
+        #run minion cmd - to be moved to progress page
+        os.system(minion_cmd)
+
         return render_template("progress.html", min_cmd = minion_cmd)
     return render_template("parameters.html")
 
