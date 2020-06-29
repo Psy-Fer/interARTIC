@@ -22,7 +22,7 @@
             <h1 class="subtitle">My Jobs Queue <br></h1>
           </div>
           <div class="column">
-            
+
               <!-- Start parameter input <enctype="multipart/form-data"> -->
               <form method=POST>
                 <div class="field">
@@ -37,11 +37,11 @@
                   <div class="control">
                     <!-- pipeline select -->
                     <h1 class="subtitle">Select a pipeline to run:</h1>
-                    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
+                    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" onclick="showNano()">
                     <label for="male">Nanopolish</label><br>
-                    <input type="radio" id="medaka" name="pipeline" value="medaka">
+                    <input type="radio" id="medaka" name="pipeline" value="medaka" onclick="showMedaka()">
                     <label for="female">Medaka</label><br>
-                    <input type="radio" id="both" name="pipeline" value="both">
+                    <input type="radio" id="both" name="pipeline" value="both" onclick="showBoth()">
                     <label for="other">Both</label>
                   </div>
                 </div>
@@ -76,15 +76,22 @@
                 <!-- override output data?-->
                 <input type="checkbox" id="overRideData" name="overRideData">
                 <label for="overRideData">Override existing data?</label><br><br>
-                
-                
+
+
                 <div class="field">
                   <div class="control">
                     <!-- Parameter selection -->
+                    <!--when medaka is selected then the current parameters appear-->
                     <!-- threads - Medaka/ Nanopolish-->
                     <h1 class="subtitle">Select parameters:</h1>
-                    <label for="numThreads">Thread usage:</label>
-                    <input type="number" id="numThreads" name="numThreads" value="4"><br>
+                    <div id="nanoParams" style="display:none">
+                      <h1 class="title is-6">Nanopolish parameters:</h1>
+                      <br>
+                    </div>
+                    <div id="medakaParams" style="display:none">
+                      <h1 class="title is-6">Medaka parameters:</h1>
+                      <label for="numThreads">Thread usage:</label>
+                      <input type="number" id="numThreads" name="numThreads" value="4"><br>
 
                     <!--<h2>Gather command:</h2>
 
@@ -95,11 +102,9 @@
                     <br>-->
 
                     <!-- normalise - Medaka/ Nanopolish-->
-                    <label for="normalise">Normalise:</label>
-                    <input type="number" id="normalise" name="normalise" value="200"><br>
-
-                    
-                    
+                      <label for="normalise">Normalise:</label>
+                      <input type="number" id="normalise" name="normalise" value="200"><br>
+                    </div>
                   </div>
                 </div>
                 <br>
@@ -109,9 +114,29 @@
                 <br>
               </form>
             </div>
-          </div> 
+          </div>
         </div>
       </div>
+
+      <script>
+    		var medakaParams = document.getElementById("medakaParams");
+        var nanoParams = document.getElementById("nanoParams");
+
+        function showMedaka() {
+    			medakaParams.style.display = "block";
+          nanoParams.style.display = "none";
+    		}
+    		function showNano() {
+          nanoParams.style.display = "block";
+      		medakaParams.style.display = "none";
+    		}
+        function showBoth(){
+          nanoParams.style.display = "block";
+          medakaParams.style.display = "block";
+        }
+
+    	</script>
+
     {% endblock %}
 </body>
 </html>
