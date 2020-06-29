@@ -39,7 +39,7 @@ def parameters():
 
         #only doing minion cmd for first sprint
         #below is a sample cmd
-        minion_cmd = "artic minion --minimap2 --medaka --normalise 200 --threads 4 --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"`
+        minion_cmd = "artic minion --minimap2 --medaka --normalise 200 --threads 4 --scheme-directory /Users/iggygetout/Documents/binf6111_project/artic-ncov2019/primer_schemes --read-file /Users/iggygetout/Documents/binf6111_project/data/SP1-raw/SP1-mapped.fastq nCoV-2019/V1 sample_name"
 
         #if nanopolish selected
         if request.form.get('pipeline') == "nanopolish":
