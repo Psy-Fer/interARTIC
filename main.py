@@ -1,8 +1,15 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import os
+import base64
 
 
 app = Flask(__name__)
+
+#initialise variables
+gather_cmd = ""
+demul_cmd = ""
+minion_cmd = "test"
+overRide = False
 
 @app.route("/")
 def home():
@@ -26,16 +33,13 @@ def parameters():
         normalise = request.form.get('normalise')
         numThreads = request.form.get('numThreads')
 
+        #no spaces in the sample name - messes up commands
+        sampleName = sampleName.replace(" ", "_")
+
         #these are for gather cmd
         #minLength = request.form['minLength']
         #maxLength = request.form['maxLength']
         #csv_file = request.form['csvFile']
-            
-        #initialise variables
-        gather_cmd = ""
-        demul_cmd = ""
-        minion_cmd = ""
-        overRide = False
 
         #only doing minion cmd for first sprint
         #below is a sample cmd
@@ -48,7 +52,7 @@ def parameters():
         #if medaka selected
         elif request.form.get('pipeline') == "medaka":
             #run medaka cmd
-            minion_cmd = "artic minion --minimap2 --medaka --normalise " + normalise + " --threads " + numThreads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " " + primer_scheme + " " + sampleName
+            minion_cmd = "artic minion --minimap2 --medaka --normalise " + normalise + " --threads " + numThreads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " " + primer_scheme + " \"" + sampleName + "\""
         #if both nano and medaka are selected
         elif request.form.get('pipeline') == "both":
             #will be nanopolish then medaka cmds separated by ';'
@@ -58,10 +62,12 @@ def parameters():
         if request.form.get('overRideData'):
             overRide = True
 
-        #run minion cmd - to be moved to progress page
-        os.system(minion_cmd)
+        #need to encode - '/' in file path screws with url
+        output_folder = base64.b64encode(output_folder.encode())
+        minion_cmd = base64.b64encode(minion_cmd.encode())
 
-        return render_template("progress.html", min_cmd = minion_cmd)
+        #return render_template("progress.html", min_cmd = minion_cmd)
+        return redirect(url_for('progress', min_cmd = minion_cmd, sample_name = sampleName, output_folder = output_folder))
     return render_template("parameters.html")
 
 
@@ -84,9 +90,16 @@ def output():
             return render_template("output.html", job_name=job_name, output_folder=output_folder, download_plots=plots)
     return render_template("output.html", job_name=job_name, output_folder=output_folder)
 
-@app.route("/progress", methods = ["GET", "POST"])
-def progress():
-	return render_template("progress.html")
+@app.route("/progress/<min_cmd>/<sample_name>/<output_folder>", methods = ["GET", "POST"])
+def progress(min_cmd, sample_name, output_folder):
+    #decode
+    output_folder = base64.b64decode(output_folder).decode()
+    min_cmd = base64.b64decode(min_cmd).decode()
+    #run minion cmd
+    os.system(min_cmd)
+    #move output files into output folder
+    os.system('mv ' + sample_name + '* ' + output_folder)
+    return render_template("progress.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
