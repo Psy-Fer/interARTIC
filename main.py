@@ -11,7 +11,7 @@ demul_cmd = ""
 minion_cmd = "test"
 overRide = False
 
-@app.route("/")
+@app.route("/home")
 def home():
     return render_template("home.html")
 
