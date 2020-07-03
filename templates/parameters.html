@@ -93,13 +93,13 @@
                       <label for="numThreads">Thread usage:</label>
                       <input type="number" id="numThreads" name="numThreads" value="4"><br>
 
-                    <!--<h2>Gather command:</h2>
+                    <h2>Gather command:</h2>
 
                     <label for="minLength">Minimum Length:</label>
                     <input type="number" id="minLength" name="minLength"><br>
                     <label for="maxLength">Maximum Length:</label>
                     <input type="number" id="maxLength" name="maxLength"><br>
-                    <br>-->
+                    <br>
 
                     <!-- normalise - Medaka/ Nanopolish-->
                       <label for="normalise">Normalise:</label>
@@ -107,6 +107,18 @@
                     </div>
                   </div>
                 </div>
+
+                <div class="field">
+                  <div class="control">
+                    <!-- single or multiple samples -->
+                    <h1 class="subtitle">This input contains:</h1>
+                    <input type="radio" id="single" name="single" value="yes">
+                    <label for="male">A single sample</label><br>
+                    <input type="radio" id="multiple" name="multiple" value="yes">
+                    <label for="female">Multiple files</label><br>
+                  </div>
+                </div>
+
                 <br>
                 <div class="field">
                   <input class="button" name="submit_job" type="submit" value="Submit Job(s)"><br>
