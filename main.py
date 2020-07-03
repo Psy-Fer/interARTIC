@@ -53,6 +53,16 @@ def parameters():
         if not os.path.isfile(read_file):
             errors['read_file'] = "Invalid path/file."
 
+        #if no output folder entered, creates one inside of input folder
+        if not output_folder:
+            output_folder = input_folder + "/output"
+
+        #if the output folder does not exist, it is created
+        #maybe need to put in checks for this? 
+        if not os.path.exists(output_folder):
+            make_dir = 'mkdir "' + output_folder + '"'
+            os.system(make_dir)
+
         #check length parameters are valid
 
         if minLength.isdigit() == False:
