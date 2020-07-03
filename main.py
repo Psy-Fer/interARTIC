@@ -22,7 +22,6 @@ def about():
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
     if request.method == "POST":
-
         #get parameters
         sampleName = request.form.get('sample_name')
         input_folder = request.form.get('input_folder')
@@ -32,6 +31,41 @@ def parameters():
         output_folder = request.form.get('output_folder')
         normalise = request.form.get('normalise')
         numThreads = request.form.get('numThreads')
+        pipeline = request.form.get('pipeline')
+        minLength = request.form.get('minLength')
+        maxLength = request.form.get('maxLength')
+        bwa = request.form.get('bwa')
+        skipNanopolish = request.form.get('skipNanopolish')
+        dryRun = request.form.get('dryrun')
+
+        errors = {}
+        print(errors)
+        if not os.path.isdir(input_folder):
+            errors['input_folder'] = "Invalid path."
+        elif len(os.listdir(input_folder)) == 0:
+            errors['input_folder'] = "Directory is empty."
+
+        if not os.path.isdir(scheme_dir):
+            errors['scheme_dir'] = "Invalid path."
+        elif len(os.listdir(scheme_dir)) == 0:
+            errors['scheme_dir'] = "Directory is empty."
+
+        if not os.path.isfile(read_file):
+            errors['read_file'] = "Invalid path/file."
+
+        #check length parameters are valid
+        if pipeline != "medaka":
+            if minLength.isdigit() == False:
+                errors['invalid_length'] = "Invalid minimum length."
+                if maxLength.isdigit() == False:
+                    errors['invalid_length'] = "Invalid maximum and minimum length."
+            elif maxLength.isdigit() == False:
+                errors['invalid_length'] = "Invalid maximum length."
+            elif int(maxLength) < int(minLength):
+                errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
+        print(errors)
+        if len(errors) != 0:
+            return render_template('parameters.html', errors=errors, name=sampleName, input_folder=input_folder,scheme_dir=scheme_dir,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
 
         #no spaces in the sample name - messes up commands
         sampleName = sampleName.replace(" ", "_")

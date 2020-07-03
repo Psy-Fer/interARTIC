@@ -29,7 +29,7 @@
                   <div class="control">
                     <!-- Job name input -->
                     <h1 class="subtitle">Sample/ job name:</h1>
-                    <input class="input is-info" id="sample_name" name="sample_name" type="text" placeholder="Job Name">
+                    <input class="input is-info" id="sample_name" name="sample_name" type="text" placeholder="Job Name" value="{{name}}" required>
                   </div>
                 </div>
 
@@ -37,7 +37,7 @@
                   <div class="control">
                     <!-- pipeline select -->
                     <h1 class="subtitle">Select a pipeline to run:</h1>
-                    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" onclick="showNano()">
+                    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" onclick="showNano()" required>
                     <label for="male">Nanopolish</label><br>
                     <input type="radio" id="medaka" name="pipeline" value="medaka" onclick="showMedaka()">
                     <label for="female">Medaka</label><br>
@@ -51,27 +51,40 @@
 
                 <!-- input folder file path - Medaka/ Nanopolish-->
                 <label for="input_folder">Input folder:</label>
-                <input type="text" id="input_folder" name="input_folder" size="60"><br>
-
+                <input type="text" id="input_folder" name="input_folder" size="60" value="{{input_folder}}"  required><br>
+                {% if errors %}
+                {% if errors['input_folder'] %}
+                <p class="has-text-danger"> {{ errors['input_folder'] }} </p>
+                {% endif %}
+                {% endif %}
                 <!-- csv file path - Medaka/ Nanopolish-->
                 <!--<label for="csvFile">File path for csv file:</label>
                 <input type="text" id="csvFile" name="csvFile" size="60"><br>-->
 
                 <!-- scheme directory file path - Medaka/ Nanopolish-->
                 <label for="scheme_folder">Scheme directory:</label>
-                <input type="text" id="scheme_folder" name="scheme_folder" size="60"><br>
-
+                <input type="text" id="scheme_folder" name="scheme_folder" size="60" value="{{scheme_dir}}" required><br>
+                {% if errors %}
+                {% if errors['scheme_dir'] %}
+                <p class="has-text-danger"> {{ errors['scheme_dir'] }} </p>
+                {% endif %}
+                {% endif %}
                 <!-- read file path - Medaka/ Nanopolish-->
                 <label for="scheme_folder">Read file:</label>
-                <input type="text" id="read_file" name="read_file" size="60"><br><br>
-
+                <input type="text" id="read_file" name="read_file" size="60" value="{{read_file}}" required><br>
+                {% if errors %}
+                {% if errors['read_file'] %}
+                <p class="has-text-danger"> {{ errors['read_file'] }} </p>
+                {% endif %}
+                {% endif %}
+                <br>
                 <!-- primer scheme name - Medaka/ Nanopolish-->
                 <label for="primer_scheme">Primer scheme name:</label>
-                <input type="text" id="primer_scheme" name="primer_scheme" size="30"><br><br>
+                <input type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
 
                 <!-- output folder file path - Medaka/ Nanopolish-->
                 <label for="output_folder">Output folder:</label>
-                <input type="text" id="output_folder" name="output_folder" size="60"><br>
+                <input type="text" id="output_folder" name="output_folder" size="60" value="{{output_folder}}"><br>
 
                 <!-- override output data?-->
                 <input type="checkbox" id="overRideData" name="overRideData">
@@ -104,6 +117,11 @@
                     <!-- normalise - Medaka/ Nanopolish-->
                       <label for="normalise">Normalise:</label>
                       <input type="number" id="normalise" name="normalise" value="200"><br>
+                      {% if errors %}
+                      {% if errors['invalid_length'] %}
+                      <p class="has-text-danger"> {{ errors['invalid_length'] }} </p>
+                      {% endif %}
+                      {% endif %}
                     </div>
                   </div>
                 </div>
