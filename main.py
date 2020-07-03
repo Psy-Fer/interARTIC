@@ -54,16 +54,16 @@ def parameters():
             errors['read_file'] = "Invalid path/file."
 
         #check length parameters are valid
-        if pipeline != "medaka":
-            if minLength.isdigit() == False:
-                errors['invalid_length'] = "Invalid minimum length."
-                if maxLength.isdigit() == False:
-                    errors['invalid_length'] = "Invalid maximum and minimum length."
-            elif maxLength.isdigit() == False:
-                errors['invalid_length'] = "Invalid maximum length."
-            elif int(maxLength) < int(minLength):
-                errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
-        print(errors)
+
+        if minLength.isdigit() == False:
+            errors['invalid_length'] = "Invalid minimum length."
+            if maxLength.isdigit() == False:
+                errors['invalid_length'] = "Invalid maximum and minimum length."
+        elif maxLength.isdigit() == False:
+            errors['invalid_length'] = "Invalid maximum length."
+        elif int(maxLength) < int(minLength):
+            errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
+
         if len(errors) != 0:
             return render_template('parameters.html', errors=errors, name=sampleName, input_folder=input_folder,scheme_dir=scheme_dir,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
 
@@ -92,7 +92,7 @@ def parameters():
         elif request.form.get('pipeline') == "both":
             #construct commands joined together
             minion_cmd = "echo 'no command for nanopolish yet'"
-        
+
         #if user agrees output can override files with the same name in output folder
         if request.form.get('overRideData'):
             overRide = True

@@ -97,6 +97,17 @@
                     <!--when medaka is selected then the current parameters appear-->
                     <!-- threads - Medaka/ Nanopolish-->
                     <h1 class="subtitle">Select parameters:</h1>
+                    <h1 class="title is-6">Gather command:</h1>
+                    {% if errors %}
+                    {% if errors['invalid_length'] %}
+                    <p class="has-text-danger"> {{ errors['invalid_length'] }} </p>
+                    {% endif %}
+                    {% endif %}
+                    <label for="minLength">Minimum Length:</label>
+                    <input type="number" id="minLength" name="minLength"><br>
+                    <label for="maxLength">Maximum Length:</label>
+                    <input type="number" id="maxLength" name="maxLength"><br>
+                    <br>
                     <div id="nanoParams" style="display:none">
                       <h1 class="title is-6">Nanopolish parameters:</h1>
                       <br>
@@ -106,22 +117,9 @@
                       <label for="numThreads">Thread usage:</label>
                       <input type="number" id="numThreads" name="numThreads" value="4"><br>
 
-                    <h2>Gather command:</h2>
-
-                    <label for="minLength">Minimum Length:</label>
-                    <input type="number" id="minLength" name="minLength"><br>
-                    <label for="maxLength">Maximum Length:</label>
-                    <input type="number" id="maxLength" name="maxLength"><br>
-                    <br>
-
                     <!-- normalise - Medaka/ Nanopolish-->
                       <label for="normalise">Normalise:</label>
                       <input type="number" id="normalise" name="normalise" value="200"><br>
-                      {% if errors %}
-                      {% if errors['invalid_length'] %}
-                      <p class="has-text-danger"> {{ errors['invalid_length'] }} </p>
-                      {% endif %}
-                      {% endif %}
                     </div>
                   </div>
                 </div>
