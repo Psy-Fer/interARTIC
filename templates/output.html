@@ -16,6 +16,7 @@
               <h1 class="title is-6"> Files produced </h1>
               <text> These are the files produced from "</text><text style="color:#0066cc">{{ job_name }}</text><text>".</text>
               <text> They have been saved into the selected folder "</text><text style="color:#0066cc">{{ output_folder }}</text><text>".</text><br>
+              <text id="files"> {{output_files}} </text>
             </div>
             <div claSS="column">
               <h1 class="title is-6"> Data Visualisation </h1>
@@ -25,9 +26,9 @@
                 <input type="checkbox" id="boxplot" name="boxplot" value="yes">
                 <label for="boxplot"> Box plot </label><br>
                 <br>
-                <text id="preview" display=none> Previewing plots: {{preview_plots}} </text>
+                <text id="preview"> Previewing plots: {{preview_plots}} </text>
                 <br>
-                <text id="preview" display=none> Downloading plots: {{download_plots}} </text>
+                <text id="download"> Downloading plots: {{download_plots}} </text>
                 <br>
                 <br><input type="submit" name="submit_button" value="Preview">
                 <input type="submit" name="submit_button" value="Download">
