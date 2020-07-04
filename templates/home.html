@@ -20,6 +20,9 @@
         <div class="columns">
           <div class="column">
             <h1 class="title is-6">My Jobs Queue</h1>
+            <ul id=jobsQueue>
+            </ul>
+                
             <a class="button" href="/parameters">Add Job</a><br>
       
           </div>
@@ -30,7 +33,30 @@
         </div>
       </div>
     </div>
-
+    <script>
+        fetch('/home')
+        .then(res => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                throw res.status;
+            }
+        }).then(result => {
+            console.log('GET response text:');
+            console.log(result);
+                        
+            const jobsQueue = document.getElementById("jobsQueue");
+            for(key in result)
+            result.jobs.forEach(p => {
+                const curJob = document.createElement("li");
+                const node = document.createTextNode(p);
+                curJob.appendChild(node);
+                jobsQueue.appendChild(curJob);
+                
+            });
+        });
+        
+    </script>
     {% endblock %}
   </body>
 </html>

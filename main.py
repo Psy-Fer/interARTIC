@@ -1,19 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+from src.job import Job
 import os
 import base64
+import queue as q
 
 
 app = Flask(__name__)
+
+#Initialise an empty job queue
+jobQueue = q.Queue(maxsize=10)
 
 #initialise variables
 gather_cmd = ""
 demul_cmd = ""
 minion_cmd = "test"
-overRide = False
+override_data = False
 
 @app.route("/home")
 def home():
-    return render_template("home.html")
+    #Update displayed queue on home page
+    queueList = []
+    for item in list(jobQueue.queue):
+        queueList.append(item)
+    
+    queueDict = {'jobs':[queueList]}
+    print(queueDict)
+    displayQueue = jsonify(queueList)
+    #return displayQueue
+    return render_template("home.html", queue = displayQueue)
 
 @app.route("/about")
 def about():
@@ -23,20 +37,25 @@ def about():
 def parameters():
     if request.method == "POST":
         #get parameters
-        sampleName = request.form.get('sample_name')
+        job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
         scheme_dir = request.form.get('scheme_folder')
         read_file = request.form.get('read_file')
         primer_scheme = request.form.get('primer_scheme')
         output_folder = request.form.get('output_folder')
         normalise = request.form.get('normalise')
-        numThreads = request.form.get('numThreads')
+        num_threads = request.form.get('num_threads')
         pipeline = request.form.get('pipeline')
-        minLength = request.form.get('minLength')
-        maxLength = request.form.get('maxLength')
+        min_length = request.form.get('min_length')
+        max_length = request.form.get('max_length')
         bwa = request.form.get('bwa')
-        skipNanopolish = request.form.get('skipNanopolish')
-        dryRun = request.form.get('dryrun')
+        skip_nanopolish = request.form.get('skip_nanopolish')
+        dry_run = request.form.get('dry_run')
+        #if user agrees output can override files with the same name in output folder
+        if request.form.get('override_data'):
+            override_data = True
+        else:
+            override_data = False
 
         errors = {}
         print(errors)
@@ -55,47 +74,36 @@ def parameters():
 
         #check length parameters are valid
 
-        if minLength.isdigit() == False:
+        if min_length.isdigit() == False:
             errors['invalid_length'] = "Invalid minimum length."
-            if maxLength.isdigit() == False:
+            if max_length.isdigit() == False:
                 errors['invalid_length'] = "Invalid maximum and minimum length."
-        elif maxLength.isdigit() == False:
+        elif max_length.isdigit() == False:
             errors['invalid_length'] = "Invalid maximum length."
-        elif int(maxLength) < int(minLength):
+        elif int(max_length) < int(min_length):
             errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
 
         if len(errors) != 0:
-            return render_template('parameters.html', errors=errors, name=sampleName, input_folder=input_folder,scheme_dir=scheme_dir,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
+            return render_template('parameters.html', errors=errors, name=job_name, input_folder=input_folder,scheme_dir=scheme_dir,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
 
-        #no spaces in the sample name - messes up commands
-        sampleName = sampleName.replace(" ", "_")
+        #no spaces in the job name - messes up commands
+        job_name = job_name.replace(" ", "_")
+        
+        
+        #Create a new instance of the Job class
+        new_job = Job(job_name, input_folder, scheme_dir, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data)
+        
+        #Add job to queue
+        jobQueue.put(new_job)
+        
+        for item in list(jobQueue.queue):
+            print(item.job_name)
 
-        #these are for gather cmd
-        minLength = request.form.get('minLength')
-        maxLength = request.form.get('maxLength')
-        #csv_file = request.form['csvFile']
 
-        gather_cmd = ""
-        dem_cmd = ""
-        minion_cmd = ""
-
-        #if nanopolish selected
-        if request.form.get('pipeline') == "nanopolish":
-            #construct cmds
-            minion_cmd = "echo 'no command for nanopolish yet'"
-        #if medaka selected
-        elif request.form.get('pipeline') == "medaka":
-            #construct cmds
-            gather_cmd = "artic gather --min-length " + minLength + " --max-length " + maxLength + " --prefix " + sampleName + " --directory " + input_folder +" --no-fast5s"
-            minion_cmd = "artic minion --minimap2 --medaka --normalise " + normalise + " --threads " + numThreads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " " + primer_scheme + " \"" + sampleName + "\""
-        #if both nano and medaka are selected
-        elif request.form.get('pipeline') == "both":
-            #construct commands joined together
-            minion_cmd = "echo 'no command for nanopolish yet'"
-
-        #if user agrees output can override files with the same name in output folder
-        if request.form.get('overRideData'):
-            overRide = True
+        #Generate commands (using methods of job)
+        gather_cmd = new_job.generateGatherCmd()
+        demul_cmd = ""
+        minion_cmd = new_job.generateMinionCmd()
 
         #need to encode - '/' in file path screws with url
         gather_cmd = base64.b64encode(gather_cmd.encode())
@@ -103,11 +111,14 @@ def parameters():
         minion_cmd = base64.b64encode(minion_cmd.encode())
 
         #return render_template("progress.html", min_cmd = minion_cmd)
-        return redirect(url_for('progress', gather_cmd = gather_cmd, min_cmd = minion_cmd, sample_name = sampleName, output_folder = output_folder))
+        return redirect(url_for('progress', gather_cmd = gather_cmd, min_cmd = minion_cmd, job_name = job_name, output_folder = output_folder))
+    #elif request.method == "GET":
+
+        
     return render_template("parameters.html")
 
-@app.route("/progress/<gather_cmd>/<min_cmd>/<sample_name>/<output_folder>", methods = ["GET", "POST"])
-def progress(gather_cmd, min_cmd, sample_name, output_folder):
+@app.route("/progress/<gather_cmd>/<min_cmd>/<job_name>/<output_folder>", methods = ["GET", "POST"])
+def progress(gather_cmd, min_cmd, job_name, output_folder):
     #decode
     gather_cmd = base64.b64decode(gather_cmd).decode()
     output_folder = base64.b64decode(output_folder).decode()
@@ -116,7 +127,7 @@ def progress(gather_cmd, min_cmd, sample_name, output_folder):
     os.system(gather_cmd)
     os.system(min_cmd)
     #move output files into output folder
-    os.system('mv ' + sample_name + '* ' + output_folder)
+    os.system('mv ' + job_name + '* ' + output_folder)
     return render_template("progress.html")
 
 #not sure if this should be a get method

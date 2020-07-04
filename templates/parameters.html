@@ -28,8 +28,8 @@
                 <div class="field">
                   <div class="control">
                     <!-- Job name input -->
-                    <h1 class="subtitle">Sample/ job name:</h1>
-                    <input class="input is-info" id="sample_name" name="sample_name" type="text" placeholder="Job Name" value="{{name}}" required>
+                    <h1 class="subtitle">Job Name:</h1>
+                    <input class="input is-info" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{name}}" required>
                   </div>
                 </div>
 
@@ -87,8 +87,8 @@
                 <input type="text" id="output_folder" name="output_folder" size="60" value="{{output_folder}}"><br>
 
                 <!-- override output data?-->
-                <input type="checkbox" id="overRideData" name="overRideData">
-                <label for="overRideData">Override existing data?</label><br><br>
+                <input type="checkbox" id="override_data" name="override_data">
+                <label for="override_data">Override existing data?</label><br><br>
 
 
                 <div class="field">
@@ -103,10 +103,10 @@
                     <p class="has-text-danger"> {{ errors['invalid_length'] }} </p>
                     {% endif %}
                     {% endif %}
-                    <label for="minLength">Minimum Length:</label>
-                    <input type="number" id="minLength" name="minLength"><br>
-                    <label for="maxLength">Maximum Length:</label>
-                    <input type="number" id="maxLength" name="maxLength"><br>
+                    <label for="min_length">Minimum Length:</label>
+                    <input type="number" id="min_length" name="min_length"><br>
+                    <label for="max_length">Maximum Length:</label>
+                    <input type="number" id="max_length" name="max_length"><br>
                     <br>
                     <div id="nanoParams" style="display:none">
                       <h1 class="title is-6">Nanopolish parameters:</h1>
@@ -114,8 +114,8 @@
                     </div>
                     <div id="medakaParams" style="display:none">
                       <h1 class="title is-6">Medaka parameters:</h1>
-                      <label for="numThreads">Thread usage:</label>
-                      <input type="number" id="numThreads" name="numThreads" value="4"><br>
+                      <label for="num_threads">Thread usage:</label>
+                      <input type="number" id="num_threads" name="num_threads" value="4"><br>
 
                     <!-- normalise - Medaka/ Nanopolish-->
                       <label for="normalise">Normalise:</label>
