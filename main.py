@@ -1,15 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, json
 from src.job import Job
+import src.queue as q
 import os
 import base64
-import queue as q
-#import json
-
 
 app = Flask(__name__)
 
 #Initialise an empty job queue
-jobQueue = q.Queue(maxsize=10)
+jobQueue = q.JobsQueue(maxsize = 10)
 
 #initialise variables
 gather_cmd = ""
@@ -57,7 +55,6 @@ def parameters():
             override_data = False
 
         errors = {}
-        print(errors)
         if not os.path.isdir(input_folder):
             errors['input_folder'] = "Invalid path."
         elif len(os.listdir(input_folder)) == 0:
@@ -81,6 +78,11 @@ def parameters():
             errors['invalid_length'] = "Invalid maximum length."
         elif int(max_length) < int(min_length):
             errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
+            
+        if jobQueue.full():
+            errors['full_queue'] = "Job queue is full."
+        
+        print("Errors: ", errors)
 
         if len(errors) != 0:
             return render_template('parameters.html', errors=errors, name=job_name, input_folder=input_folder,scheme_dir=scheme_dir,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
@@ -88,40 +90,42 @@ def parameters():
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
         
-        
         #Create a new instance of the Job class
         new_job = Job(job_name, input_folder, scheme_dir, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data)
         
         #Add job to queue
         jobQueue.put(new_job)
-        
-        for item in list(jobQueue.queue):
-            print(item.job_name)
-
 
         #Generate commands (using methods of job)
-        gather_cmd = new_job.generateGatherCmd()
+        '''gather_cmd = new_job.generateGatherCmd()
         demul_cmd = ""
         minion_cmd = new_job.generateMinionCmd()
 
         #need to encode - '/' in file path screws with url
         gather_cmd = base64.b64encode(gather_cmd.encode())
         output_folder = base64.b64encode(output_folder.encode())
-        minion_cmd = base64.b64encode(minion_cmd.encode())
+        minion_cmd = base64.b64encode(minion_cmd.encode())'''
 
         #return render_template("progress.html", min_cmd = minion_cmd)
-        return redirect(url_for('progress', gather_cmd = gather_cmd, min_cmd = minion_cmd, job_name = job_name, output_folder = output_folder))
-    #elif request.method == "GET":
-
+        #return redirect(url_for('progress', gather_cmd = gather_cmd, min_cmd = minion_cmd, job_name = job_name, output_folder = output_folder))
+        return redirect(url_for('progress', job_name=job_name))
         
     return render_template("parameters.html")
 
-@app.route("/progress/<gather_cmd>/<min_cmd>/<job_name>/<output_folder>", methods = ["GET", "POST"])
-def progress(gather_cmd, min_cmd, job_name, output_folder):
+@app.route("/progress/<job_name>", methods = ["GET", "POST"])
+def progress(job_name):
+    job = jobQueue.getJobByName(job_name)
+    print(job)
+
+    gather_cmd = job.gather_cmd
+    output_folder = job.output_folder
+    min_cmd = job.min_cmd
+
+    print(gather_cmd, output_folder, min_cmd)
     #decode
-    gather_cmd = base64.b64decode(gather_cmd).decode()
-    output_folder = base64.b64decode(output_folder).decode()
-    min_cmd = base64.b64decode(min_cmd).decode()
+    #gather_cmd = base64.b64decode(gather_cmd).decode()
+    #output_folder = base64.b64decode(output_folder).decode()
+    #min_cmd = base64.b64decode(min_cmd).decode()
     #run minion cmd
     os.system(gather_cmd)
     os.system(min_cmd)

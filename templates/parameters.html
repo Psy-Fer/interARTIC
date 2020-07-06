@@ -137,7 +137,15 @@
 
                 <br>
                 <div class="field">
-                  <input class="button" name="submit_job" type="submit" value="Submit Job(s)"><br>
+                    <div class="control">
+                        {% if errors %}
+                        {% if errors['full_queue'] %}
+                        <p class="has-text-danger"> {{ errors['full_queue'] }} </p>
+                        {% endif %}
+                        {% endif %}
+                        <br>
+                        <input class="button" name="submit_job" type="submit" value="Submit Job(s)"><br>
+                    </div>
                 </div>
                 <br>
               </form>
@@ -147,17 +155,17 @@
       </div>
 
       <script>
-    		var medakaParams = document.getElementById("medakaParams");
+        var medakaParams = document.getElementById("medakaParams");
         var nanoParams = document.getElementById("nanoParams");
 
         function showMedaka() {
-    			medakaParams.style.display = "block";
-          nanoParams.style.display = "none";
-    		}
-    		function showNano() {
-          nanoParams.style.display = "block";
+            medakaParams.style.display = "block";
+            nanoParams.style.display = "none";
+        }
+        function showNano() {
+            nanoParams.style.display = "block";
       		medakaParams.style.display = "none";
-    		}
+        }
         function showBoth(){
           nanoParams.style.display = "block";
           medakaParams.style.display = "block";

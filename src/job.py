@@ -16,6 +16,9 @@ class Job:
         self._skip_nanopolish = skip_nanopolish
         self._dry_run = dry_run
         self._override_data = override_data
+        self._gather_cmd = self.__generateGatherCmd()
+        self._min_cmd = self.__generateMinionCmd()
+
 
     @property
     def job_name(self):
@@ -76,13 +79,17 @@ class Job:
     @property
     def override_data(self):
         return self._override_data
-
-
-    def add_to_queue(self):
-        jobQueue.put(self)
-        print(jobQueue)
         
-    def generateGatherCmd(self):
+    @property
+    def gather_cmd(self):
+        return self._gather_cmd
+        
+    @property
+    def min_cmd(self):
+        return self._min_cmd
+
+        
+    def __generateGatherCmd(self):
         if self._pipeline == "medaka":
             gather_cmd = "artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder +" --no-fast5s"
         elif self._pipeline == "nanopolish":
@@ -91,7 +98,7 @@ class Job:
             gather_cmd = "echo 'no gather command for nanopolish yet'"
         return gather_cmd
         
-    def generateMinionCmd(self):
+    def __generateMinionCmd(self):
         if self._pipeline == "medaka":
             minion_cmd = "artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._scheme_dir + " --read-file " + self._read_file + " " + self._primer_scheme + " \"" + self._job_name + "\""
         elif self._pipeline == "nanopolish":
