@@ -3,6 +3,8 @@ from src.job import Job
 import src.queue as q
 import os
 import base64
+import subprocess
+from subprocess import Popen, PIPE, CalledProcessError
 
 app = Flask(__name__)
 
@@ -122,6 +124,11 @@ def parameters():
         
     return render_template("parameters.html")
 
+def displayOutput(cmd):
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)                    
+    stdout, stderr = p.communicate()
+    return stdout
+
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
     job = jobQueue.getJobByName(job_name)
@@ -132,6 +139,7 @@ def progress(job_name):
     min_cmd = job.min_cmd
 
     print(gather_cmd, output_folder, min_cmd)
+
     #decode
     #gather_cmd = base64.b64decode(gather_cmd).decode()
     #output_folder = base64.b64decode(output_folder).decode()
@@ -140,8 +148,8 @@ def progress(job_name):
     os.system(gather_cmd)
     os.system(min_cmd)
     #move output files into output folder
-    os.system('mv ' + job_name + '* ' + output_folder)
-    return render_template("progress.html")
+    #os.system('mv ' + job_name + '* ' + output_folder)
+    return render_template("progress.html", subprocess_output=displayOutput(gather_cmd));
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])

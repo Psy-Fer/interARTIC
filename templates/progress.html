@@ -12,16 +12,17 @@
     <div class="hero-body">
 		<div class="container is-fluid">
 			<h1> Progress </h1>
-			<p> Blah blah...</p>
+			
 			<label for="file">Pipeline progress:</label>
 			<progress id="file" value="32" max="100"> 32% </progress>
-		
+
+			<pre>{{ subprocess_output }}</pre>
 		
 			<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
 			<h1>Commands being run: <h1><br>
-    		<p>
+    		<!-- <p>
     			{{ min_cmd }} <br>
-    		</p>
+    		</p> -->
 
 		</div>
 	</div>
