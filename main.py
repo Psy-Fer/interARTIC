@@ -68,6 +68,16 @@ def parameters():
         if not os.path.isfile(read_file):
             errors['read_file'] = "Invalid path/file."
 
+        #if no output folder entered, creates one inside of input folder
+        if not output_folder:
+            output_folder = input_folder + "/output"
+
+        #if the output folder does not exist, it is created
+        #maybe need to put in checks for this?
+        if not os.path.exists(output_folder):
+            make_dir = 'mkdir "' + output_folder + '"'
+            os.system(make_dir)
+
         #check length parameters are valid
 
         if min_length.isdigit() == False:
@@ -135,9 +145,19 @@ def progress(job_name):
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])
-def output():
-    job_name = request.args.get('job_name')
-    output_folder = request.args.get('output_folder')
+def output(): #need to update to take in output folder and job name as parameters
+    #job_name = request.args.get('job_name')
+    #output_folder = request.args.get('output_folder')
+    job_name = "My Job1"
+    output_folder = '.'
+    output_files = []
+
+    if job_name:
+        if output_folder:
+            for (dirpath, dirnames, filenames) in os.walk(output_folder):
+                print(filenames)
+                output_files.extend(filenames)
+
     if request.method == "POST":
         plots = []
         if request.form.get('barplot') == "yes":
@@ -147,10 +167,10 @@ def output():
         if not plots:
             plots = "Nothing selected."
         if request.form['submit_button'] == 'Preview':
-            return render_template("output.html", job_name=job_name, output_folder=output_folder, preview_plots=plots)
+            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots)
         if request.form['submit_button'] == 'Download':
-            return render_template("output.html", job_name=job_name, output_folder=output_folder, download_plots=plots)
-    return render_template("output.html", job_name=job_name, output_folder=output_folder)
+            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots)
+    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
 
 
 if __name__ == "__main__":
