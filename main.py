@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, json
 from src.job import Job
 import os
 import base64
 import queue as q
+#import json
 
 
 app = Flask(__name__)
@@ -21,12 +22,10 @@ def home():
     #Update displayed queue on home page
     queueList = []
     for item in list(jobQueue.queue):
-        queueList.append(item)
+        queueList.append(item.job_name)
     
-    queueDict = {'jobs':[queueList]}
-    print(queueDict)
-    displayQueue = jsonify(queueList)
-    #return displayQueue
+    queueDict = {'jobs':queueList}
+    displayQueue = json.htmlsafe_dumps(queueDict)
     return render_template("home.html", queue = displayQueue)
 
 @app.route("/about")

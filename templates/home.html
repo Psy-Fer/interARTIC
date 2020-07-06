@@ -21,6 +21,7 @@
           <div class="column">
             <h1 class="title is-6">My Jobs Queue</h1>
             <ul id=jobsQueue>
+                <li>{{queue.response}}</li>
             </ul>
                 
             <a class="button" href="/parameters">Add Job</a><br>
@@ -34,7 +35,7 @@
       </div>
     </div>
     <script>
-        fetch('/home')
+        /*fetch('/home')
         .then(res => {
             if (res.status === 200) {
                 return res.json();
@@ -54,8 +55,20 @@
                 jobsQueue.appendChild(curJob);
                 
             });
-        });
-        
+        });*/
+         const jobsQueue = document.getElementById("jobsQueue");
+
+         var jobsJson = JSON.parse({{ queue|tojson|safe }});
+         console.log("Jobs List: ", jobsJson);
+         const jobs = jobsJson.jobs;
+
+         jobs.forEach( job => {
+             console.log(job);
+             const curJob = document.createElement("li");
+             const node = document.createTextNode(job);
+             curJob.appendChild(node);
+             jobsQueue.appendChild(curJob);
+         });
     </script>
     {% endblock %}
   </body>
