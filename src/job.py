@@ -93,16 +93,19 @@ class Job:
         if self._pipeline == "medaka":
             gather_cmd = "artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder +" --no-fast5s"
         elif self._pipeline == "nanopolish":
-            gather_cmd = "echo 'no gather command for nanopolish yet'"
+            gather_cmd = "artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder + " --fast5-directory " + self._input_folder + "/fast5_pass"
         elif self._pipeline == "both":
-            gather_cmd = "echo 'no gather command for nanopolish yet'"
+            gather_cmd = "echo 'no gather command for both pipelines yet'"
         return gather_cmd
+
+    #add demultiplex cmd function too - whether nanopolish or medaka it will always be: 
+    #dem_cmd = "artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq"
         
     def __generateMinionCmd(self):
         if self._pipeline == "medaka":
-            minion_cmd = "artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._scheme_dir + " --read-file " + self._read_file + " " + self._primer_scheme + " \"" + self._job_name + "\""
+            minion_cmd = "artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file " + self._read_file + " " + self._primer_scheme + " \"" + self._job_name + "\""
         elif self._pipeline == "nanopolish":
-            minion_cmd = "echo 'no minion command for nanopolish yet'"
+            minion_cmd = "artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file " + self._read_file + " --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name
         elif self._pipeline == "both":
-            minion_cmd = "echo 'no minion command for nanopolish yet'"
+            minion_cmd = "echo 'no minion command for both pipelines yet'"
         return minion_cmd

@@ -14,7 +14,7 @@
     <!-- Titles -->
     <div class="hero-body">
       <div class="container is-fluid">
-        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis - ONLY FOR MEDAKA CURRENTLY</h1> <br>
+        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis</h1> <br>
       </div>
       <div class="container is-fluid">
         <div class="columns">
@@ -38,11 +38,11 @@
                     <!-- pipeline select -->
                     <h1 class="subtitle">Select a pipeline to run:</h1>
                     <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" onclick="showNano()" required>
-                    <label for="male">Nanopolish</label><br>
+                    <label for="nanopolish">Nanopolish</label><br>
                     <input type="radio" id="medaka" name="pipeline" value="medaka" onclick="showMedaka()">
-                    <label for="female">Medaka</label><br>
+                    <label for="medaka">Medaka</label><br>
                     <input type="radio" id="both" name="pipeline" value="both" onclick="showBoth()">
-                    <label for="other">Both</label>
+                    <label for="both">Both</label>
                   </div>
                 </div>
 
@@ -69,6 +69,7 @@
                 <p class="has-text-danger"> {{ errors['scheme_dir'] }} </p>
                 {% endif %}
                 {% endif %}
+
                 <!-- read file path - Medaka/ Nanopolish-->
                 <label for="scheme_folder">Read file:</label>
                 <input type="text" id="read_file" name="read_file" size="60" value="{{read_file}}" required><br>
@@ -114,6 +115,7 @@
                     </div>
                     <div id="medakaParams" style="display:none">
                       <h1 class="title is-6">Medaka parameters:</h1>
+
                       <label for="num_threads">Thread usage:</label>
                       <input type="number" id="num_threads" name="num_threads" value="4"><br>
 
@@ -128,10 +130,10 @@
                   <div class="control">
                     <!-- single or multiple samples -->
                     <h1 class="subtitle">This input contains:</h1>
-                    <input type="radio" id="single" name="single" value="yes">
-                    <label for="male">A single sample</label><br>
-                    <input type="radio" id="multiple" name="multiple" value="yes">
-                    <label for="female">Multiple files</label><br>
+                    <input type="radio" id="single" name="num_samples" value="single">
+                    <label for="single">A single sample</label><br>
+                    <input type="radio" id="multiple" name="num_samples" value="multiple">
+                    <label for="multiple">Multiple files</label><br>
                   </div>
                 </div>
 

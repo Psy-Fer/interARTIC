@@ -36,7 +36,6 @@ def parameters():
         #get parameters
         job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
-        scheme_dir = request.form.get('scheme_folder')
         read_file = request.form.get('read_file')
         primer_scheme = request.form.get('primer_scheme')
         output_folder = request.form.get('output_folder')
@@ -48,6 +47,41 @@ def parameters():
         bwa = request.form.get('bwa')
         skip_nanopolish = request.form.get('skip_nanopolish')
         dry_run = request.form.get('dry_run')
+        #variables to add to job class
+        num_samples = request.form.get('num_samples')
+        #scheme_dir = request.form.get('scheme_folder') -- this can be removed
+
+        '''
+        #if nanopolish selected
+        if pipeline == "nanopolish":
+            #construct cmds
+            gather_cmd = "artic gather --min-length " + minLength + " --max-length " + maxLength + " --prefix " + job_name + " --directory " + input_folder + " --fast5-directory " + input_folder + "/fast5_pass"
+            #if single sample
+            if request.form.get('single') == "single":
+                minion_cmd = "artic minion --normalise  --threads " + num_threads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " --fast5-directory " + output_folder + "/fast5_pass --sequencing-summary " + input_folder + "/*sequencing_summary.txt " + primer_scheme + " " + job_name
+            #if multiple samples
+            elif request.form.get('multiple') == "multiple":
+                dem_cmd = "artic demultiplex --threads " + num_threads + " " + job_name + "_fastq_pass.fastq"
+                #make for loop for multiple barcodes - TO DO
+                minion_cmd = "echo 'not handling multiple samples yet'"
+        #if medaka selected
+        elif pipeline == "medaka":
+            #construct cmds
+            gather_cmd = "artic gather --min-length " + minLength + " --max-length " + maxLength + " --prefix " + job_name + " --directory " + input_folder +" --no-fast5s"
+            #if single sample
+            if request.form.get('single') == "single":
+                minion_cmd = "artic minion --minimap2 --medaka --normalise " + normalise + " --threads " + num_threads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " " + primer_scheme + " \"" + job_name + "\""
+            #if multiple samples
+            elif request.form.get('multiple') == "multiple":
+                dem_cmd = "artic demultiplex --threads " + num_threads + " " + job_name + "_fastq_pass.fastq"
+                #make for loop for multiple barcodes - TO DO
+                minion_cmd = "echo 'not handling multiple samples yet'"
+        #if both nano and medaka are selected
+        elif pipeline == "both":
+            #construct commands joined together
+            minion_cmd = "echo 'no command for nanopolish yet'"
+        '''
+
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
             override_data = True
