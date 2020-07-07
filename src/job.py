@@ -1,9 +1,9 @@
+import os
 
 class Job:
-    def __init__(self, job_name, input_folder, scheme_dir, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data):
+    def __init__(self, job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data):
         self._job_name = job_name
         self._input_folder = input_folder
-        self._scheme_dir = scheme_dir
         self._read_file = read_file
         self._primer_scheme = primer_scheme
         self._output_folder = output_folder
@@ -27,10 +27,6 @@ class Job:
     @property
     def input_folder(self):
         return self._input_folder
-        
-    @property
-    def scheme_dir(self):
-        return self._scheme_dir
 
     @property
     def read_file(self):
@@ -109,3 +105,19 @@ class Job:
         elif self._pipeline == "both":
             minion_cmd = "echo 'no minion command for both pipelines yet'"
         return minion_cmd
+        
+    def execute(self):
+        # Execute this job
+        # Run gather command
+        # Run minion command
+        print("EXECUTING JOB: ", self._job_name)
+        os.system(self._gather_cmd)
+        os.system(self._min_cmd)
+        # Not sure if i need to do anything here to direct output???
+        os.system('mv ' + self._job_name + '* ' + self._output_folder)
+        
+    def abort(self):
+        # If job is running, abort it and remove output
+        pass
+        
+
