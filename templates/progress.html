@@ -5,24 +5,31 @@
     <title>Progress</title>
 	<link rel="stylesheet" href="/static/css/bulma.min.css"/>
 	<link rel="stylesheet" href="/static/css/confirm_modal.css"/>
+	<link rel="stylesheet" href="/static/css/confirm_modal.css"/>
   </head>
   <body>
     {% extends "page_template.html" %}
     {% block content %}
     <div class="hero-body">
 		<div class="container is-fluid">
-			<h1> Progress </h1>
+			<center><h1 class="title is-4">Progress for {{ job_name }}</h1></center>
+			<br>
 			
 			<label for="file">Pipeline progress:</label>
 			<progress id="file" value="32" max="100"> 32% </progress>
+			<br><br>
 
-			<pre>{{ subprocess_output }}</pre>
-		
-			<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
 			<h1>Commands being run: <h1><br>
     		<!-- <p>
     			{{ min_cmd }} <br>
     		</p> -->
+			<br>
+
+			<center><div id="commandOutput" style="width:400px">
+				<pre>{{ output|safe }}<pre>
+			</div></center>
+			<br><br>
+			<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
 
 		</div>
 	</div>
@@ -58,7 +65,16 @@
 
 	</script>
 
-    {% endblock %}
 
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			setInterval(function() {
+				$( "#commandOutput" ).load(window.location.href + " #commandOutput" );
+			}, 1000); 
+		});
+	</script>
+	
+    {% endblock %}
   </body>
 </html>

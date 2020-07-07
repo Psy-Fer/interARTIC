@@ -5,6 +5,7 @@ import os
 import base64
 import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
+import sys
 
 app = Flask(__name__)
 
@@ -156,23 +157,20 @@ def parameters():
         return redirect(url_for('progress', job_name=job_name))
         
     return render_template("parameters.html")
+    
+@app.route("/progress", methods = ["GET", "POST"])
+def progress():
+    #job = jobQueue.getJobByName(job_name)
+    #print(job)
 
-def displayOutput(cmd):
-    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)                    
-    stdout, stderr = p.communicate()
-    return stdout
+    #gather_cmd = job.gather_cmd
+    #output_folder = job.output_folder
+    #min_cmd = job.min_cmd
 
-@app.route("/progress/<job_name>", methods = ["GET", "POST"])
-def progress(job_name):
-    job = jobQueue.getJobByName(job_name)
-    print(job)
-
-    gather_cmd = job.gather_cmd
-    output_folder = job.output_folder
-    min_cmd = job.min_cmd
-
-    print(gather_cmd, output_folder, min_cmd)
-
+    # need to not hardcode 
+    with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
+        output = f.read().replace("\n","<br/>")
+   # print(gather_cmd, output_folder, min_cmd)
     #decode
     #gather_cmd = base64.b64decode(gather_cmd).decode()
     #output_folder = base64.b64decode(output_folder).decode()
@@ -182,7 +180,7 @@ def progress(job_name):
 #    os.system(min_cmd)
     #move output files into output folder
     #os.system('mv ' + job_name + '* ' + output_folder)
-    return render_template("progress.html", subprocess_output=displayOutput(gather_cmd));
+    return render_template("progress.html", output=output)
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])
