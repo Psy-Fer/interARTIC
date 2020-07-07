@@ -19,15 +19,30 @@
       <div class="container is-fluid">
         <div class="columns">
           <div class="column">
-            <h1 class="title is-6">Jobs Queue</h1>
-            <table id=jobsQueue>
+<!--            <h1 class="title is-6">Jobs Queue</h1>-->
+            <table class="table is-hoverable is-bordered is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Jobs Queue</td>
+                    </tr>
+                </thead>
+                <tbody id=jobsQueue>
+                </tbody>
             </table>
                 
             <a class="button" href="/parameters">Add Job</a><br>
       
           </div>
           <div class="column">
-            <h1 class="title is-6">Completed Jobs</h1>
+            <table class="table is-hoverable is-bordered is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Completed Jobs</td>
+                    </tr>
+                </thead>
+                <tbody id=jobsQueue>
+                </tbody>
+            </table>
             <a href="{{ url_for('output') }}">Output</a>
           </div>
         </div>
@@ -37,17 +52,35 @@
          const jobsQueue = document.getElementById("jobsQueue");
 
          var jobsJson = JSON.parse({{ queue|tojson|safe }});
-         console.log("Jobs List: ", jobsJson);
-         const jobs = jobsJson.jobs;
-
-         jobs.forEach( job => {
+         console.log("Jobs Queue: ", jobsJson);
+         
+         if (jobsJson != null) {
+             var jobs = jobsJson.jobs;
+             jobs.forEach(job => {
+                 for (var key of Object.keys(job)) {
+                     const curJobRow = document.createElement("tr");
+                     const curJob = document.createElement("td");
+                     const linkNode = document.createElement("a");
+                     const textNode = document.createTextNode(key);
+                     linkNode.href = job[key];
+                     
+                     linkNode.appendChild(textNode);
+                     curJob.appendChild(linkNode);
+                     curJobRow.appendChild(curJob);
+                     jobsQueue.appendChild(curJobRow);
+                 };
+             });
+         } else {
              const curJobRow = document.createElement("tr");
              const curJob = document.createElement("td");
-             const node = document.createTextNode(job);
-             curJob.appendChild(node);
+             const textNode = document.createTextNode("You currently have no queued jobs.");
+             curJob.classList.add("has-text-grey-light");
+             curJob.classList.add("is-italic");
+             
+             curJob.appendChild(textNode);
              curJobRow.appendChild(curJob);
              jobsQueue.appendChild(curJobRow);
-         });
+         };
     </script>
     {% endblock %}
   </body>

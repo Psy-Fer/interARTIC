@@ -21,10 +21,16 @@ override_data = False
 def home():
     #Update displayed queue on home page
     queueList = []
-    for item in list(jobQueue.queue):
-        queueList.append(item.job_name)
+    if jobQueue.empty():
+        return render_template("home.html", queue = None)
+        
+    for item in jobQueue.getItems():
+        queueList.append({item.job_name : url_for('progress', job_name=item.job_name)})
     
-    queueDict = {'jobs':queueList}
+    queueDict = {'jobs': queueList}
+    for key, value in queueDict.items():
+        print(key, value)
+        
     displayQueue = json.htmlsafe_dumps(queueDict)
     return render_template("home.html", queue = displayQueue)
 
@@ -38,7 +44,6 @@ def parameters():
         #get parameters
         job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
-        scheme_dir = request.form.get('scheme_folder')
         read_file = request.form.get('read_file')
         primer_scheme = request.form.get('primer_scheme')
         output_folder = request.form.get('output_folder')
@@ -50,6 +55,40 @@ def parameters():
         bwa = request.form.get('bwa')
         skip_nanopolish = request.form.get('skip_nanopolish')
         dry_run = request.form.get('dry_run')
+        #variables to add to job class
+        num_samples = request.form.get('num_samples')
+
+        '''
+        #if nanopolish selected
+        if pipeline == "nanopolish":
+            #construct cmds
+            gather_cmd = "artic gather --min-length " + minLength + " --max-length " + maxLength + " --prefix " + job_name + " --directory " + input_folder + " --fast5-directory " + input_folder + "/fast5_pass"
+            #if single sample
+            if request.form.get('single') == "single":
+                minion_cmd = "artic minion --normalise  --threads " + num_threads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " --fast5-directory " + output_folder + "/fast5_pass --sequencing-summary " + input_folder + "/*sequencing_summary.txt " + primer_scheme + " " + job_name
+            #if multiple samples
+            elif request.form.get('multiple') == "multiple":
+                dem_cmd = "artic demultiplex --threads " + num_threads + " " + job_name + "_fastq_pass.fastq"
+                #make for loop for multiple barcodes - TO DO
+                minion_cmd = "echo 'not handling multiple samples yet'"
+        #if medaka selected
+        elif pipeline == "medaka":
+            #construct cmds
+            gather_cmd = "artic gather --min-length " + minLength + " --max-length " + maxLength + " --prefix " + job_name + " --directory " + input_folder +" --no-fast5s"
+            #if single sample
+            if request.form.get('single') == "single":
+                minion_cmd = "artic minion --minimap2 --medaka --normalise " + normalise + " --threads " + num_threads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " " + primer_scheme + " \"" + job_name + "\""
+            #if multiple samples
+            elif request.form.get('multiple') == "multiple":
+                dem_cmd = "artic demultiplex --threads " + num_threads + " " + job_name + "_fastq_pass.fastq"
+                #make for loop for multiple barcodes - TO DO
+                minion_cmd = "echo 'not handling multiple samples yet'"
+        #if both nano and medaka are selected
+        elif pipeline == "both":
+            #construct commands joined together
+            minion_cmd = "echo 'no command for nanopolish yet'"
+        '''
+
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
             override_data = True
@@ -61,12 +100,6 @@ def parameters():
             errors['input_folder'] = "Invalid path."
         elif len(os.listdir(input_folder)) == 0:
             errors['input_folder'] = "Directory is empty."
-
-        if not os.path.isdir(scheme_dir):
-            errors['scheme_dir'] = "Invalid path."
-        elif len(os.listdir(scheme_dir)) == 0:
-            errors['scheme_dir'] = "Directory is empty."
-
         if not os.path.isfile(read_file):
             errors['read_file'] = "Invalid path/file."
 
@@ -97,16 +130,16 @@ def parameters():
         print("Errors: ", errors)
 
         if len(errors) != 0:
-            return render_template('parameters.html', errors=errors, name=job_name, input_folder=input_folder,scheme_dir=scheme_dir,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
+            return render_template('parameters.html', errors=errors, name=job_name, input_folder=input_folder,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
         
         #Create a new instance of the Job class
-        new_job = Job(job_name, input_folder, scheme_dir, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data)
+        new_job = Job(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data)
         
         #Add job to queue
-        jobQueue.put(new_job)
+        jobQueue.putJob(new_job)
 
         #Generate commands (using methods of job)
         '''gather_cmd = new_job.generateGatherCmd()
@@ -145,8 +178,8 @@ def progress(job_name):
     #output_folder = base64.b64decode(output_folder).decode()
     #min_cmd = base64.b64decode(min_cmd).decode()
     #run minion cmd
-    os.system(gather_cmd)
-    os.system(min_cmd)
+#    os.system(gather_cmd)
+#    os.system(min_cmd)
     #move output files into output folder
     #os.system('mv ' + job_name + '* ' + output_folder)
     return render_template("progress.html", subprocess_output=displayOutput(gather_cmd));
