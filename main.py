@@ -1,13 +1,62 @@
 from flask import Flask, render_template, request, redirect, url_for, json
-from src.job import Job
+#from src.job import Job
 import src.queue as q
 import os
 import base64
+from celery import Celery
+import subprocess
+from src.system import System
+from celery.utils.log import get_task_logger
+
+
+
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'top-secret!'
+# Celery configuration
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 
-#Initialise an empty job queue
-jobQueue = q.JobsQueue(maxsize = 10)
+# Initialize Celery
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+logger = get_task_logger(__name__)
+
+
+@celery.task
+def executeJob(gather_cmd, min_cmd):
+    logger.info("In tasks.py, executing job...")
+    #print("In tasks.py, executing job...")
+    #print("JOB NAME: ",job_name)
+    #job = qSys.getJobByName(job_name)
+    #print("JOB: ",job)
+    #gather_cmd = job.gather_cmd
+    #output_folder = job.output_folder
+    #min_cmd = job.min_cmd
+
+    print(gather_cmd, min_cmd)
+
+    #os.system("cd redis-server; src/redis-server")
+
+    #command = "echo running; for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do sleep 1; echo i; done ; echo FINISHING JOB"
+    commands = [gather_cmd, min_cmd]
+    for cmd in commands:
+        po = subprocess.Popen(cmd, shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+        stdout, stderr = po.communicate()
+        #self.update_state(state='PROGRESS')
+        po.wait()
+
+        returnCode = po.returncode
+        if returnCode != 0:
+            raise Exception("Command {} got return code {}.\nSTDOUT: {}\nSTDERR: {}".format(cmd, returnCode, stdout, stderr))
+        print("JOB CMD {} RETURNED: {}".format(cmd, returnCode))
+
+
+max_queue_size = 10
+qSys = System(10)
 
 #initialise variables
 gather_cmd = ""
@@ -19,11 +68,11 @@ override_data = False
 def home():
     #Update displayed queue on home page
     queueList = []
-    if jobQueue.empty():
+    if qSys.queue.empty():
         return render_template("home.html", queue = None)
         
-    for item in jobQueue.getItems():
-        queueList.append({item.job_name : url_for('progress', job_name=item.job_name)})
+    for item in qSys.queue.getItems():
+        queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
     
     queueDict = {'jobs': queueList}
     for key, value in queueDict.items():
@@ -122,7 +171,7 @@ def parameters():
         elif int(max_length) < int(min_length):
             errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
             
-        if jobQueue.full():
+        if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
         
         print("Errors: ", errors)
@@ -134,11 +183,16 @@ def parameters():
         job_name = job_name.replace(" ", "_")
         
         #Create a new instance of the Job class
-        new_job = Job(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data)
-        
-        #Add job to queue
-        jobQueue.putJob(new_job)
+        new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data)
+        print("HEHE")
 
+        #Add job to queue
+        qSys.addJob(new_job)
+        #task = celery.current_app.send_task('myapp.tasks.executeJob')
+        print("HERE IN MAIN")
+        task = executeJob.delay(new_job.gather_cmd, new_job.min_cmd)
+        new_job.task_id = task.id
+        print("IT WORKED?")
         #Generate commands (using methods of job)
         '''gather_cmd = new_job.generateGatherCmd()
         demul_cmd = ""
@@ -151,20 +205,22 @@ def parameters():
 
         #return render_template("progress.html", min_cmd = minion_cmd)
         #return redirect(url_for('progress', gather_cmd = gather_cmd, min_cmd = minion_cmd, job_name = job_name, output_folder = output_folder))
-        return redirect(url_for('progress', job_name=job_name))
+        return redirect(url_for('progress', job_name=job_name, task_id = task.id))
         
     return render_template("parameters.html")
 
-@app.route("/progress/<job_name>", methods = ["GET", "POST"])
-def progress(job_name):
-    job = jobQueue.getJobByName(job_name)
-    print(job)
+@app.route("/progress/<job_name>/<task_id>", methods = ["GET", "POST"])
+def progress(job_name, task_id):
+    task = executeJob.AsyncResult(task_id)
+    print(task.state)
+    job = qSys.getJobByName(job_name)
+    print("PROOOO: ",job)
 
-    gather_cmd = job.gather_cmd
-    output_folder = job.output_folder
-    min_cmd = job.min_cmd
+    # gather_cmd = job.gather_cmd
+    # output_folder = job.output_folder
+    # min_cmd = job.min_cmd
 
-    print(gather_cmd, output_folder, min_cmd)
+    # print(gather_cmd, output_folder, min_cmd)
     #decode
     #gather_cmd = base64.b64decode(gather_cmd).decode()
     #output_folder = base64.b64decode(output_folder).decode()

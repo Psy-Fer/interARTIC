@@ -1,4 +1,10 @@
 import os
+#from .tasks import executeJob
+from flask import jsonify, url_for
+import subprocess
+from celery.app.control import Inspect
+import celery
+
 
 class Job:
     def __init__(self, job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data):
@@ -18,6 +24,7 @@ class Job:
         self._override_data = override_data
         self._gather_cmd = self.__generateGatherCmd()
         self._min_cmd = self.__generateMinionCmd()
+        self._task_id = None
 
 
     @property
@@ -84,6 +91,16 @@ class Job:
     def min_cmd(self):
         return self._min_cmd
 
+    @property
+    def task_id(self):
+        return self._task_id
+    
+    @task_id.setter
+    def task_id(self, val):
+        if val:
+            self._task_id = val
+    
+
         
     def __generateGatherCmd(self):
         if self._pipeline == "medaka":
@@ -110,14 +127,24 @@ class Job:
         # Execute this job
         # Run gather command
         # Run minion command
-        print("EXECUTING JOB: ", self._job_name)
-        os.system(self._gather_cmd)
-        os.system(self._min_cmd)
-        # Not sure if i need to do anything here to direct output???
-        os.system('mv ' + self._job_name + '* ' + self._output_folder)
+        # print("EXECUTING JOB: ", self._job_name)
+        # os.system(self._gather_cmd)
+        # os.system(self._min_cmd)
+        # # Not sure if i need to do anything here to direct output???
+        # os.system('mv ' + self._job_name + '* ' + self._output_folder)
+        print("IN JOB")
         
+        #task = celery.current_app.send_task('myapp.tasks.executeJob')
+        #print(task.get())
+        #print(task.state())
+        print("IN JOB PT 2")
+        #return jsonify({}), 202, {'Location': url_for('taskstatus',task_id=task.id)}
+
+
     def abort(self):
         # If job is running, abort it and remove output
         pass
+
+
         
 
