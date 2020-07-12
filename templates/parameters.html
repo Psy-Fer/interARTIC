@@ -62,22 +62,18 @@
                 <input type="text" id="csvFile" name="csvFile" size="60"><br>-->
 
                 <!-- scheme directory file path - Medaka/ Nanopolish-->
+                <!--
                 <label for="scheme_folder">Scheme directory:</label>
                 <input type="text" id="scheme_folder" name="scheme_folder" size="60" value="{{scheme_dir}}" required><br>
                 {% if errors %}
                 {% if errors['scheme_dir'] %}
                 <p class="has-text-danger"> {{ errors['scheme_dir'] }} </p>
                 {% endif %}
-                {% endif %}
+                {% endif %}-->
 
                 <!-- read file path - Medaka/ Nanopolish-->
-                <label for="scheme_folder">Read file:</label>
-                <input type="text" id="read_file" name="read_file" size="60" value="{{read_file}}" required><br>
-                {% if errors %}
-                {% if errors['read_file'] %}
-                <p class="has-text-danger"> {{ errors['read_file'] }} </p>
-                {% endif %}
-                {% endif %}
+                <label for="scheme_folder">Read file (only input if you already have this file, otherwise artic gather/ demultiplex will generate it):</label>
+                <input type="text" id="read_file" name="read_file" size="60" value="{{read_file}}"><br>
                 <br>
                 <!-- primer scheme name - Medaka/ Nanopolish-->
                 <label for="primer_scheme">Primer scheme name:</label>

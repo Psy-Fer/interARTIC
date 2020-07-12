@@ -33,6 +33,8 @@ def about():
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
     if request.method == "POST":
+        #test
+        #os.system("artic gather --min-length 400 --max-length 800 --prefix ebov-mayinga --directory /Users/iggygetout/Documents/binf6111_project/data/20190830_1509_MN22126_AAQ411_9efc5448 --no-fast5s")
         #get parameters
         job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
@@ -42,6 +44,7 @@ def parameters():
         normalise = request.form.get('normalise')
         num_threads = request.form.get('num_threads')
         pipeline = request.form.get('pipeline')
+        num_samples = request.form.get('num_samples')
         min_length = request.form.get('min_length')
         max_length = request.form.get('max_length')
         bwa = request.form.get('bwa')
@@ -49,7 +52,6 @@ def parameters():
         dry_run = request.form.get('dry_run')
         #variables to add to job class
         num_samples = request.form.get('num_samples')
-        #scheme_dir = request.form.get('scheme_folder') -- this can be removed
 
         '''
         #if nanopolish selected
@@ -94,13 +96,13 @@ def parameters():
         elif len(os.listdir(input_folder)) == 0:
             errors['input_folder'] = "Directory is empty."
 
-        if not os.path.isdir(scheme_dir):
-            errors['scheme_dir'] = "Invalid path."
-        elif len(os.listdir(scheme_dir)) == 0:
-            errors['scheme_dir'] = "Directory is empty."
-
-        if not os.path.isfile(read_file):
-            errors['read_file'] = "Invalid path/file."
+        #if read file is specified by user
+        if read_file:
+            if not os.path.isfile(read_file):
+                errors['read_file'] = "Invalid path/file."
+        else:
+            #to be filled later
+            read_file = ""
 
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
@@ -129,13 +131,13 @@ def parameters():
         print("Errors: ", errors)
 
         if len(errors) != 0:
-            return render_template('parameters.html', errors=errors, name=job_name, input_folder=input_folder,scheme_dir=scheme_dir,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
+            return render_template('parameters.html', errors=errors, name=job_name, input_folder=input_folder,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
         
         #Create a new instance of the Job class
-        new_job = Job(job_name, input_folder, scheme_dir, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data)
+        new_job = Job(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
         
         #Add job to queue
         jobQueue.put(new_job)
@@ -159,22 +161,23 @@ def parameters():
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
     job = jobQueue.getJobByName(job_name)
-    print(job)
+    #print(job)
 
     gather_cmd = job.gather_cmd
     output_folder = job.output_folder
     min_cmd = job.min_cmd
 
-    print(gather_cmd, output_folder, min_cmd)
+    #print(gather_cmd, output_folder, min_cmd)
+    job.executeCmds()
     #decode
     #gather_cmd = base64.b64decode(gather_cmd).decode()
     #output_folder = base64.b64decode(output_folder).decode()
     #min_cmd = base64.b64decode(min_cmd).decode()
     #run minion cmd
-    os.system(gather_cmd)
-    os.system(min_cmd)
+    #os.system(gather_cmd)
+    #os.system(min_cmd)
     #move output files into output folder
-    os.system('mv ' + job_name + '* ' + output_folder)
+    #os.system('mv ./' + job_name + '* ' + output_folder)
     return render_template("progress.html")
 
 #not sure if this should be a get method
