@@ -1,0 +1,8 @@
+##fileformat=VCFv4.1
+##medaka_version=1.0.1
+##INFO=<ID=Pool,Number=1,Type=String,Description="The pool name">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Medaka genotype.">
+##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Medaka genotype quality score">
+##contig=<ID=BTB20484>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
+BTB20484	9982	.	A	G	17.594	PASS	Pool=Ebov-DRC_2;	GT:GQ	1:17.594
