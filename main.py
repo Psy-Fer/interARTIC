@@ -39,8 +39,6 @@ def about():
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
     if request.method == "POST":
-        #test
-        #os.system("artic gather --min-length 400 --max-length 800 --prefix ebov-mayinga --directory /Users/iggygetout/Documents/binf6111_project/data/20190830_1509_MN22126_AAQ411_9efc5448 --no-fast5s")
         #get parameters
         job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
@@ -56,7 +54,6 @@ def parameters():
         bwa = request.form.get('bwa')
         skip_nanopolish = request.form.get('skip_nanopolish')
         dry_run = request.form.get('dry_run')
-        #variables to add to job class
         num_samples = request.form.get('num_samples')
 
         #if user agrees output can override files with the same name in output folder
@@ -116,19 +113,6 @@ def parameters():
         
         #Add job to queue
         jobQueue.put(new_job)
-
-        #Generate commands (using methods of job)
-        '''gather_cmd = new_job.generateGatherCmd()
-        demul_cmd = ""
-        minion_cmd = new_job.generateMinionCmd()
-
-        #need to encode - '/' in file path screws with url
-        gather_cmd = base64.b64encode(gather_cmd.encode())
-        output_folder = base64.b64encode(output_folder.encode())
-        minion_cmd = base64.b64encode(minion_cmd.encode())'''
-
-        #return render_template("progress.html", min_cmd = minion_cmd)
-        #return redirect(url_for('progress', gather_cmd = gather_cmd, min_cmd = minion_cmd, job_name = job_name, output_folder = output_folder))
         return redirect(url_for('progress', job_name=job_name))
         
     return render_template("parameters.html")
