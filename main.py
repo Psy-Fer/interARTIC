@@ -6,6 +6,7 @@ import base64
 import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
 import sys
+import re
 
 app = Flask(__name__)
 
@@ -166,10 +167,23 @@ def progress():
     #gather_cmd = job.gather_cmd
     #output_folder = job.output_folder
     #min_cmd = job.min_cmd
-
+    
+    
     # need to not hardcode 
     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
-        output = f.read().replace("\n","<br/>")
+        gatherOutput = f.read().replace("\n","<br/>")            
+    
+    #os.spawnl(os.P_NOWAIT, '', './dummy.sh > output.txt')
+    
+    pattern = "^ERROR"
+    error = {}
+    with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
+        for line in f:
+            result = re.match(pattern, line)
+            if (result):
+                error['error_pipeline'] = "yo theres an error man"
+                
+    
    # print(gather_cmd, output_folder, min_cmd)
     #decode
     #gather_cmd = base64.b64decode(gather_cmd).decode()
@@ -180,7 +194,24 @@ def progress():
 #    os.system(min_cmd)
     #move output files into output folder
     #os.system('mv ' + job_name + '* ' + output_folder)
-    return render_template("progress.html", output=output)
+    return render_template("progress.html", gatherOutput=gatherOutput, error=error)
+
+def run_command():
+    command = "./dummy.sh"
+    f = open("output.txt", "w")
+    p = subprocess.Popen(command, stdout=f, shell=True)
+    
+def error_checking():
+    pattern = "^ERROR"
+    errors = {}
+    with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
+        for line in f:
+            result = re.match(pattern, line)
+            if (result):
+                errors['error_pipeline'] = "yo theres an error man"
+                print(errors)
+
+    return errors
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])
