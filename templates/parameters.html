@@ -51,7 +51,7 @@
 
                 <!-- input folder file path - Medaka/ Nanopolish-->
                 <label for="input_folder">Input folder:</label>
-                <input type="text" id="input_folder" name="input_folder" size="60" value="{{input_folder}}"  required><br>
+                <input type="text" id="input_folder" name="input_folder" size="80" value="{{input_folder}}"  required><br>
                 {% if errors %}
                 {% if errors['input_folder'] %}
                 <p class="has-text-danger"> {{ errors['input_folder'] }} </p>
@@ -61,27 +61,58 @@
                 <!--<label for="csvFile">File path for csv file:</label>
                 <input type="text" id="csvFile" name="csvFile" size="60"><br>-->
 
-                <!-- read file path - Medaka/ Nanopolish-->
-                <label for="scheme_folder">Read file:</label>
-                <input type="text" id="read_file" name="read_file" size="60" value="{{read_file}}" required><br>
+                <!-- scheme directory file path - Medaka/ Nanopolish-->
+                <!--
+                <label for="scheme_folder">Scheme directory:</label>
+                <input type="text" id="scheme_folder" name="scheme_folder" size="60" value="{{scheme_dir}}" required><br>
                 {% if errors %}
-                {% if errors['read_file'] %}
-                <p class="has-text-danger"> {{ errors['read_file'] }} </p>
+                {% if errors['scheme_dir'] %}
+                <p class="has-text-danger"> {{ errors['scheme_dir'] }} </p>
                 {% endif %}
-                {% endif %}
-                <br>
-                <!-- primer scheme name - Medaka/ Nanopolish-->
-                <label for="primer_scheme">Primer scheme name:</label>
-                <input type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
+                {% endif %}-->
+
+                <!-- read file path - Medaka/ Nanopolish-->
+                <label for="scheme_folder">Read file (only input if you already have this file, otherwise artic gather/ demultiplex will generate it):</label>
+                <input type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
+                
 
                 <!-- output folder file path - Medaka/ Nanopolish-->
                 <label for="output_folder">Output folder:</label>
-                <input type="text" id="output_folder" name="output_folder" size="60" value="{{output_folder}}"><br>
+                <input type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
 
                 <!-- override output data?-->
                 <input type="checkbox" id="override_data" name="override_data">
                 <label for="override_data">Override existing data?</label><br><br>
 
+                <h1 class="subtitle">Primer Scheme:</h1>
+
+                <!-- primer scheme name - Medaka/ Nanopolish-->
+                <label for="primer_scheme">Name: e.g. nCoV-2019/V1</label>
+                <input type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
+                
+                <div class="field">
+                  <div class="control">
+                    <!-- primer type -->
+                    <h2>Primer type:</h2>
+                    <input type="radio" id="artic" name="primer_type" value="artic" onclick="setParams()">
+                    <label for="artic">Artic</label><br>
+                    <input type="radio" id="kirby" name="primer_type" value="kirby" onclick="setParams()">
+                    <label for="kirby">Kirby</label><br>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <div class="control">
+                    <!-- barcode type -->
+                    <h2>Barcode type:</h2>
+                    <input type="radio" id="native" name="barcode_type" value="native" onclick="setParams()">
+                    <label for="native">Native</label><br>
+                    <input type="radio" id="rapid" name="barcode_type" value="rapid" onclick="setParams()">
+                    <label for="rapid">Rapid</label><br>
+                  </div>
+                </div>
+
+                <br>
 
                 <div class="field">
                   <div class="control">
@@ -124,7 +155,7 @@
                     <input type="radio" id="single" name="num_samples" value="single">
                     <label for="single">A single sample</label><br>
                     <input type="radio" id="multiple" name="num_samples" value="multiple">
-                    <label for="multiple">Multiple files</label><br>
+                    <label for="multiple">Multiple samples</label><br>
                   </div>
                 </div>
 
@@ -162,6 +193,18 @@
         function showBoth(){
           nanoParams.style.display = "block";
           medakaParams.style.display = "block";
+        }
+
+        //primers
+        var artic = document.getElementById("artic");
+        var kirby = document.getElementById("kirby");
+        //barcodes
+        var native = document.getElementById("native");
+        var rapid = document.getElementById("rapid");
+
+        function setParams(){
+            //set min/max length, threads and normalise to correct numbers
+            // depending on the primer and barcode chosen
         }
 
     	</script>
