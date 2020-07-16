@@ -44,7 +44,7 @@ class JobsQueue:
     def getJobByName(self, job_name):
         #Returns a job with the given name, or None if no match
         for job in self._items:
-            if job.job_name == job_name:
+            if job._job_name == job_name:
                 return job
         return None
         
