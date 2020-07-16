@@ -3,14 +3,11 @@ from src.job import Job
 import src.queue as q
 import os
 import base64
-<<<<<<< HEAD
 import fnmatch
-=======
 import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
 import sys
 import re
->>>>>>> origin/steph-progress
 
 app = Flask(__name__)
 
@@ -126,16 +123,35 @@ def parameters():
         new_job = Job(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
         
         #Add job to queue
-        jobQueue.put(new_job)
+        jobQueue.putJob(new_job)
+       
         return redirect(url_for('progress', job_name=job_name))
 
     return render_template("parameters.html")
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
-    job = jobQueue.getJobByName(job_name)
-    return render_template("progress.html", output = job.executeCmds())
-# Steph's work:    
+    #print(jobQueue.getJob)
+    
+    job = jobQueue.getJob()
+    
+    path = job.output_folder
+    path += "/all_cmds_log.txt"
+    print(path);
+    with open(path, "r") as f:
+        gatherOutput = f.read().replace("\n","<br/>")
+        
+    pattern = "^ERROR"
+    error = {}
+    with open(path, "r") as f:
+        for line in f:
+            result = re.match(pattern, line)
+            if (result):
+                error['error_pipeline'] = "Error found"
+            
+    return render_template("progress.html", output = job.executeCmds(), error=error)
+# 
+# Extra stuff:    
 # @app.route("/progress", methods = ["GET", "POST"])
 # def progress():
 #     #job = jobQueue.getJobByName(job_name)
@@ -144,23 +160,6 @@ def progress(job_name):
 #     #gather_cmd = job.gather_cmd
 #     #output_folder = job.output_folder
 #     #min_cmd = job.min_cmd
-    
-    
-#     # need to not hardcode 
-#     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
-#         gatherOutput = f.read().replace("\n","<br/>")            
-    
-#     #os.spawnl(os.P_NOWAIT, '', './dummy.sh > output.txt')
-    
-#     pattern = "^ERROR"
-#     error = {}
-#     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
-#         for line in f:
-#             result = re.match(pattern, line)
-#             if (result):
-#                 error['error_pipeline'] = "yo theres an error man"
-                
-    
 #    # print(gather_cmd, output_folder, min_cmd)
 #     #decode
 #     #gather_cmd = base64.b64decode(gather_cmd).decode()
@@ -173,22 +172,6 @@ def progress(job_name):
 #     #os.system('mv ' + job_name + '* ' + output_folder)
 #     return render_template("progress.html", gatherOutput=gatherOutput, error=error)
 
-# def run_command():
-#     command = "./dummy.sh"
-#     f = open("output.txt", "w")
-#     p = subprocess.Popen(command, stdout=f, shell=True)
-    
-# def error_checking():
-#     pattern = "^ERROR"
-#     errors = {}
-#     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
-#         for line in f:
-#             result = re.match(pattern, line)
-#             if (result):
-#                 errors['error_pipeline'] = "yo theres an error man"
-#                 print(errors)
-
-#     return errors
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])

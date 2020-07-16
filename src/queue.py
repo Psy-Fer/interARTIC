@@ -51,7 +51,8 @@ class JobsQueue:
     def putJob(self, job):
         #Check if queue is empty - if yes, execute job
         if self.empty():
-            job.execute()
+            self._items.append(job)
+            return True
         #Check if queue is currently at size limit
         if not self.full():
             self._items.append(job)
@@ -70,9 +71,7 @@ class JobsQueue:
         for job in self._items:
             if job.job_name == job_name:
                 self._items.remove(job)
-        
-        
-        
+                
 
 
 

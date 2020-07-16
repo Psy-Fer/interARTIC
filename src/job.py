@@ -23,7 +23,7 @@ class Job:
 
 
     @property
-    def job_name(self):
+    def get_job_name(self):
         return self._job_name
 
     @property
@@ -81,7 +81,6 @@ class Job:
     @property
     def num_samples(self):
         return self._num_samples
-    
         
     @property
     def gather_cmd(self):
@@ -175,7 +174,6 @@ class Job:
                 minion_cmd.append("echo 'no minion command for both pipelines yet'")
 
         return minion_cmd
-
 
     def executeCmds(self):
         if self._num_samples == "single":
