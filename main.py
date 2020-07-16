@@ -132,24 +132,22 @@ def parameters():
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
     #print(jobQueue.getJob)
-    
-    job = jobQueue.getJob()
-    
+    job = jobQueue.getJobByName(job_name)
+
     path = job.output_folder
     path += "/all_cmds_log.txt"
-    print(path);
     with open(path, "r") as f:
         gatherOutput = f.read().replace("\n","<br/>")
-        
-    pattern = "^ERROR"
-    error = {}
-    with open(path, "r") as f:
-        for line in f:
-            result = re.match(pattern, line)
-            if (result):
-                error['error_pipeline'] = "Error found"
+    #pattern = "^ERROR"
+    #error = {}
+    #with open(path, "r") as f:
+    #    for line in f:
+    #        result = re.match(pattern, line)
+    #        if (result):
+    #            error['error_pipeline'] = "Error found"
             
-    return render_template("progress.html", output = job.executeCmds(), error=error)
+    return render_template("progress.html", runcmd = job.executeCmds(), gatherOutput=gatherOutput)
+
 # 
 # Extra stuff:    
 # @app.route("/progress", methods = ["GET", "POST"])
