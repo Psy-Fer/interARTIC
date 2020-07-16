@@ -4,24 +4,54 @@
     <meta charset="utf-8">
     <title>Progress</title>
 	<link rel="stylesheet" href="/static/css/bulma.min.css"/>
-	<link rel="stylesheet" href="/static/css/confirm_modal.css"/>
+	<link rel="stylesheet" href="/static/css/confirm_modal.css"/>	
+	<link rel="stylesheet" href="/static/css/page_template.css"/>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   </head>
   <body>
     {% extends "page_template.html" %}
     {% block content %}
     <div class="hero-body">
 		<div class="container is-fluid">
-			<h1> Progress </h1>
-			<p> Blah blah...</p>
+
+			<center>
+				<h1 class="title is-4">Progress for {{ job_name }}</h1>
+				<h2 class="title is-5">Job 1 in queue</h2>
+			<br>
 			<label for="file">Pipeline progress:</label>
 			<progress id="file" value="32" max="100"> 32% </progress>
-		
-		
+			<br><br>
+			</center>
 			<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
-			<h1>Commands being run: <h1><br>
-    		<p>
+
+
+			<div id="dialog-confirm" style="background:#ffffff;border:1px solid">
+				{% if error %}
+					<p>
+					ERROR OCCURRED
+					</p>
+				{% endif %}
+			</div>
+
+			<!--<h1 class="title is-6">Commands being run: <h1>
+    		<code>print cmds here</code>
+			<br>-->
+		
+
+			<!-- <p>
     			{{ min_cmd }} <br>
-    		</p>
+    		</p> -->
+			<br>
+
+			<center>
+				<h1 class="title is-5">Output from the Gather Command:</h1>
+				<div id="gatherOutput" style="height:700px;width:800px;border:1px solid;overflow:auto">
+				<br>
+				<p>{{ gatherOutput|safe }}<p><br><br>
+			</div>
+			</center>
+			<br><br>
 
 		</div>
 	</div>
@@ -57,7 +87,45 @@
 
 	</script>
 
-    {% endblock %}
+	<script>
+		$(document).ready(function() {
+			setInterval(function() {
+				$( "#gatherOutput" ).load(window.location.href + " #gatherOutput" );
+				$( "#dialog-confirm" ).load(window.location.href + " #dialog-confirm" );
+			}, 900); 
+		});
+	</script>
+	
 
+	<script> 
+		$( function() {
+			$( "#dialog-confirm" ).dialog({
+				autoOpen: false,
+				resizable: false,
+				height: 200,
+				width: 200,
+				modal: true,
+				buttons: {
+					"Restart": function() {
+						$( this ).dialog( "close" );
+					},
+					Cancel: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				dialogClass: 'no-close success-dialog'
+			});
+		} );
+		$(document).ready(function() {
+			setInterval( function() {
+				var errors = ["{{ error|safe }}"];
+				console.log(errors[0]);
+				if (errors[0] != null) {
+					$( "#dialog-confirm" ).dialog( "open" );
+				} 
+			}, 1000);
+		});
+	</script>
+    {% endblock %}
   </body>
 </html>
