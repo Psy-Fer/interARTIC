@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, json
+from flask import Flask, render_template, request, redirect, url_for, json, jsonify
 #from src.job import Job
 import src.queue as q
 import os
@@ -7,6 +7,9 @@ from celery import Celery
 import subprocess
 from src.system import System
 from celery.utils.log import get_task_logger
+import requests
+import random
+import time
 
 
 
@@ -24,8 +27,28 @@ celery.conf.update(app.config)
 logger = get_task_logger(__name__)
 
 
-@celery.task
-def executeJob(gather_cmd, min_cmd):
+@celery.task(bind=True)
+def longTask(self):
+    """Background task that runs a long function with progress reports."""
+    verb = ['Starting up', 'Booting', 'Repairing', 'Loading', 'Checking']
+    adjective = ['master', 'radiant', 'silent', 'harmonic', 'fast']
+    noun = ['solar array', 'particle reshaper', 'cosmic ray', 'orbiter', 'bit']
+    message = ''
+    total = random.randint(10, 50)
+    for i in range(total):
+        if not message or random.random() < 0.25:
+            message = '{0} {1} {2}...'.format(random.choice(verb),
+                                              random.choice(adjective),
+                                              random.choice(noun))
+        self.update_state(state='PROGRESS',
+                          meta={'current': i, 'total': total,
+                                'status': message})
+        time.sleep(1)
+    return {'current': 100, 'total': 100, 'status': 'Task completed!',
+            'result': 42}
+
+@celery.task(bind=True)
+def executeJob(self, gather_cmd, min_cmd):
     logger.info("In tasks.py, executing job...")
     #print("In tasks.py, executing job...")
     #print("JOB NAME: ",job_name)
@@ -41,7 +64,7 @@ def executeJob(gather_cmd, min_cmd):
 
     #command = "echo running; for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do sleep 1; echo i; done ; echo FINISHING JOB"
     commands = [gather_cmd, min_cmd]
-    for cmd in commands:
+    for i, cmd in enumerate(commands):
         po = subprocess.Popen(cmd, shell=True,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -49,10 +72,57 @@ def executeJob(gather_cmd, min_cmd):
         #self.update_state(state='PROGRESS')
         po.wait()
 
+        if i == 0:
+            status = "Successfully ran gather"
+            n = 50
+        else:
+            status = "Successfully ran minion"
+            n = 100
+
+        self.update_state(state='PROGRESS', meta={'current': n, 'status': status, 'command': cmd})
         returnCode = po.returncode
         if returnCode != 0:
             raise Exception("Command {} got return code {}.\nSTDOUT: {}\nSTDERR: {}".format(cmd, returnCode, stdout, stderr))
         print("JOB CMD {} RETURNED: {}".format(cmd, returnCode))
+
+    return {'current': 100, 'total': 100, 'status': 'Task completed!', 'result': returnCode}
+
+
+@app.route('/task/<job_name>', methods = ['POST'])
+def task(job_name):
+    job = qSys.getJobByName(job_name)
+    task = executeJob.apply_async(args=[job.gather_cmd, job.min_cmd])
+    #task = longTask.apply_async()
+    return jsonify({}), 202, {'Location': url_for('task_status', task_id = task.id)}
+
+@app.route('/status/<task_id>')
+def task_status(task_id):
+    task = executeJob.AsyncResult(task_id)
+    if task.state == 'PENDING':
+        response = {
+            'state': task.state,
+            'current': 0,
+            'total': 100,
+            'status': 'Pending...'
+        }
+    elif task.state != 'FAILURE':
+        response = {
+            'state': task.state,
+            'current': task.info.get('current', 0),
+            'total': 100,
+            'status': task.info.get('status', '')
+        }
+        if 'result' in task.info:
+            response['result'] = task.info['result']
+    else:
+        # something went wrong in the background job
+        response = {
+            'state': task.state,
+            'current': 1,
+            'total': 100,
+            'status': str(task.info),  # this is the exception raised
+        }
+    return json.htmlsafe_dumps(response)
 
 
 max_queue_size = 10
@@ -190,9 +260,19 @@ def parameters():
         qSys.addJob(new_job)
         #task = celery.current_app.send_task('myapp.tasks.executeJob')
         print("HERE IN MAIN")
-        task = executeJob.delay(new_job.gather_cmd, new_job.min_cmd)
-        new_job.task_id = task.id
-        print("IT WORKED?")
+        
+        
+        
+        #task = executeJob.delay(new_job.gather_cmd, new_job.min_cmd)
+        #new_job.task_id = task.id
+
+        #task(job_name)
+        #requests.post('/task', data = new_job.job_name)
+
+
+
+
+
         #Generate commands (using methods of job)
         '''gather_cmd = new_job.generateGatherCmd()
         demul_cmd = ""
@@ -205,16 +285,18 @@ def parameters():
 
         #return render_template("progress.html", min_cmd = minion_cmd)
         #return redirect(url_for('progress', gather_cmd = gather_cmd, min_cmd = minion_cmd, job_name = job_name, output_folder = output_folder))
-        return redirect(url_for('progress', job_name=job_name, task_id = task.id))
+        return redirect(url_for('progress', job_name=job_name))
         
     return render_template("parameters.html")
 
-@app.route("/progress/<job_name>/<task_id>", methods = ["GET", "POST"])
-def progress(job_name, task_id):
-    task = executeJob.AsyncResult(task_id)
-    print(task.state)
-    job = qSys.getJobByName(job_name)
-    print("PROOOO: ",job)
+@app.route("/progress/<job_name>", methods = ["GET", "POST"])
+def progress(job_name):
+
+    return render_template("progress.html", job_name = job_name)
+    #return res
+
+    #job = qSys.getJobByName(job_name)
+    #print("PROOOO: ",job)
 
     # gather_cmd = job.gather_cmd
     # output_folder = job.output_folder
@@ -230,7 +312,7 @@ def progress(job_name, task_id):
 #    os.system(min_cmd)
     #move output files into output folder
 #    os.system('mv ' + job_name + '* ' + output_folder)
-    return render_template("progress.html")
+    #return render_template("progress.html")
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])

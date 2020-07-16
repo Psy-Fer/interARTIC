@@ -14,15 +14,14 @@
 			<h1> Progress </h1>
 			<p> Blah blah...</p>
 			<label for="file">Pipeline progress:</label>
-			<progress id="file" value="32" max="100"> 32% </progress>
+			<div id="progress-bar">
+
+			</div>
+			<!-- <progress id="file" value="32" max="100"> 32% </progress> -->
 		
 		
 			<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
-			<h1>Commands being run: <h1><br>
-    		<p>
-    			{{ min_cmd }} <br>
-    		</p>
-
+			<h1 id='status'>Status of job: <h1><br>
 		</div>
 	</div>
 
@@ -38,6 +37,8 @@
 
 	</div>
 
+	<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script>
 		var abortBtn = document.getElementById("abortBtn");
 		var confirmModal = document.getElementById("confirmModal");
@@ -54,6 +55,69 @@
 		function confirm() {
   			
 		}
+
+
+		const status_div = document.getElementById('status');
+		//const para = document.createElement("p");
+		//para.innerHTML = JSON.stringify(stat);
+		//status.appendChild(para);
+
+        // create a progress bar
+        var nanobar = new Nanobar({
+            bg: '#44f',
+            target: document.getElementById('progress-bar')
+		});
+		//nanobar.go(0);
+		//update_progress('{{ url }}', nanobar, status_div );
+
+		//var bar = document.getElementById('progress-bar');
+		//bar.appendChild(nanobar)
+
+
+		console.log("{{ job_name }}")
+		$.ajax({
+			type: 'POST',
+			url: '/task/{{ job_name }}',
+			success: function(data, status, request) {
+				status_url = request.getResponseHeader('Location');
+				update_progress(status_url, nanobar, status_div );
+			},
+			error: function() {
+				alert('Unexpected error');
+			}
+		});
+
+
+
+
+
+		function update_progress(status_url, nanobar, status_div) {
+        // send GET request to status URL
+			$.getJSON(status_url, function(data) {
+				// update UI
+				percent = parseInt(data['current'] * 100 / data['total']);
+				nanobar.go(percent);
+				$(status_div.childNodes[1]).text(percent + '%');
+				$(status_div.childNodes[2]).text(data['status']);
+				if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {
+					if ('result' in data) {
+						// show result
+						$(status_div.childNodes[3]).text('Result: ' + data['result']);
+					}
+					else {
+						// something unexpected happened
+						$(status_div.childNodes[3]).text('Result: ' + data['state']);
+					}
+				}
+				else {
+					// rerun in 2 seconds
+					setTimeout(function() {
+						update_progress(status_url, nanobar, status_div);
+					}, 2000);
+				}
+			});
+    	}
+
 
 	</script>
 
