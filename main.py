@@ -175,12 +175,12 @@ def progress(job_name):
 
 
 #not sure if this should be a get method
-@app.route("/output", methods = ["GET", "POST"])
-def output(): #need to update to take in job name as parameter
-    job_name = request.args.get('job_name')
-    output_folder = request.args.get('output_folder')
-    #job = jobQueue.getJobByName(job_name)
-    #output_folder = job.output_folder
+@app.route("/output/<job_name>", methods = ["GET", "POST"])
+def output(job_name): #need to update to take in job name as parameter
+    #job_name = request.args.get('job_name')
+    #output_folder = request.args.get('output_folder')
+    job = jobQueue.getJobByName(job_name)
+    output_folder = job._output_folder
     output_files = []
     barplot = ''
     boxplot = ''
