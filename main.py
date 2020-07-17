@@ -3,14 +3,11 @@ from src.job import Job
 import src.queue as q
 import os
 import base64
-<<<<<<< HEAD
 import fnmatch
-=======
 import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
 import sys
 import re
->>>>>>> origin/steph-progress
 
 app = Flask(__name__)
 
@@ -124,7 +121,7 @@ def parameters():
 
         #Create a new instance of the Job class
         new_job = Job(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
-        
+
         #Add job to queue
         jobQueue.put(new_job)
         return redirect(url_for('progress', job_name=job_name))
@@ -135,7 +132,7 @@ def parameters():
 def progress(job_name):
     job = jobQueue.getJobByName(job_name)
     return render_template("progress.html", output = job.executeCmds())
-# Steph's work:    
+# Steph's work:
 # @app.route("/progress", methods = ["GET", "POST"])
 # def progress():
 #     #job = jobQueue.getJobByName(job_name)
@@ -144,14 +141,14 @@ def progress(job_name):
 #     #gather_cmd = job.gather_cmd
 #     #output_folder = job.output_folder
 #     #min_cmd = job.min_cmd
-    
-    
-#     # need to not hardcode 
+
+
+#     # need to not hardcode
 #     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
-#         gatherOutput = f.read().replace("\n","<br/>")            
-    
+#         gatherOutput = f.read().replace("\n","<br/>")
+
 #     #os.spawnl(os.P_NOWAIT, '', './dummy.sh > output.txt')
-    
+
 #     pattern = "^ERROR"
 #     error = {}
 #     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
@@ -159,8 +156,8 @@ def progress(job_name):
 #             result = re.match(pattern, line)
 #             if (result):
 #                 error['error_pipeline'] = "yo theres an error man"
-                
-    
+
+
 #    # print(gather_cmd, output_folder, min_cmd)
 #     #decode
 #     #gather_cmd = base64.b64decode(gather_cmd).decode()
@@ -177,7 +174,7 @@ def progress(job_name):
 #     command = "./dummy.sh"
 #     f = open("output.txt", "w")
 #     p = subprocess.Popen(command, stdout=f, shell=True)
-    
+
 # def error_checking():
 #     pattern = "^ERROR"
 #     errors = {}
