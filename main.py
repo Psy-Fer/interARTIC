@@ -138,6 +138,7 @@ def progress(job_name):
 
     path = job.output_folder
     path += "/all_cmds_log.txt"
+    print(path)
     with open(path, "r") as f:
         gatherOutput = f.read().replace("\n","<br/>")
     #pattern = "^ERROR"
@@ -147,8 +148,10 @@ def progress(job_name):
     #        result = re.match(pattern, line)
     #        if (result):
     #            error['error_pipeline'] = "Error found"
+    num_in_queue = jobQueue.getJobNumber(job_name)
+    queue_length = jobQueue.getNumberInQueue()
             
-    return render_template("progress.html", gatherOutput=gatherOutput)
+    return render_template("progress.html", gatherOutput=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length)
 
 # 
 # Extra stuff:    

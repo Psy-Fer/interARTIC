@@ -17,7 +17,7 @@
 
 			<center>
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
-				<h2 class="title is-5">Job 1 in queue</h2>
+				<h2 class="title is-5">Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
 			<br>
 			<label for="file">Pipeline progress:</label>
 			<progress id="file" value="32" max="100"> 32% </progress>
@@ -46,9 +46,9 @@
 
 			<center>
 				<h1 class="title is-5">Output from the Gather Command:</h1>
-				<div id="gatherOutput" style="height:700px;width:800px;border:1px solid;overflow:auto">
+				<div id="gatherOutput" >
 				<br>
-				<p>{{ gatherOutput|safe }}<p><br><br>
+				<pre>{{ gatherOutput|safe }}<pre><br><br>
 			</div>
 			</center>
 			<br><br>
