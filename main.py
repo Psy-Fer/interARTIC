@@ -34,7 +34,7 @@ def home():
         return render_template("home.html", queue = None)
 
     for item in jobQueue.getItems():
-        queueList.append({item.job_name : url_for('progress', job_name=item.job_name)})
+        queueList.append({item._job_name : url_for('progress', job_name=item._job_name)})
 
     queueDict = {'jobs': queueList}
     for key, value in queueDict.items():
@@ -127,7 +127,7 @@ def parameters():
         
         new_job.executeCmds()
        
-        return redirect(url_for('progress', job_name=job_name), )
+        return redirect(url_for('progress', job_name=job_name))
 
     return render_template("parameters.html")
 
@@ -135,12 +135,15 @@ def parameters():
 def progress(job_name):
     #print(jobQueue.getJob)
     job = jobQueue.getJobByName(job_name)
+    job_name = job._job_name
 
     path = job.output_folder
-    path += "/all_cmds_log.txt"
+    path +="/all_cmds_log.txt"
+    
     print(path)
     with open(path, "r") as f:
         gatherOutput = f.read().replace("\n","<br/>")
+        
     #pattern = "^ERROR"
     #error = {}
     #with open(path, "r") as f:
@@ -148,10 +151,11 @@ def progress(job_name):
     #        result = re.match(pattern, line)
     #        if (result):
     #            error['error_pipeline'] = "Error found"
+    
     num_in_queue = jobQueue.getJobNumber(job_name)
     queue_length = jobQueue.getNumberInQueue()
             
-    return render_template("progress.html", gatherOutput=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length)
+    return render_template("progress.html", gatherOutput=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
 
 # 
 # Extra stuff:    

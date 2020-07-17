@@ -50,8 +50,16 @@
 				<br>
 				<pre>{{ gatherOutput|safe }}<pre><br><br>
 			</div>
-			</center>
+			
 			<br><br>
+
+			<button id="direct_to_output" class="float-left submit-button">Go to output</button>
+			</center>
+			<script type="text/javascript">
+				document.getElementById("direct_to_output").onclick = function () {
+					location.href = "/output/{{ job_name }}";
+				};
+			</script>
 
 		</div>
 	</div>
