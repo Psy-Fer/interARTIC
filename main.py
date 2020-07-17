@@ -124,8 +124,10 @@ def parameters():
         
         #Add job to queue
         jobQueue.putJob(new_job)
+        
+        new_job.executeCmds()
        
-        return redirect(url_for('progress', job_name=job_name))
+        return redirect(url_for('progress', job_name=job_name), )
 
     return render_template("parameters.html")
 
@@ -146,7 +148,7 @@ def progress(job_name):
     #        if (result):
     #            error['error_pipeline'] = "Error found"
             
-    return render_template("progress.html", runcmd = job.executeCmds(), gatherOutput=gatherOutput)
+    return render_template("progress.html", gatherOutput=gatherOutput)
 
 # 
 # Extra stuff:    
