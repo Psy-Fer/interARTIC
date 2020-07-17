@@ -20,12 +20,6 @@ demul_cmd = ""
 minion_cmd = "test"
 override_data = False
 
-'''
-def run_command():
-    command = "sleep 8; echo '*** it worked ****'"
-    os.system(command)
-'''
-
 @app.route("/home")
 def home():
     #Update displayed queue on home page

@@ -98,15 +98,15 @@ class Job:
         
     def __generateGatherCmd(self):
         if self._pipeline == "medaka":
-            gather_cmd = "artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder +" --no-fast5s" + " >> all_cmds_log.txt 2>>all_cmds_log.txt"
+            gather_cmd = "artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder +" --no-fast5s" + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
         elif self._pipeline == "nanopolish":
-            gather_cmd = "artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder + " --fast5-directory " + self._input_folder + "/fast5_pass" + " >> all_cmds_log.txt 2>>all_cmds_log.txt"
+            gather_cmd = "artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder + " --fast5-directory " + self._input_folder + "/fast5_pass" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
         elif self._pipeline == "both":
             gather_cmd = "echo 'no gather command for both pipelines yet'"
         return gather_cmd
 
     def __generateDemultCmd(self):
-        demult_cmd = "artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> all_cmds_log.txt 2>>all_cmds_log.txt"
+        demult_cmd = "artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
         return demult_cmd
 
     def __generateMinionCmd(self):
@@ -114,17 +114,17 @@ class Job:
             #if read file is provided by user
             if self._read_file != "":
                 if self._pipeline == "medaka":
-                    minion_cmd = "artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file " + self._read_file + " " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> all_cmds_log.txt 2>>all_cmds_log.txt"
+                    minion_cmd = "artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file " + self._read_file + " " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 elif self._pipeline == "nanopolish":
-                    minion_cmd = "artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file " + self._read_file + " --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> all_cmds_log.txt 2>>all_cmds_log.txt"
+                    minion_cmd = "artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file " + self._read_file + " --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 elif self._pipeline == "both":
                     minion_cmd = "echo 'no minion command for both pipelines yet'"
             #if read file isn't provided by user
             else:
                 if self._pipeline == "medaka":
-                    minion_cmd = "artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file ./" + self._job_name + "_fastq_pass.fastq " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> all_cmds_log.txt 2>>all_cmds_log.txt"
+                    minion_cmd = "artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file ./" + self._job_name + "_fastq_pass.fastq " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 elif self._pipeline == "nanopolish":
-                    minion_cmd = "artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file ./" + self._job_name + "_fastq_pass.fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> all_cmds_log.txt 2>>all_cmds_log.txt"
+                    minion_cmd = "artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file ./" + self._job_name + "_fastq_pass.fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 elif self._pipeline == "both":
                     minion_cmd = "echo 'no minion command for both pipelines yet'"
         elif self._num_samples == "multiple":
@@ -146,7 +146,7 @@ class Job:
                         dir_path = self._output_folder + "/" + primer_type + "_" + sample_name + "_" + run_name + "_" + barcode + "_" + self._pipeline
                         minion_cmd.append("mkdir " + dir_path)
                         #append minion cmd in barcode directory
-                        minion_cmd.append("artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> all_cmds_log.txt 2>>all_cmds_log.txt")
+                        minion_cmd.append("artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt")
                         #output goes into current directory so this moves all output files to correct folder
                         minion_cmd.append("mv " + self._job_name + "_" + barcode + "* " + dir_path)
                         #minion_cmd.append('mv ./all_cmds_log.txt ' + dir_path)
@@ -167,7 +167,7 @@ class Job:
                         dir_path = self._output_folder + "/" + primer_type + "_" + sample_name + "_" + run_name + "_" + barcode + "_" + self._pipeline
                         minion_cmd.append("mkdir " + dir_path)
                         #append minion cmd in barcode directory
-                        minion_cmd.append("artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> all_cmds_log.txt 2>>all_cmds_log.txt")
+                        minion_cmd.append("artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt")
                         #output goes into current directory so this moves all output files to correct folder
                         minion_cmd.append("mv ./" + self._job_name + "_" + barcode + "* " + dir_path)
             elif self._pipeline == "both":
