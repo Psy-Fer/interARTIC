@@ -50,17 +50,7 @@ def longTask(self):
 @celery.task(bind=True)
 def executeJob(self, gather_cmd, min_cmd):
     logger.info("In tasks.py, executing job...")
-    #print("In tasks.py, executing job...")
-    #print("JOB NAME: ",job_name)
-    #job = qSys.getJobByName(job_name)
-    #print("JOB: ",job)
-    #gather_cmd = job.gather_cmd
-    #output_folder = job.output_folder
-    #min_cmd = job.min_cmd
-
     print(gather_cmd, min_cmd)
-
-    #os.system("cd redis-server; src/redis-server")
 
     #command = "echo running; for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do sleep 1; echo i; done ; echo FINISHING JOB"
     commands = [gather_cmd, min_cmd]
@@ -175,37 +165,6 @@ def parameters():
         #variables to add to job class
         num_samples = request.form.get('num_samples')
 
-        '''
-        #if nanopolish selected
-        if pipeline == "nanopolish":
-            #construct cmds
-            gather_cmd = "artic gather --min-length " + minLength + " --max-length " + maxLength + " --prefix " + job_name + " --directory " + input_folder + " --fast5-directory " + input_folder + "/fast5_pass"
-            #if single sample
-            if request.form.get('single') == "single":
-                minion_cmd = "artic minion --normalise  --threads " + num_threads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " --fast5-directory " + output_folder + "/fast5_pass --sequencing-summary " + input_folder + "/*sequencing_summary.txt " + primer_scheme + " " + job_name
-            #if multiple samples
-            elif request.form.get('multiple') == "multiple":
-                dem_cmd = "artic demultiplex --threads " + num_threads + " " + job_name + "_fastq_pass.fastq"
-                #make for loop for multiple barcodes - TO DO
-                minion_cmd = "echo 'not handling multiple samples yet'"
-        #if medaka selected
-        elif pipeline == "medaka":
-            #construct cmds
-            gather_cmd = "artic gather --min-length " + minLength + " --max-length " + maxLength + " --prefix " + job_name + " --directory " + input_folder +" --no-fast5s"
-            #if single sample
-            if request.form.get('single') == "single":
-                minion_cmd = "artic minion --minimap2 --medaka --normalise " + normalise + " --threads " + num_threads + " --scheme-directory " + scheme_dir + " --read-file " + read_file + " " + primer_scheme + " \"" + job_name + "\""
-            #if multiple samples
-            elif request.form.get('multiple') == "multiple":
-                dem_cmd = "artic demultiplex --threads " + num_threads + " " + job_name + "_fastq_pass.fastq"
-                #make for loop for multiple barcodes - TO DO
-                minion_cmd = "echo 'not handling multiple samples yet'"
-        #if both nano and medaka are selected
-        elif pipeline == "both":
-            #construct commands joined together
-            minion_cmd = "echo 'no command for nanopolish yet'"
-        '''
-
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
             override_data = True
@@ -258,33 +217,7 @@ def parameters():
 
         #Add job to queue
         qSys.addJob(new_job)
-        #task = celery.current_app.send_task('myapp.tasks.executeJob')
-        print("HERE IN MAIN")
         
-        
-        
-        #task = executeJob.delay(new_job.gather_cmd, new_job.min_cmd)
-        #new_job.task_id = task.id
-
-        #task(job_name)
-        #requests.post('/task', data = new_job.job_name)
-
-
-
-
-
-        #Generate commands (using methods of job)
-        '''gather_cmd = new_job.generateGatherCmd()
-        demul_cmd = ""
-        minion_cmd = new_job.generateMinionCmd()
-
-        #need to encode - '/' in file path screws with url
-        gather_cmd = base64.b64encode(gather_cmd.encode())
-        output_folder = base64.b64encode(output_folder.encode())
-        minion_cmd = base64.b64encode(minion_cmd.encode())'''
-
-        #return render_template("progress.html", min_cmd = minion_cmd)
-        #return redirect(url_for('progress', gather_cmd = gather_cmd, min_cmd = minion_cmd, job_name = job_name, output_folder = output_folder))
         return redirect(url_for('progress', job_name=job_name))
         
     return render_template("parameters.html")
@@ -293,26 +226,7 @@ def parameters():
 def progress(job_name):
 
     return render_template("progress.html", job_name = job_name)
-    #return res
-
-    #job = qSys.getJobByName(job_name)
-    #print("PROOOO: ",job)
-
-    # gather_cmd = job.gather_cmd
-    # output_folder = job.output_folder
-    # min_cmd = job.min_cmd
-
-    # print(gather_cmd, output_folder, min_cmd)
-    #decode
-    #gather_cmd = base64.b64decode(gather_cmd).decode()
-    #output_folder = base64.b64decode(output_folder).decode()
-    #min_cmd = base64.b64decode(min_cmd).decode()
-    #run minion cmd
-#    os.system(gather_cmd)
-#    os.system(min_cmd)
-    #move output files into output folder
-#    os.system('mv ' + job_name + '* ' + output_folder)
-    #return render_template("progress.html")
+    
 
 #not sure if this should be a get method
 @app.route("/output", methods = ["GET", "POST"])
