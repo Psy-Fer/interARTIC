@@ -217,7 +217,7 @@ def parameters():
             errors['input_folder'] = "Invalid path."
         elif len(os.listdir(input_folder)) == 0:
             errors['input_folder'] = "Directory is empty."
-        if not os.path.isfile(read_file):
+        if not os.path.isfile(read_file) and read_file:
             errors['read_file'] = "Invalid path/file."
 
         #if no output folder entered, creates one inside of input folder
