@@ -50,12 +50,12 @@ def longTask(self):
             'result': 42}
 
 @celery.task(bind=True)
-def executeJob(self, gather_cmd, min_cmd):
+def executeJob(self, gather_cmd, demult_cmd, min_cmd):
     logger.info("In tasks.py, executing job...")
-    print(gather_cmd, min_cmd)
+    print(gather_cmd, demult_cmd, min_cmd)
 
     #command = "echo running; for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do sleep 1; echo i; done ; echo FINISHING JOB"
-    commands = [gather_cmd, min_cmd]
+    commands = [gather_cmd, demult_cmd, min_cmd]
     for i, cmd in enumerate(commands):
         po = subprocess.Popen(cmd, shell=True,
                             stdout=subprocess.PIPE,
@@ -83,7 +83,7 @@ def executeJob(self, gather_cmd, min_cmd):
 @app.route('/task/<job_name>', methods = ['POST'])
 def task(job_name):
     job = qSys.getJobByName(job_name)
-    task = executeJob.apply_async(args=[job.gather_cmd, job.min_cmd])
+    task = executeJob.apply_async(args=[job.gather_cmd, job.demult_cmd, job.min_cmd])
     #task = longTask.apply_async()
     return jsonify({}), 202, {'Location': url_for('task_status', task_id = task.id)}
 
@@ -234,21 +234,12 @@ def parameters():
         qSys.addJob(new_job)
         
         return redirect(url_for('progress', job_name=job_name))
-        # new_job = Job(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
-        
-        # #Add job to queue
-        # jobQueue.putJob(new_job)
-        
-        # new_job.executeCmds()
-       
-        # return redirect(url_for('progress', job_name=job_name))
 
     return render_template("parameters.html")
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
     #print(jobQueue.getJob)
-    # job = jobQueue.getJobByName(job_name)
     job = qSys.getJobByName(job_name)
     job_name = job._job_name
     
@@ -302,7 +293,6 @@ def progress(job_name):
 def output(job_name): #need to update to take in job name as parameter
     #job_name = request.args.get('job_name')
     #output_folder = request.args.get('output_folder')
-    # job = jobQueue.getJobByName(job_name)
     job = qSys.getJobByName(job_name)
     output_folder = job._output_folder
     output_files = []
