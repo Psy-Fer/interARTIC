@@ -22,15 +22,27 @@
               <h1 class="title is-6"> Data Visualisation </h1>
               <form method=POST>
                 <input type="checkbox" id="barplot" name="barplot" value="yes">
-                <label for="barplot"> Bar plot </label><br>
+                <label for="barplot"> Barplot </label><br>
                 <input type="checkbox" id="boxplot" name="boxplot" value="yes">
-                <label for="boxplot"> Box plot </label><br>
+                <label for="boxplot"> Boxplot </label><br>
                 <br>
-                <text id="preview"> Previewing plots: {{preview_plots}} </text>
+                <div id="preview">
+                  <text> Previewing plots: </text>
+                    {% if preview_plots %}
+                    {% if preview_plots['barplot'] %}
+                    <img src="{{preview_plots['barplot']}}" alt="barplot">
+                    {% endif %}
+                    {% endif %}
+                    {% if preview_plots %}
+                    {% if preview_plots['boxplot'] %}
+                    <img src= "{{preview_plots['boxplot']}}" alt="boxplot">
+                    {% endif %}
+                    {% endif %}
+                </div>
                 <br>
-                <text id="download"> Downloading plots: {{download_plots}} </text>
+                  <text> Downloading plots: {{download_plots}} </text>
                 <br>
-                <br><input type="submit" name="submit_button" value="Preview">
+                <br><input type="submit" name="submit_button" value="Preview" onClick="preview()">
                 <input type="submit" name="submit_button" value="Download">
               </form>
             </div>
@@ -38,6 +50,16 @@
         </div>
     </div>
     </div>
+
+    <script>
+      var prev = document.getElementById("preview");
+
+      function preview() {
+
+      }
+
+
+    </script>
 
   {% endblock %}
   </body>

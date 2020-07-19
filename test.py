@@ -1,11 +1,12 @@
-import os
+import os, fnmatch
 
-output_folder = 'C:/Users/alyne/OneDrive/Desktop'
-output_files = []
-
-print(os.walk(output_folder))
-
-for (dirpath, dirnames, filenames) in os.walk(output_folder):
-    output_files.extend(filenames)
-
-print(output_files)
+for (dirpath, dirnames, filenames) in os.walk('./sample_output'):
+    for name in filenames:
+        print(name)
+        if fnmatch.fnmatch(name, '*barplot*'):
+            print("I found"+name)
+            barplot = name
+        if fnmatch.fnmatch(name, '*boxplot*'):
+            print("I found"+name)
+            boxplot = name
+    print(filenames)

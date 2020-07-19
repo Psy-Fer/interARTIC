@@ -1,0 +1,49 @@
+##fileformat=VCFv4.2
+##source=Longshot v0.4.0
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth of reads passing MAPQ filter">
+##INFO=<ID=AC,Number=R,Type=Integer,Description="Number of Observations of Each Allele">
+##INFO=<ID=AM,Number=1,Type=Integer,Description="Number of Ambiguous Allele Observations">
+##INFO=<ID=MC,Number=1,Type=Integer,Description="Minimum Error Correction (MEC) for this single variant">
+##INFO=<ID=MF,Number=1,Type=Float,Description="Minimum Error Correction (MEC) Fraction for this variant.">
+##INFO=<ID=MB,Number=1,Type=Float,Description="Minimum Error Correction (MEC) Fraction for this variant's haplotype block.">
+##INFO=<ID=AQ,Number=1,Type=Float,Description="Mean Allele Quality value (PHRED-scaled).">
+##INFO=<ID=GM,Number=1,Type=Integer,Description="Phased genotype matches unphased genotype (boolean).">
+##INFO=<ID=PH,Number=G,Type=Integer,Description="PHRED-scaled Probabilities of Phased Genotypes">
+##INFO=<ID=SC,Number=1,Type=String,Description="Reference Sequence in 21-bp window around variant.">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Genotype Quality">
+##FORMAT=<ID=PS,Number=1,Type=Integer,Description="Phase Set">
+##FORMAT=<ID=UG,Number=1,Type=String,Description="Unphased Genotype (pre-haplotype-assembly)">
+##FORMAT=<ID=UQ,Number=1,Type=Float,Description="Unphased Genotype Quality (pre-haplotype-assembly)">
+##FILTER=<ID=dn,Description="In a dense cluster of variants">
+##FILTER=<ID=dp,Description="Exceeds maximum depth">
+##FILTER=<ID=sb,Description="Allelic strand bias">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
+BTB20484	212	.	G	A	46.07	PASS	DP=5;AC=0,5;AM=0;MC=0;MF=0.0;MB=0.0;AQ=16.68;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:11.86:.:1/1:11.86
+BTB20484	228	.	T	C	32.01	PASS	DP=5;AC=0,4;AM=1;MC=0;MF=0.0;MB=0.0;AQ=11.29;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:9.24:.:1/1:9.24
+BTB20484	244	.	C	T	30.29	PASS	DP=5;AC=0,4;AM=1;MC=0;MF=0.0;MB=0.0;AQ=11.57;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:9.19:.:1/1:9.19
+BTB20484	337	.	T	C	32.68	PASS	DP=5;AC=0,4;AM=1;MC=0;MF=0.0;MB=0.0;AQ=9.5;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:9.25:.:1/1:9.25
+BTB20484	386	.	G	A	238.55	dn	DP=18;AC=0,16;AM=2;MC=0;MF=0.0;MB=0.0;AQ=11.44;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:43.86:.:1/1:43.86
+BTB20484	3715	.	AG	A	8.9	PASS	DP=3;AC=0,2;AM=1;MC=0;MF=0.0;MB=0.0;AQ=7.23;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:7.53:.:1/1:7.53
+BTB20484	3736	.	G	A	7.5	PASS	DP=3;AC=0,3;AM=0;MC=0;MF=0.0;MB=0.0;AQ=14.01;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:4.45:.:1/1:4.45
+BTB20484	3796	.	C	T	13.92	PASS	DP=3;AC=0,3;AM=0;MC=0;MF=0.0;MB=0.0;AQ=16.86;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:6.16:.:1/1:6.16
+BTB20484	3796	.	C	T	14.01	PASS	DP=3;AC=0,3;AM=0;MC=0;MF=0.0;MB=0.0;AQ=16.89;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:6.17:.:1/1:6.17
+BTB20484	3847	.	CA	C	5.57	PASS	DP=10;AC=0,2;AM=8;MC=0;MF=0.0;MB=0.0;AQ=6.5;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:4.94:.:1/1:4.94
+BTB20484	3945	.	G	T	94.32	PASS	DP=10;AC=0,9;AM=1;MC=0;MF=0.0;MB=0.0;AQ=10.53;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:22.37:.:1/1:22.37
+BTB20484	3968	.	CG	C	92.09	PASS	DP=10;AC=0,8;AM=2;MC=0;MF=0.0;MB=0.0;AQ=10.42;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:28.87:.:1/1:28.87
+BTB20484	4047	.	T	C	223.44	PASS	DP=17;AC=0,15;AM=2;MC=0;MF=0.0;MB=0.0;AQ=11.32;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:40.97:.:1/1:40.97
+BTB20484	6915	.	TA	T	11.25	PASS	DP=28;AC=3,7;AM=18;MC=0;MF=0.0;MB=0.0;AQ=6.41;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	0/1:3.16:.:0/1:3.16
+BTB20484	8088	.	A	G	4.11	PASS	DP=5;AC=2,3;AM=0;MC=0;MF=0.0;MB=0.0;AQ=13.45;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	0/1:3.86:.:0/1:3.86
+BTB20484	8088	.	A	G	44.67	PASS	DP=5;AC=0,5;AM=0;MC=0;MF=0.0;MB=0.0;AQ=16.21;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:11.81:.:1/1:11.81
+BTB20484	10040	.	T	C	459.1	dn	DP=58;AC=13,38;AM=7;MC=0;MF=0.0;MB=0.0;AQ=11.47;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	0/1:5.67:.:0/1:5.67
+BTB20484	13368	.	CGG	C	7.82	PASS	DP=1;AC=0,1;AM=0;MC=0;MF=0.0;MB=0.0;AQ=20.92;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:6.17:.:1/1:6.17
+BTB20484	13373	.	CGT	C	5.53	PASS	DP=1;AC=0,1;AM=0;MC=0;MF=0.0;MB=0.0;AQ=18.01;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:4.61:.:1/1:4.61
+BTB20484	13402	.	AGC	T	20.35	PASS	DP=1;AC=0,1;AM=0;MC=0;MF=0.0;MB=0.0;AQ=34.16;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:10.03:.:1/1:10.03
+BTB20484	13420	.	AAG	A	7.5	PASS	DP=1;AC=0,1;AM=0;MC=0;MF=0.0;MB=0.0;AQ=20.53;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:5.96:.:1/1:5.96
+BTB20484	14384	.	CTAAAA	C	19.78	PASS	DP=1;AC=0,1;AM=0;MC=0;MF=0.0;MB=0.0;AQ=33.58;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:9.98:.:1/1:9.98
+BTB20484	15592	.	CA	C	3.73	PASS	DP=1;AC=0,1;AM=0;MC=0;MF=0.0;MB=0.0;AQ=15.3;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:3.21:.:1/1:3.21
+BTB20484	16516	.	G	A	500.0	dn;dp	DP=150;AC=25,92;AM=33;MC=0;MF=0.0;MB=0.0;AQ=9.43;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	0/1:34.77:.:0/1:34.77
+BTB20484	16516	.	G	A	35.86	dn;dp	DP=150;AC=4,12;AM=134;MC=0;MF=0.0;MB=0.0;AQ=3.71;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	0/1:4.08:.:0/1:4.08
+BTB20484	17808	.	CA	C	14.3	PASS	DP=4;AC=0,3;AM=1;MC=0;MF=0.0;MB=0.0;AQ=8.28;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:11.59:.:1/1:11.59
+BTB20484	17859	.	CAG	C	13.18	PASS	DP=4;AC=0,2;AM=2;MC=0;MF=0.0;MB=0.0;AQ=5.94;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:10.11:.:1/1:10.11
+BTB20484	17984	.	CT	C	11.9	PASS	DP=4;AC=1,3;AM=0;MC=0;MF=0.0;MB=0.0;AQ=13.83;GM=1;PH=6.02,6.02,6.02,6.02;SC=None;	GT:GQ:PS:UG:UQ	1/1:4.14:.:1/1:4.14

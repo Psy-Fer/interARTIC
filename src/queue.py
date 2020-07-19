@@ -22,15 +22,16 @@ class JobsQueue:
     def getJobByName(self, job_name):
         #Returns a job with the given name, or None if no match
         for job in self._items:
-            if job.job_name == job_name:
+            if job._job_name == job_name:
                 return job
         return None
         
     def putJob(self, job):
         #Check if queue is empty - if yes, execute job
-        # if self.empty():
-        #     job.execute()
-        # #Check if queue is currently at size limit
+        if self.empty():
+            self._items.append(job)
+            return True
+        #Check if queue is currently at size limit
         if not self.full():
             self._items.append(job)
             return True
@@ -54,9 +55,17 @@ class JobsQueue:
         for job in self._items:
             if job.job_name == job_name:
                 self._items.remove(job)
+                
+    def getJobNumber(self, job_name):
+        num = 1
+        for job in self._items:
+            if job._job_name == job_name:
+                return num
+            num = num + 1
+        return None
         
-        
-        
+    def getNumberInQueue(self):
+        return len(self._items)
 
 
 
