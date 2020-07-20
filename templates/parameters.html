@@ -19,7 +19,15 @@
       <div class="container is-fluid">
         <div class="columns">
           <div class="column is-one-quarter">
-            <h1 class="subtitle">My Jobs Queue <br></h1>
+            <table class="table is-hoverable is-bordered is-fullwidth">
+              <thead>
+                  <tr>
+                      <th>Jobs Queue</td>
+                  </tr>
+              </thead>
+              <tbody id=jobsQueue>
+              </tbody>
+          </table>
           </div>
           <div class="column">
 
@@ -206,6 +214,46 @@
             // depending on the primer and barcode chosen
         }
 
+        const jobsQueue = document.getElementById("jobsQueue");
+
+         var jobsJson = JSON.parse({{ queue|tojson|safe }});
+         console.log("Jobs Queue: ", jobsJson);
+         
+         if (jobsJson != null) {
+             var jobs = jobsJson.jobs;
+             jobs.forEach(job => {
+                 for (var key of Object.keys(job)) {
+                     const curJobRow = document.createElement("tr");
+                     const curJob = document.createElement("td");
+                     const linkNode = document.createElement("a");
+                     const textNode = document.createTextNode(key);
+                     linkNode.href = job[key];
+                     
+                     const btn = document.createElement("BUTTON"); 
+                     btn.innerHTML = "Abort"; 
+                     btn.classList.add("button");
+                     btn.classList.add("is-danger");
+                     btn.classList.add("is-light");
+                     btn.style = "float:right";
+
+                     linkNode.appendChild(textNode);
+                     curJob.appendChild(linkNode);
+                     curJob.appendChild(btn);
+                     curJobRow.appendChild(curJob);
+                     jobsQueue.appendChild(curJobRow);
+                 };
+             });
+         } else {
+             const curJobRow = document.createElement("tr");
+             const curJob = document.createElement("td");
+             const textNode = document.createTextNode("You currently have no queued jobs.");
+             curJob.classList.add("has-text-grey-light");
+             curJob.classList.add("is-italic");
+             
+             curJob.appendChild(textNode);
+             curJobRow.appendChild(curJob);
+             jobsQueue.appendChild(curJobRow);
+         };
     	</script>
 
     {% endblock %}

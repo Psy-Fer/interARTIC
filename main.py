@@ -235,7 +235,20 @@ def parameters():
 
         return redirect(url_for('progress', job_name=job_name))
 
-    return render_template("parameters.html")
+    #Update displayed queue on home page
+    queueList = []
+    if qSys.queue.empty():
+        return render_template("parameters.html", queue = None)
+
+    for item in qSys.queue.getItems():
+        queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+
+    # for item in jobQueue.getItems():
+    #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name)})
+
+    queueDict = {'jobs': queueList}
+    displayQueue = json.htmlsafe_dumps(queueDict)
+    return render_template("parameters.html", queue = displayQueue)
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
