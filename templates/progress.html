@@ -19,16 +19,14 @@
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
 				<h2 class="title is-5">Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
 			<br>
-			<label for="file">Pipeline progress:</label>
-			<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
+			<label for="file">Pipeline progress:</label><br>
+			<button class="button is-danger is-light" id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
 			<h1 id='status'>Status of job: <h1><br>
 				<div id="progress-bar">
 
 				</div>
 			<br><br>
 			</center>
-			<button id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
-
 
 			<!--<div id="dialog-confirm" style="background:#ffffff;border:1px solid">
 				{% if error %}
