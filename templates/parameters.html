@@ -208,12 +208,28 @@
         //barcodes
         var native = document.getElementById("native");
         var rapid = document.getElementById("rapid");
-
-        function setParams(){
-            //set min/max length, threads and normalise to correct numbers
-            // depending on the primer and barcode chosen
+        //max/min length
+        function setParams() {
+          var max_length = document.getElementById("max_length");
+          var min_length = document.getElementById("min_length");
+          if(artic.checked && native.checked) {
+            max_length.value = '500';
+            min_length.value = '300';
+          } else if (kirby.checked && native.checked) {
+            max_length.value = '2700';
+            min_length.value = '2300';
+          } else if (kirby.checked && rapid.checked) {
+            max_length.value = '2700';
+            min_length.value = '300';
+          } else {
+            max_length.value = '';
+            min_length.value = '';
+          }
         }
+        
 
+        
+        // Displaying the Queue
         const jobsQueue = document.getElementById("jobsQueue");
 
          var jobsJson = JSON.parse({{ queue|tojson|safe }});
