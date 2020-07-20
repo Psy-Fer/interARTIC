@@ -132,10 +132,10 @@ def home():
     queueList = []
     if qSys.queue.empty():
         return render_template("home.html", queue = None)
-        
+
     for item in qSys.queue.getItems():
         queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
-    
+
     # for item in jobQueue.getItems():
     #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name)})
 
@@ -197,10 +197,10 @@ def parameters():
         #if the output folder does not exist, it is created
         #maybe need to put in checks for this?
         if not os.path.exists(output_folder):
-            make_dir = 'mkdir "' + output_folder + '"'    
+            make_dir = 'mkdir "' + output_folder + '"'
             os.system(make_dir)
         # Make empty log file for initial progress rendering
-        make_log = 'touch ' + output_folder +'/all_cmds_log.txt'
+        make_log = 'touch ' + '"' + output_folder + '"' +'/all_cmds_log.txt'
         os.system(make_log)
 
         #check length parameters are valid
@@ -213,7 +213,7 @@ def parameters():
             errors['invalid_length'] = "Invalid maximum length."
         elif int(max_length) < int(min_length):
             errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
-            
+
         if qSys.queue.full():
         # if jobQueue.full():
             errors['full_queue'] = "Job queue is full."
@@ -232,7 +232,7 @@ def parameters():
 
         #Add job to queue
         qSys.addJob(new_job)
-        
+
         return redirect(url_for('progress', job_name=job_name))
 
     return render_template("parameters.html")
@@ -242,14 +242,14 @@ def progress(job_name):
     #print(jobQueue.getJob)
     job = qSys.getJobByName(job_name)
     job_name = job._job_name
-    
+
     path = job.output_folder
     path +="/all_cmds_log.txt"
-    
+
     print(path)
     with open(path, "r") as f:
         gatherOutput = f.read().replace("\n","<br/>")
-        
+
     #pattern = "^ERROR"
     #error = {}
     #with open(path, "r") as f:
@@ -257,16 +257,16 @@ def progress(job_name):
     #        result = re.match(pattern, line)
     #        if (result):
     #            error['error_pipeline'] = "Error found"
-    
+
     # num_in_queue = jobQueue.getJobNumber(job_name)
     # queue_length = jobQueue.getNumberInQueue()
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
-            
+
     return render_template("progress.html", gatherOutput=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
 
-# 
-# Extra stuff:    
+#
+# Extra stuff:
 # @app.route("/progress", methods = ["GET", "POST"])
 # def progress():
 #     #job = jobQueue.getJobByName(job_name)

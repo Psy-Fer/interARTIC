@@ -74,7 +74,7 @@
                 <!-- read file path - Medaka/ Nanopolish-->
                 <label for="scheme_folder">Read file (only input if you already have this file, otherwise artic gather/ demultiplex will generate it):</label>
                 <input type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
-                
+
 
                 <!-- output folder file path - Medaka/ Nanopolish-->
                 <label for="output_folder">Output folder:</label>
@@ -89,7 +89,7 @@
                 <!-- primer scheme name - Medaka/ Nanopolish-->
                 <label for="primer_scheme">Name: e.g. nCoV-2019/V1</label>
                 <input type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
-                
+
                 <div class="field">
                   <div class="control">
                     <!-- primer type -->
@@ -129,22 +129,21 @@
                     <label for="min_length">Minimum Length:</label>
                     <input type="number" id="min_length" name="min_length"><br>
                     <label for="max_length">Maximum Length:</label>
-                    <input type="number" id="max_length" name="max_length"><br>
-                    <br>
+                    <input type="number" id="max_length" name="max_length"><br><br>
+                    <h1 class="title is-6">Other parameters:</h1>
+                    <label for="num_threads">Thread usage:</label>
+                    <input type="number" id="num_threads" name="num_threads" value="4"><br>
+                    <!-- normalise - Medaka/ Nanopolish-->
+                      <label for="normalise">Normalise:</label>
+                      <input type="number" id="normalise" name="normalise" value="200"><br>
+                    <!--<br>
                     <div id="nanoParams" style="display:none">
                       <h1 class="title is-6">Nanopolish parameters:</h1>
                       <br>
                     </div>
                     <div id="medakaParams" style="display:none">
                       <h1 class="title is-6">Medaka parameters:</h1>
-
-                      <label for="num_threads">Thread usage:</label>
-                      <input type="number" id="num_threads" name="num_threads" value="4"><br>
-
-                    <!-- normalise - Medaka/ Nanopolish-->
-                      <label for="normalise">Normalise:</label>
-                      <input type="number" id="normalise" name="normalise" value="200"><br>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
 
@@ -179,21 +178,21 @@
       </div>
 
       <script>
-        var medakaParams = document.getElementById("medakaParams");
+        /*var medakaParams = document.getElementById("medakaParams");
         var nanoParams = document.getElementById("nanoParams");
 
         function showMedaka() {
-            medakaParams.style.display = "block";
-            nanoParams.style.display = "none";
+          medakaParams.style.display = "block";
+          nanoParams.style.display = "none";
         }
         function showNano() {
-            nanoParams.style.display = "block";
+          nanoParams.style.display = "block";
       		medakaParams.style.display = "none";
         }
         function showBoth(){
           nanoParams.style.display = "block";
           medakaParams.style.display = "block";
-        }
+        }*/
 
         //primers
         var artic = document.getElementById("artic");
