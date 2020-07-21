@@ -21,7 +21,6 @@
 			<br>
 			<label for="file">Pipeline progress:</label><br>
 			<button class="button is-danger is-light" id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
-			<h1 id='status'>Status of job: <h1><br>
 				<div id="progress-bar">
 
 				</div>
@@ -47,14 +46,15 @@
 			<br>
 
 			<center>
-				<h1 class="title is-5">Output from the Gather Command:</h1>
-				<div id="gatherOutput" >
+				<h1 class="title is-5">Output from the ARTIC Pipeline:</h1>
+			</center>
+				<div id="outputLog">
 				<br>
-				<pre>{{ gatherOutput|safe }}<pre><br><br>
+				<pre>{{ outputLog|safe }}<pre><br><br>
 			</div>
 			
 			<br><br>
-
+			<center>
 			<button id="direct_to_output" class="float-left submit-button">Go to output</button>
 			</center>
 			<script type="text/javascript">
@@ -165,7 +165,7 @@
 	<script>
 		$(document).ready(function() {
 			setInterval(function() {
-				$( "#gatherOutput" ).load(window.location.href + " #gatherOutput" );
+				$( "#outputLog" ).load(window.location.href + " #outputLog" );
 				//ß$( "#dialog-confirm" ).load(window.location.href + " #dialog-confirm" );
 			}, 900); 
 		});

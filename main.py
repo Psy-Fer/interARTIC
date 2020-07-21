@@ -276,7 +276,7 @@ def progress(job_name):
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
 
-    return render_template("progress.html", gatherOutput=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
+    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
 
 #
 # Extra stuff:
