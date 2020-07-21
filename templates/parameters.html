@@ -8,9 +8,6 @@
 <body>
     {% extends "page_template.html" %}
     {% block content %}
-
-
-
     <!-- Titles -->
     <div class="hero-body">
       <div class="container is-fluid">
@@ -66,19 +63,6 @@
                 <p class="has-text-danger"> {{ errors['input_folder'] }} </p>
                 {% endif %}
                 {% endif %}
-                <!-- csv file path - Medaka/ Nanopolish-->
-                <!--<label for="csvFile">File path for csv file:</label>
-                <input type="text" id="csvFile" name="csvFile" size="60"><br>-->
-
-                <!-- scheme directory file path - Medaka/ Nanopolish-->
-                <!--
-                <label for="scheme_folder">Scheme directory:</label>
-                <input type="text" id="scheme_folder" name="scheme_folder" size="60" value="{{scheme_dir}}" required><br>
-                {% if errors %}
-                {% if errors['scheme_dir'] %}
-                <p class="has-text-danger"> {{ errors['scheme_dir'] }} </p>
-                {% endif %}
-                {% endif %}-->
 
                 <!-- read file path - Medaka/ Nanopolish-->
                 <br><label for="scheme_folder">Read file:</label><br>
@@ -231,8 +215,6 @@
           }
         }
 
-
-
         // Displaying the Queue
         const jobsQueue = document.getElementById("jobsQueue");
 
@@ -274,7 +256,7 @@
              curJobRow.appendChild(curJob);
              jobsQueue.appendChild(curJobRow);
          };
-    	</script>
+        </script>
 
     {% endblock %}
 </body>

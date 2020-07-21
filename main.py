@@ -125,6 +125,10 @@ gather_cmd = ""
 demul_cmd = ""
 minion_cmd = "test"
 override_data = False
+over_errors = "False"
+@app.route("/")
+def route():
+    return redirect(url_for('home'))
 
 @app.route("/home")
 def home():
@@ -152,6 +156,7 @@ def about():
 
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
+   
     if request.method == "POST":
         #get parameters
         job_name = request.form.get('job_name')
@@ -175,7 +180,7 @@ def parameters():
             override_data = True
         else:
             override_data = False
-
+        
         errors = {}
         if not os.path.isdir(input_folder):
             errors['input_folder'] = "Invalid path."
@@ -199,12 +204,32 @@ def parameters():
         if not os.path.exists(output_folder):
             make_dir = 'mkdir "' + output_folder + '"'
             os.system(make_dir)
+        
+        dir_files = os.listdir(output_folder)
+        filematch = 0
+        if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
+            remove = "rm -r " + output_folder + "/*"
+            os.system(remove)
+
+        if override_data is False and len(dir_files) > 0:
+            print("CCHHHHHHHHH")
+            for f in dir_files:
+                if fnmatch.fnmatch(f, job_name+'*'):
+                    global over_errors 
+                    over_errors = "True"
+                    filematch += 1
+            if filematch > 0:
+                print(filematch,"nnnnnn")
+                remove = "rm -r " + output_folder + "/*"
+                os.system(remove)
+        elif override_data is True:
+            remove = "rm -r " + output_folder + "/*"
+            os.system(remove)
+
         # Make empty log file for initial progress rendering
-        make_log = 'touch ' + '"' + output_folder + '"' +'/all_cmds_log.txt'
+        make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
         os.system(make_log)
-
         #check length parameters are valid
-
         if min_length.isdigit() == False:
             errors['invalid_length'] = "Invalid minimum length."
             if max_length.isdigit() == False:
@@ -215,13 +240,22 @@ def parameters():
             errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
 
         if qSys.queue.full():
-        # if jobQueue.full():
             errors['full_queue'] = "Job queue is full."
 
         print("Errors: ", errors)
-
         if len(errors) != 0:
-            return render_template('parameters.html', errors=errors, name=job_name, input_folder=input_folder,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
+            #Update displayed queue on home page
+            queueList = []
+            if qSys.queue.empty():
+                return render_template("parameters.html", queue = None, errors=errors,name=job_name, input_folder=input_folder,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
+
+            for item in qSys.queue.getItems():
+                queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+
+            queueDict = {'jobs': queueList}
+            displayQueue = json.htmlsafe_dumps(queueDict)
+
+            return render_template('parameters.html', errors=errors, queue=displayQueue,name=job_name, input_folder=input_folder,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -234,7 +268,7 @@ def parameters():
         qSys.addJob(new_job)
 
         return redirect(url_for('progress', job_name=job_name))
-
+    
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
@@ -243,9 +277,6 @@ def parameters():
     for item in qSys.queue.getItems():
         queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
 
-    # for item in jobQueue.getItems():
-    #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name)})
-
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
     return render_template("parameters.html", queue = displayQueue)
@@ -253,6 +284,7 @@ def parameters():
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
     #print(jobQueue.getJob)
+    global over_errors
     job = qSys.getJobByName(job_name)
     job_name = job._job_name
 
@@ -275,8 +307,8 @@ def progress(job_name):
     # queue_length = jobQueue.getNumberInQueue()
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
-
-    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
+    print(over_errors, "cheking eorrr")
+    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, over_errors=over_errors)
 
 #
 # Extra stuff:
