@@ -311,6 +311,8 @@ def output(job_name): #need to update to take in job name as parameter
     output_files = []
     barplot = ''
     boxplot = ''
+    static = os.getcwd()+'/static/'
+    print(static)
 
     if output_folder:
         if os.path.exists(output_folder):
@@ -318,25 +320,33 @@ def output(job_name): #need to update to take in job name as parameter
                 for name in filenames:
                     if fnmatch.fnmatch(name, '*barplot.png'):
                         barplot = name
+                        os.system('cp -t '+ static + ' ' + output_folder + '/' + barplot)
                     if fnmatch.fnmatch(name, '*boxplot.png'):
                         boxplot = name
+                        os.system('cp -t '+ static + ' ' + output_folder + '/' + boxplot)
                 output_files.extend(filenames)
 
         if request.method == "POST":
-            plots = {}
-            if request.form.get('barplot') == "yes":
-                if barplot:
-                    #plots['barplot'] = '../'+output_folder[2:]+'/'+barplot
-                    plots['barplot'] = '../static/'+barplot
-            if request.form.get('boxplot') == "yes":
-                if boxplot:
-                    #plots['boxplot'] = '../'+output_folder[2:]+'/'+boxplot
-                    plots['boxplot'] = '../static/'+boxplot
+            plot = request.form.get('plot')
+            if request.form['submit_button'] == 'Remove':
+                if plot == 'barplot' or plot == 'both':
+                    os.system('rm '+ static + '/' + barplot)
+                if plot == 'boxplot' or plot == 'both':
+                    os.system('rm '+ static + '/' + boxplot)
+                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
+            else:
+                plots = {}
+                if plot == 'barplot' or plot == 'both':
+                    if barplot:
+                        plots['barplot'] = '../static/'+barplot
+                if plot == 'boxplot' or plot == 'both':
+                    if boxplot:
+                        plots['boxplot'] = '../static/'+boxplot
 
-            if request.form['submit_button'] == 'Preview':
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots)
-            if request.form['submit_button'] == 'Download':
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots)
+                if request.form['submit_button'] == 'Preview':
+                    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots)
+                if request.form['submit_button'] == 'Download':
+                    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots)
 
     return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
 

@@ -18,13 +18,15 @@
               <text> They have been saved into the selected folder "</text><text style="color:#0066cc">{{ output_folder }}</text><text>".</text><br>
               <text id="files"> {{output_files}} </text>
             </div>
-            <div claSS="column">
+            <div class="column">
               <h1 class="title is-6"> Data Visualisation </h1>
               <form method=POST>
-                <input type="checkbox" id="barplot" name="barplot" value="yes">
+                <input type="radio" id="barplot" name="plot" value="barplot" required>
                 <label for="barplot"> Barplot </label><br>
-                <input type="checkbox" id="boxplot" name="boxplot" value="yes">
+                <input type="radio" id="boxplot" name="plot" value="boxplot">
                 <label for="boxplot"> Boxplot </label><br>
+                <input type="radio" id="both" name="plot" value="both">
+                <label for="both"> Both </label><br>
                 <br>
                 <div id="preview">
                   <text> Previewing plots: </text>
@@ -42,23 +44,21 @@
                 <br>
                   <text> Downloading plots: {{download_plots}} </text>
                 <br>
-                <br><input type="submit" name="submit_button" value="Preview" onClick="preview()">
+                <br><input type="submit" name="submit_button" value="Preview">
                 <input type="submit" name="submit_button" value="Download">
+                <input type="submit" name="submit_button" value="Remove">
               </form>
             </div>
           </div>
+            <input type="submit" id="direct_to_progress" value="Go to progress"><br>
         </div>
     </div>
     </div>
 
-    <script>
-      var prev = document.getElementById("preview");
-
-      function preview() {
-
-      }
-
-
+    <script type="text/javascript">
+      document.getElementById("direct_to_progress").onclick = function () {
+        location.href = "/progress/{{ job_name }}";
+      };
     </script>
 
   {% endblock %}
