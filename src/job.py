@@ -41,7 +41,7 @@ class Job:
     @property
     def read_file(self):
         return self._read_file
-        
+
     @property
     def primer_scheme(self):
         return self._primer_scheme
@@ -49,7 +49,7 @@ class Job:
     @property
     def output_folder(self):
         return self._output_folder
-        
+
     @property
     def normalise(self):
         return self._normalise
@@ -57,7 +57,7 @@ class Job:
     @property
     def num_threads(self):
         return self._num_threads
-        
+
     @property
     def pipeline(self):
         return self._pipeline
@@ -69,19 +69,19 @@ class Job:
     @property
     def max_length(self):
         return self._max_length
-        
+
     @property
     def bwa(self):
         return self._bwa
-    
+
     @property
     def skip_nanopolish(self):
         return self._skip_nanopolish
-    
+
     @property
     def dry_run(self):
         return self._dry_run
-        
+
     @property
     def override_data(self):
         return self._override_data
@@ -89,7 +89,7 @@ class Job:
     @property
     def num_samples(self):
         return self._num_samples
-        
+
     @property
     def gather_cmd(self):
         return self._gather_cmd
@@ -97,8 +97,8 @@ class Job:
     @property
     def demult_cmd(self):
         return self._demult_cmd
-    
-        
+
+
     @property
     def min_cmd(self):
         return self._min_cmd
@@ -106,14 +106,13 @@ class Job:
     @property
     def task_id(self):
         return self._task_id
-    
+
     @task_id.setter
     def task_id(self, val):
         if val:
             self._task_id = val
-    
 
-        
+
     def __generateGatherCmd(self):
         if self._pipeline == "medaka":
             gather_cmd = "artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder +" --no-fast5s" + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
@@ -151,7 +150,10 @@ class Job:
             if self._pipeline == "medaka":
                 #open the csv file
                 csv_filepath = self._input_folder + '/sample-barcode.csv'
-                run_name = self._input_folder.split('/')[-2]
+                if self._input_folder.startswith('C:\\'):
+                    run_name = self._input_folder.split('\\')[-2]
+                else:
+                    run_name = self._input_folder.split('/')[-2]
                 #open csv file
                 with open(csv_filepath,'rt')as f:
                     data = csv.reader(f)
@@ -172,7 +174,10 @@ class Job:
             elif self._pipeline == "nanopolish":
                 #open the csv file
                 csv_filepath = self._input_folder + '/sample-barcode.csv'
-                run_name = self._input_folder.split('/')[-2]
+                if self._input_folder.startswith('C:\\'):
+                    run_name = self._input_folder.split('\\')[-2]
+                else:
+                    run_name = self._input_folder.split('/')[-2]
                 #open csv file
                 with open(csv_filepath,'rt')as f:
                     data = csv.reader(f)
@@ -222,7 +227,7 @@ class Job:
         # # Not sure if i need to do anything here to direct output???
         # os.system('mv ' + self._job_name + '* ' + self._output_folder)
         print("IN JOB")
-        
+
         #task = celery.current_app.send_task('myapp.tasks.executeJob')
         #print(task.get())
         #print(task.state())

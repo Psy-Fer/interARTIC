@@ -36,7 +36,8 @@
                 <div class="field">
                   <div class="control">
                     <!-- Job name input -->
-                    <h1 class="subtitle">Job Name:</h1>
+                    <b> * = required parameter </b><br><br>
+                    <h1 class="subtitle">Job Name: *</h1>
                     <input class="input is-info" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{name}}" required>
                   </div>
                 </div>
@@ -44,7 +45,7 @@
                 <div class="field">
                   <div class="control">
                     <!-- pipeline select -->
-                    <h1 class="subtitle">Select a pipeline to run:</h1>
+                    <h1 class="subtitle">Select a pipeline to run: *</h1>
                     <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" onclick="showNano()" required>
                     <label for="nanopolish">Nanopolish</label><br>
                     <input type="radio" id="medaka" name="pipeline" value="medaka" onclick="showMedaka()">
@@ -55,10 +56,10 @@
                 </div>
 
                 <!-- file path input -->
-                <h1 class="subtitle">Provide file paths:</h1>
-
+                <h1 class="subtitle">Provide file paths: *</h1>
+                <b>These must be absolute file paths. Must start with either "/" or "C:\".</b><br><br>
                 <!-- input folder file path - Medaka/ Nanopolish-->
-                <label for="input_folder">Input folder:</label>
+                <label for="input_folder">Input folder: *</label><br>
                 <input type="text" id="input_folder" name="input_folder" size="80" value="{{input_folder}}"  required><br>
                 {% if errors %}
                 {% if errors['input_folder'] %}
@@ -80,22 +81,25 @@
                 {% endif %}-->
 
                 <!-- read file path - Medaka/ Nanopolish-->
-                <label for="scheme_folder">Read file (only input if you already have this file, otherwise artic gather/ demultiplex will generate it):</label>
-                <input type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
+                <br><label for="scheme_folder">Read file:</label><br>
+                <small>(only input if you already have this file, otherwise artic gather/ demultiplex will generate it)</small><br>
+                <input type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br><br>
 
 
                 <!-- output folder file path - Medaka/ Nanopolish-->
-                <label for="output_folder">Output folder:</label>
+                <label for="output_folder">Output folder: </label><br>
+                <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
                 <input type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
 
                 <!-- override output data?-->
                 <input type="checkbox" id="override_data" name="override_data">
                 <label for="override_data">Override existing data?</label><br><br>
 
-                <h1 class="subtitle">Primer Scheme:</h1>
+                <h1 class="subtitle">Primer Scheme: *</h1>
 
                 <!-- primer scheme name - Medaka/ Nanopolish-->
-                <label for="primer_scheme">Name: e.g. nCoV-2019/V1</label>
+                <label for="primer_scheme">Name: *</label><br>
+                <small> e.g. nCoV-2019/V1 </small><br>
                 <input type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
 
                 <div class="field">
@@ -127,23 +131,23 @@
                     <!-- Parameter selection -->
                     <!--when medaka is selected then the current parameters appear-->
                     <!-- threads - Medaka/ Nanopolish-->
-                    <h1 class="subtitle">Select parameters:</h1>
-                    <h1 class="title is-6">Gather command:</h1>
+                    <h1 class="subtitle">Select parameters: *</h1>
+                    <h1 class="title is-6">Gather command: *</h1>
                     {% if errors %}
                     {% if errors['invalid_length'] %}
                     <p class="has-text-danger"> {{ errors['invalid_length'] }} </p>
                     {% endif %}
                     {% endif %}
-                    <label for="min_length">Minimum Length:</label>
-                    <input type="number" id="min_length" name="min_length"><br>
-                    <label for="max_length">Maximum Length:</label>
-                    <input type="number" id="max_length" name="max_length"><br><br>
-                    <h1 class="title is-6">Other parameters:</h1>
-                    <label for="num_threads">Thread usage:</label>
-                    <input type="number" id="num_threads" name="num_threads" value="4"><br>
+                    <label for="min_length">Minimum Length: *</label>
+                    <input type="number" id="min_length" name="min_length" required><br>
+                    <label for="max_length">Maximum Length: *</label>
+                    <input type="number" id="max_length" name="max_length" required><br><br>
+                    <h1 class="title is-6">Other parameters: *</h1>
+                    <label for="num_threads">Thread usage: *</label>
+                    <input type="number" id="num_threads" name="num_threads" value="4" required><br>
                     <!-- normalise - Medaka/ Nanopolish-->
-                      <label for="normalise">Normalise:</label>
-                      <input type="number" id="normalise" name="normalise" value="200"><br>
+                      <label for="normalise">Normalise: *</label>
+                      <input type="number" id="normalise" name="normalise" value="200" required><br>
                     <!--<br>
                     <div id="nanoParams" style="display:none">
                       <h1 class="title is-6">Nanopolish parameters:</h1>
@@ -158,8 +162,8 @@
                 <div class="field">
                   <div class="control">
                     <!-- single or multiple samples -->
-                    <h1 class="subtitle">This input contains:</h1>
-                    <input type="radio" id="single" name="num_samples" value="single">
+                    <h1 class="subtitle">This input contains: *</h1>
+                    <input type="radio" id="single" name="num_samples" value="single" required>
                     <label for="single">A single sample</label><br>
                     <input type="radio" id="multiple" name="num_samples" value="multiple">
                     <label for="multiple">Multiple samples</label><br>
@@ -226,15 +230,15 @@
             min_length.value = '';
           }
         }
-        
 
-        
+
+
         // Displaying the Queue
         const jobsQueue = document.getElementById("jobsQueue");
 
          var jobsJson = JSON.parse({{ queue|tojson|safe }});
          console.log("Jobs Queue: ", jobsJson);
-         
+
          if (jobsJson != null) {
              var jobs = jobsJson.jobs;
              jobs.forEach(job => {
@@ -244,9 +248,9 @@
                      const linkNode = document.createElement("a");
                      const textNode = document.createTextNode(key);
                      linkNode.href = job[key];
-                     
-                     const btn = document.createElement("BUTTON"); 
-                     btn.innerHTML = "Abort"; 
+
+                     const btn = document.createElement("BUTTON");
+                     btn.innerHTML = "Abort";
                      btn.classList.add("button");
                      btn.classList.add("is-danger");
                      btn.classList.add("is-light");
@@ -265,7 +269,7 @@
              const textNode = document.createTextNode("You currently have no queued jobs.");
              curJob.classList.add("has-text-grey-light");
              curJob.classList.add("is-italic");
-             
+
              curJob.appendChild(textNode);
              curJobRow.appendChild(curJob);
              jobsQueue.appendChild(curJobRow);
