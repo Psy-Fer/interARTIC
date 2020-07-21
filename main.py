@@ -1,8 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for, json
-from src.job import Job
+from flask import Flask, render_template, request, redirect, url_for, json, jsonify
+#from src.job import Job
 import src.queue as q
 import os
 import base64
+from celery import Celery
+import subprocess
+from src.system import System
+from celery.utils.log import get_task_logger
+import requests
+import random
+import time
 import fnmatch
 import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
@@ -10,9 +17,108 @@ import sys
 import re
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'top-secret!'
+# Celery configuration
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 
-#Initialise an empty job queue
-jobQueue = q.JobsQueue(maxsize = 10)
+# Initialize Celery
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+logger = get_task_logger(__name__)
+
+
+@celery.task(bind=True)
+def longTask(self):
+    """Background task that runs a long function with progress reports."""
+    verb = ['Starting up', 'Booting', 'Repairing', 'Loading', 'Checking']
+    adjective = ['master', 'radiant', 'silent', 'harmonic', 'fast']
+    noun = ['solar array', 'particle reshaper', 'cosmic ray', 'orbiter', 'bit']
+    message = ''
+    total = random.randint(10, 50)
+    for i in range(total):
+        if not message or random.random() < 0.25:
+            message = '{0} {1} {2}...'.format(random.choice(verb),
+                                              random.choice(adjective),
+                                              random.choice(noun))
+        self.update_state(state='PROGRESS',
+                          meta={'current': i, 'total': total,
+                                'status': message})
+        time.sleep(1)
+    return {'current': 100, 'total': 100, 'status': 'Task completed!',
+            'result': 42}
+
+@celery.task(bind=True)
+def executeJob(self, gather_cmd, demult_cmd, min_cmd):
+    logger.info("In tasks.py, executing job...")
+    print(gather_cmd, demult_cmd, min_cmd)
+
+    #command = "echo running; for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do sleep 1; echo i; done ; echo FINISHING JOB"
+    commands = [gather_cmd, demult_cmd, min_cmd]
+    for i, cmd in enumerate(commands):
+        po = subprocess.Popen(cmd, shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+        stdout, stderr = po.communicate()
+        #self.update_state(state='PROGRESS')
+        po.wait()
+
+        if i == 0:
+            status = "Successfully ran gather"
+            n = 50
+        else:
+            status = "Successfully ran minion"
+            n = 100
+
+        self.update_state(state='PROGRESS', meta={'current': n, 'status': status, 'command': cmd})
+        returnCode = po.returncode
+        if returnCode != 0:
+            raise Exception("Command {} got return code {}.\nSTDOUT: {}\nSTDERR: {}".format(cmd, returnCode, stdout, stderr))
+        print("JOB CMD {} RETURNED: {}".format(cmd, returnCode))
+
+    return {'current': 100, 'total': 100, 'status': 'Task completed!', 'result': returnCode}
+
+
+@app.route('/task/<job_name>', methods = ['POST'])
+def task(job_name):
+    job = qSys.getJobByName(job_name)
+    task = executeJob.apply_async(args=[job.gather_cmd, job.demult_cmd, job.min_cmd])
+    #task = longTask.apply_async()
+    return jsonify({}), 202, {'Location': url_for('task_status', task_id = task.id)}
+
+@app.route('/status/<task_id>')
+def task_status(task_id):
+    task = executeJob.AsyncResult(task_id)
+    if task.state == 'PENDING':
+        response = {
+            'state': task.state,
+            'current': 0,
+            'total': 100,
+            'status': 'Pending...'
+        }
+    elif task.state != 'FAILURE':
+        response = {
+            'state': task.state,
+            'current': task.info.get('current', 0),
+            'total': 100,
+            'status': task.info.get('status', '')
+        }
+        if 'result' in task.info:
+            response['result'] = task.info['result']
+    else:
+        # something went wrong in the background job
+        response = {
+            'state': task.state,
+            'current': 1,
+            'total': 100,
+            'status': str(task.info),  # this is the exception raised
+        }
+    return json.htmlsafe_dumps(response)
+
+
+max_queue_size = 10
+qSys = System(10)
 
 #initialise variables
 gather_cmd = ""
@@ -20,21 +126,18 @@ demul_cmd = ""
 minion_cmd = "test"
 override_data = False
 
-'''
-def run_command():
-    command = "sleep 8; echo '*** it worked ****'"
-    os.system(command)
-'''
-
 @app.route("/home")
 def home():
     #Update displayed queue on home page
     queueList = []
-    if jobQueue.empty():
+    if qSys.queue.empty():
         return render_template("home.html", queue = None)
 
-    for item in jobQueue.getItems():
-        queueList.append({item.job_name : url_for('progress', job_name=item.job_name)})
+    for item in qSys.queue.getItems():
+        queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+
+    # for item in jobQueue.getItems():
+    #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name)})
 
     queueDict = {'jobs': queueList}
     for key, value in queueDict.items():
@@ -96,6 +199,9 @@ def parameters():
         if not os.path.exists(output_folder):
             make_dir = 'mkdir "' + output_folder + '"'
             os.system(make_dir)
+        # Make empty log file for initial progress rendering
+        make_log = 'touch ' + '"' + output_folder + '"' +'/all_cmds_log.txt'
+        os.system(make_log)
 
         #check length parameters are valid
 
@@ -108,7 +214,8 @@ def parameters():
         elif int(max_length) < int(min_length):
             errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
 
-        if jobQueue.full():
+        if qSys.queue.full():
+        # if jobQueue.full():
             errors['full_queue'] = "Job queue is full."
 
         print("Errors: ", errors)
@@ -120,19 +227,59 @@ def parameters():
         job_name = job_name.replace(" ", "_")
 
         #Create a new instance of the Job class
-        new_job = Job(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+        new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+        print("HEHE")
 
         #Add job to queue
-        jobQueue.put(new_job)
+        qSys.addJob(new_job)
+
         return redirect(url_for('progress', job_name=job_name))
 
-    return render_template("parameters.html")
+    #Update displayed queue on home page
+    queueList = []
+    if qSys.queue.empty():
+        return render_template("parameters.html", queue = None)
+
+    for item in qSys.queue.getItems():
+        queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+
+    # for item in jobQueue.getItems():
+    #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name)})
+
+    queueDict = {'jobs': queueList}
+    displayQueue = json.htmlsafe_dumps(queueDict)
+    return render_template("parameters.html", queue = displayQueue)
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
-    job = jobQueue.getJobByName(job_name)
-    return render_template("progress.html", output = job.executeCmds())
-# Steph's work:
+    #print(jobQueue.getJob)
+    job = qSys.getJobByName(job_name)
+    job_name = job._job_name
+
+    path = job.output_folder
+    path +="/all_cmds_log.txt"
+
+    print(path)
+    with open(path, "r") as f:
+        gatherOutput = f.read().replace("\n","<br/>")
+
+    #pattern = "^ERROR"
+    #error = {}
+    #with open(path, "r") as f:
+    #    for line in f:
+    #        result = re.match(pattern, line)
+    #        if (result):
+    #            error['error_pipeline'] = "Error found"
+
+    # num_in_queue = jobQueue.getJobNumber(job_name)
+    # queue_length = jobQueue.getNumberInQueue()
+    num_in_queue = qSys.queue.getJobNumber(job_name)
+    queue_length = qSys.queue.getNumberInQueue()
+
+    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
+
+#
+# Extra stuff:
 # @app.route("/progress", methods = ["GET", "POST"])
 # def progress():
 #     #job = jobQueue.getJobByName(job_name)
@@ -141,23 +288,6 @@ def progress(job_name):
 #     #gather_cmd = job.gather_cmd
 #     #output_folder = job.output_folder
 #     #min_cmd = job.min_cmd
-
-
-#     # need to not hardcode
-#     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
-#         gatherOutput = f.read().replace("\n","<br/>")
-
-#     #os.spawnl(os.P_NOWAIT, '', './dummy.sh > output.txt')
-
-#     pattern = "^ERROR"
-#     error = {}
-#     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
-#         for line in f:
-#             result = re.match(pattern, line)
-#             if (result):
-#                 error['error_pipeline'] = "yo theres an error man"
-
-
 #    # print(gather_cmd, output_folder, min_cmd)
 #     #decode
 #     #gather_cmd = base64.b64decode(gather_cmd).decode()
@@ -170,30 +300,14 @@ def progress(job_name):
 #     #os.system('mv ' + job_name + '* ' + output_folder)
 #     return render_template("progress.html", gatherOutput=gatherOutput, error=error)
 
-# def run_command():
-#     command = "./dummy.sh"
-#     f = open("output.txt", "w")
-#     p = subprocess.Popen(command, stdout=f, shell=True)
-
-# def error_checking():
-#     pattern = "^ERROR"
-#     errors = {}
-#     with open("/Users/stephanietong/Documents/University/BINF6111/SARS-CoV-2-NanoporeAnalysisWebApp/output.txt", "r") as f:
-#         for line in f:
-#             result = re.match(pattern, line)
-#             if (result):
-#                 errors['error_pipeline'] = "yo theres an error man"
-#                 print(errors)
-
-#     return errors
 
 #not sure if this should be a get method
-@app.route("/output", methods = ["GET", "POST"])
-def output(): #need to update to take in job name as parameter
-    job_name = request.args.get('job_name')
-    output_folder = request.args.get('output_folder')
-    #job = jobQueue.getJobByName(job_name)
-    #output_folder = job.output_folder
+@app.route("/output/<job_name>", methods = ["GET", "POST"])
+def output(job_name): #need to update to take in job name as parameter
+    #job_name = request.args.get('job_name')
+    #output_folder = request.args.get('output_folder')
+    job = qSys.getJobByName(job_name)
+    output_folder = job._output_folder
     output_files = []
     barplot = ''
     boxplot = ''
