@@ -25,13 +25,14 @@
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
 				<h2 class="title is-5">Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
 			<br>
-			<label for="file">Pipeline progress:</label><br>
 			<button class="button is-danger is-light" id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
 				<h1 id='status'> <h1><br>
-
+				<label for="file">Pipeline progress:</label><br>
 				<div id="progress-bar">
 
 			</div>
+
+			
 
 				</div>
 			<br><br>
@@ -88,12 +89,13 @@
 		</div>
 
 	</div>
-	<script type="text/javascript">
+	<!-- <script type="text/javascript">
 		var oerror = document.getElementById("alert");
         if (oerror.innerHTML.trim() == "True") {
-          alert("Output Folder selected contains files. These will be overwritten.");
+		  alert("Output Folder selected contains files. These will be overwritten.");
+		  oerror.innerHTML = "False"
         }
-      </script>
+      </script> -->
 	<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script>

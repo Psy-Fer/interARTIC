@@ -220,7 +220,12 @@ def parameters():
                     filematch += 1
             if filematch > 0:
                 print(filematch,"nnnnnn")
-                remove = "rm -r " + output_folder + "/*"
+                remove = 'rm -r \"' + output_folder + '\"/'+job_name+'*'
+                os.system(remove)
+                remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
+                os.system(remove)
+            else:
+                remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
                 os.system(remove)
         elif override_data is True:
             remove = "rm -r " + output_folder + "/*"
@@ -343,7 +348,7 @@ def output(job_name): #need to update to take in job name as parameter
     output_files = []
     barplot = ''
     boxplot = ''
-    static = os.getcwd()+'/static/'
+    static = os.path.dirname(os.path.realpath(__file__)) + '/static'
     print(static)
 
     if output_folder:
@@ -352,10 +357,10 @@ def output(job_name): #need to update to take in job name as parameter
                 for name in filenames:
                     if fnmatch.fnmatch(name, '*barplot.png'):
                         barplot = name
-                        os.system('cp -t '+ static + ' ' + output_folder + '/' + barplot)
+                        os.system('cp  '+ output_folder + '/' + barplot +' ' + static)
                     if fnmatch.fnmatch(name, '*boxplot.png'):
                         boxplot = name
-                        os.system('cp -t '+ static + ' ' + output_folder + '/' + boxplot)
+                        os.system('cp  '+ output_folder + '/' + boxplot + ' ' + static)
                 output_files.extend(filenames)
 
         if request.method == "POST":
