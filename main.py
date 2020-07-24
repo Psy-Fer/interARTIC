@@ -156,7 +156,7 @@ def about():
 
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
-   
+
     if request.method == "POST":
         #get parameters
         job_name = request.form.get('job_name')
@@ -180,7 +180,7 @@ def parameters():
             override_data = True
         else:
             override_data = False
-        
+
         errors = {}
         if not os.path.isdir(input_folder):
             errors['input_folder'] = "Invalid path."
@@ -204,7 +204,7 @@ def parameters():
         if not os.path.exists(output_folder):
             make_dir = 'mkdir "' + output_folder + '"'
             os.system(make_dir)
-        
+
         dir_files = os.listdir(output_folder)
         filematch = 0
         if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
@@ -215,7 +215,7 @@ def parameters():
             print("CCHHHHHHHHH")
             for f in dir_files:
                 if fnmatch.fnmatch(f, job_name+'*'):
-                    global over_errors 
+                    global over_errors
                     over_errors = "True"
                     filematch += 1
             if filematch > 0:
@@ -268,7 +268,7 @@ def parameters():
         qSys.addJob(new_job)
 
         return redirect(url_for('progress', job_name=job_name))
-    
+
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
@@ -371,9 +371,11 @@ def output(job_name): #need to update to take in job name as parameter
                 if plot == 'barplot' or plot == 'both':
                     if barplot:
                         plots['barplot'] = '../static/'+barplot
+                        #plots['barplot'] = 'file://'+output_folder+'/'+barplot
                 if plot == 'boxplot' or plot == 'both':
                     if boxplot:
                         plots['boxplot'] = '../static/'+boxplot
+                        #plots['boxplot'] = 'file://'+output_folder+'/'+boxplot
 
                 if request.form['submit_button'] == 'Preview':
                     return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots)
