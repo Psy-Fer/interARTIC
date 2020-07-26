@@ -24,6 +24,7 @@ class Job:
         self._dry_run = dry_run
         self._override_data = override_data
         self._num_samples = num_samples
+        self._save_graphs = True
         self._gather_cmd = self.__generateGatherCmd()
         self._demult_cmd = self.__generateDemultCmd()
         self._min_cmd = self.__generateMinionCmd()
@@ -89,6 +90,10 @@ class Job:
     @property
     def num_samples(self):
         return self._num_samples
+
+    @property
+    def save_graphs(self):
+        return self._save_graphs
 
     @property
     def gather_cmd(self):
@@ -238,3 +243,9 @@ class Job:
     def abort(self):
         # If job is running, abort it and remove output
         pass
+
+    def disableSave(self):
+        self._save_graphs = False
+
+    def enableSave(self):
+        self._save_graphs = True

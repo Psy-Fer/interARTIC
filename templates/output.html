@@ -13,13 +13,13 @@
         <div class="container is-fluid">
           <div class="columns">
             <div class="column">
-              <h1 class="title is-6"> Files produced </h1>
+              <h1 class="title is-4"> Files produced </h1>
               <text> These are the files produced from "</text><text style="color:#0066cc">{{ job_name }}</text><text>".</text>
               <text> They have been saved into the selected folder "</text><text style="color:#0066cc">{{ output_folder }}</text><text>".</text><br>
               <text id="files"> {{output_files}} </text>
             </div>
             <div class="column">
-              <h1 class="title is-6"> Data Visualisation </h1>
+              <h1 class="title is-4"> Data Visualisation </h1>
               <form method=POST>
                 <input type="radio" id="barplot" name="plot" value="barplot" required>
                 <label for="barplot"> Barplot </label><br>
@@ -46,8 +46,17 @@
                 <br>
                 <br><input type="submit" name="submit_button" value="Preview">
                 <input type="submit" name="submit_button" value="Download">
-                <input type="submit" name="submit_button" value="Remove">
-              </form>
+                </form>
+                <br>
+                <b> Enable plots produced to be previewed? </b><br>
+                <small> This requires the plots to be saved to a static folder. Please disable if you would not like this feature. <br>
+                <form method=POST>
+                  <input type="radio" id="enable" name="save" value="enable" required>
+                  <label for="enable"> Enable </label><br>
+                  <input type="radio" id="disable" name="save" value="disable">
+                  <label for="disable"> Disable </label><br>
+                  <input type="submit" name="submit_button" value="Confirm"> </small>
+                <form>
             </div>
           </div>
             <input type="submit" id="direct_to_progress" value="Go to progress"><br>
