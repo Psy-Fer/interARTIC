@@ -340,6 +340,10 @@ def output(job_name): #need to update to take in job name as parameter
     #output_folder = request.args.get('output_folder')
     job = qSys.getJobByName(job_name)
     output_folder = job._output_folder
+    save_graphs = job.save_graphs
+    save_able = 'Disabled'
+    if(save_graphs):
+        save_able = 'Enabled'
     output_files = []
     barplot = ''
     boxplot = ''
@@ -351,11 +355,11 @@ def output(job_name): #need to update to take in job name as parameter
                 for name in filenames:
                     if fnmatch.fnmatch(name, '*barplot.png'):
                         barplot = name
-                        if job.save_graphs:
+                        if save_graphs:
                             os.system('cp -t '+ static + ' ' + output_folder + '/' + barplot)
                     if fnmatch.fnmatch(name, '*boxplot.png'):
                         boxplot = name
-                        if job.save_graphs:
+                        if save_graphs:
                             os.system('cp -t '+ static + ' ' + output_folder + '/' + boxplot)
                 output_files.extend(filenames)
 
@@ -365,16 +369,16 @@ def output(job_name): #need to update to take in job name as parameter
             if request.form['submit_button'] == 'Confirm':
                 if save == 'enable':
                     job.enableSave()
+                    save_able = 'Enabled'
                 if save == 'disable':
                     os.system('rm '+ static + '/' + barplot)
                     os.system('rm '+ static + '/' + boxplot)
                     job.disableSave()
-                    print(job.save_graphs)
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
+                    save_able = 'Disabled'
+                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
             else:
                 plots = {}
-                if job.save_graphs:
-                    print(job.save_graphs)
+                if save_graphs:
                     if plot == 'barplot' or plot == 'both':
                         if barplot:
                             plots['barplot'] = '../static/'+barplot
@@ -385,11 +389,11 @@ def output(job_name): #need to update to take in job name as parameter
                             #plots['boxplot'] = 'file://'+output_folder+'/'+boxplot
 
                     if request.form['submit_button'] == 'Preview':
-                        return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots)
+                        return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots, save_graphs=save_able)
                     if request.form['submit_button'] == 'Download':
-                        return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots)
+                        return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots, save_graphs=save_able)
 
-    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
+    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
 
 
 if __name__ == "__main__":

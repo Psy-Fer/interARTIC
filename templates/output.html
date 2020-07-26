@@ -34,8 +34,6 @@
                     {% if preview_plots['barplot'] %}
                     <img src="{{preview_plots['barplot']}}" alt="barplot">
                     {% endif %}
-                    {% endif %}
-                    {% if preview_plots %}
                     {% if preview_plots['boxplot'] %}
                     <img src= "{{preview_plots['boxplot']}}" alt="boxplot">
                     {% endif %}
@@ -49,6 +47,7 @@
                 </form>
                 <br>
                 <b> Enable plots produced to be previewed? </b><br>
+                <text> Current status: </text><i>{{save_graphs}}</i><br>
                 <small> This requires the plots to be saved to a static folder. Please disable if you would not like this feature. <br>
                 <form method=POST>
                   <input type="radio" id="enable" name="save" value="enable" required>
