@@ -135,7 +135,7 @@ class Job:
                 elif self._pipeline == "nanopolish":
                     minion_cmd = "echo '*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file " + self._read_file + " --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 elif self._pipeline == "both":
-                    minion_cmd = "echo 'no minion command for both pipelines yet'"
+                    minion_cmd = ""
             #if read file isn't provided by user
             else:
                 if self._pipeline == "medaka":
@@ -143,7 +143,7 @@ class Job:
                 elif self._pipeline == "nanopolish":
                     minion_cmd = "echo '*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._input_folder + "/primer_schemes --read-file ./" + self._job_name + "_fastq_pass.fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 elif self._pipeline == "both":
-                    minion_cmd = "echo 'no minion command for both pipelines yet'"
+                    minion_cmd = ""
         elif self._num_samples == "multiple":
             #going to run multiple minion cmds
             minion_cmd = "echo '*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"

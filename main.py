@@ -28,6 +28,33 @@ celery.conf.update(app.config)
 
 logger = get_task_logger(__name__)
 
+def check_override(output_folder, override_data, job_name):
+    dir_files = os.listdir(output_folder)
+    filematch = 0
+    if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
+        remove = "rm -r " + output_folder + "/*"
+        os.system(remove)
+
+    if override_data is False and len(dir_files) > 0:
+        print("CCHHHHHHHHH")
+        for f in dir_files:
+            if fnmatch.fnmatch(f, job_name+'*'):
+                global over_errors 
+                over_errors = "True"
+                filematch += 1
+        if filematch > 0:
+            print(filematch,"nnnnnn")
+            remove = 'rm -r \"' + output_folder + '\"/'+job_name+'*'
+            os.system(remove)
+            remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
+            os.system(remove)
+        else:
+            remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
+            os.system(remove)
+    elif override_data is True:
+        remove = "rm -r " + output_folder + "/*"
+        os.system(remove)
+
 
 @celery.task(bind=True)
 def longTask(self):
@@ -199,12 +226,33 @@ def parameters():
         if not output_folder:
             output_folder = input_folder + "/output"
 
-        #if the output folder does not exist, it is created
-        #maybe need to put in checks for this?
-        if not os.path.exists(output_folder):
-            make_dir = 'mkdir "' + output_folder + '"'
-            os.system(make_dir)
+        #both pipelines running
+        if pipeline == "both":
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder + "/medaka"):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
+                make_dir_m = 'mkdir "' + output_folder + '/medaka"'
+                os.system(make_dir_m)
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder + "/nanopolish"):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
+                make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
+                os.system(make_dir_n)
+        #only one pipeline running
+        else:
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
         
+        #override files in output folder checks
+        if pipeline == "both":
+            check_override(output_folder + "/medaka", override_data, job_name)
+            check_override(output_folder + "/nanopolish", override_data, job_name)
+        
+        '''
         dir_files = os.listdir(output_folder)
         filematch = 0
         if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
@@ -230,10 +278,19 @@ def parameters():
         elif override_data is True:
             remove = "rm -r " + output_folder + "/*"
             os.system(remove)
+        '''
 
-        # Make empty log file for initial progress rendering
-        make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
-        os.system(make_log)
+        if pipeline != "both":
+            # Make empty log file for initial progress rendering
+            make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
+            os.system(make_log)
+        else:
+            # Make empty log file for initial progress rendering
+            make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
+            make_log_n = 'touch \"' + output_folder + '\"/nanopolish/all_cmds_log.txt'
+            os.system(make_log_m)
+            os.system(make_log_n)
+
         #check length parameters are valid
         if min_length.isdigit() == False:
             errors['invalid_length'] = "Invalid minimum length."
@@ -265,13 +322,28 @@ def parameters():
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
 
-        #Create a new instance of the Job class
-        new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+        if pipeline != "both":
+            #Create a new instance of the Job class
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
 
-        #Add job to queue
-        qSys.addJob(new_job)
+            #Add job to queue
+            qSys.addJob(new_job)
+        #if both pipelines
+        else:
+            #Create a new medaka instance of the Job class
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+            #Create a new nanopolish instance of the Job class
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
 
-        return redirect(url_for('progress', job_name=job_name))
+            #Add medaka job to queue
+            qSys.addJob(new_job_m)
+            #Add nanopolish job to queue
+            qSys.addJob(new_job_n)
+
+        if pipeline == "both":
+            return redirect(url_for('progress', job_name=job_name+"_medaka"))
+        else:
+            return redirect(url_for('progress', job_name=job_name))
     
     #Update displayed queue on home page
     queueList = []
