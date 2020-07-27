@@ -7,7 +7,6 @@ from celery import Celery
 import subprocess
 from src.system import System
 from celery.utils.log import get_task_logger
-from celery.task.control import revoke
 import requests
 import random
 import time
@@ -388,7 +387,8 @@ def progress(job_name):
 @app.route("/abort/<job_name>", methods = ["GET"])
 def abort(job_name):
     # job = qSys.getJobByName(job_name)
-    # revoke(job.task_id,terminate=True)
+    # task = job.task_id
+    # task.revoke(terminate=True)
     # qSys.removeJob(job_name)
     # return redirect(url_for('home'))
     return "IN THE WORKS"
