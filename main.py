@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, json, jsonify
+from flask import Flask, render_template, request, redirect, url_for, json, jsonify, flash
 #from src.job import Job
 import src.queue as q
 import os
@@ -139,9 +139,6 @@ def home():
 
     for item in qSys.queue.getItems():
         queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
-
-    # for item in jobQueue.getItems():
-    #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name)})
 
     queueDict = {'jobs': queueList}
     for key, value in queueDict.items():
@@ -332,6 +329,16 @@ def progress(job_name):
 #     #os.system('mv ' + job_name + '* ' + output_folder)
 #     return render_template("progress.html", gatherOutput=gatherOutput, error=error)
 
+@app.route("/abort/<job_name>", methods = ["GET", "POST"])
+def abort(job_name):
+    # job = qSys.getJobByName(job_name)
+    # task = job.task_id
+    # print("queue:", qSys.queue)
+    # print("task_id:", task)
+    # task.revoke(terminate=True, signal='SIGKILL')
+    # qSys.removeJob(job_name)
+    # return render_template("home.html")
+    return "TRYING TO ABORT"
 
 #not sure if this should be a get method
 @app.route("/output/<job_name>", methods = ["GET", "POST"])

@@ -64,12 +64,13 @@
                      const textNode = document.createTextNode(key);
                      linkNode.href = job[key];
                      
-                     const btn = document.createElement("BUTTON"); 
+                     const btn = document.createElement("a"); 
                      btn.innerHTML = "Abort"; 
                      btn.classList.add("button");
                      btn.classList.add("is-danger");
                      btn.classList.add("is-light");
                      btn.style = "float:right";
+                     btn.href = job[key].replace('progress', 'abort');
 
                      linkNode.appendChild(textNode);
                      curJob.appendChild(linkNode);
