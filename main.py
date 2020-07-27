@@ -267,7 +267,6 @@ def parameters():
 
         #Create a new instance of the Job class
         new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
-        print("HEHE")
 
         #Add job to queue
         qSys.addJob(new_job)
@@ -312,7 +311,7 @@ def progress(job_name):
     # queue_length = jobQueue.getNumberInQueue()
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
-    print(over_errors, "cheking eorrr")
+    print(over_errors, "checking error")
     return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, over_errors=over_errors)
 
 #
