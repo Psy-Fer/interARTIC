@@ -21,7 +21,7 @@
 			{% with messages = get_flashed_messages() %}
 				{% if messages %}
 					{% for message in messages %}
-					<div class="notification is-warning" id="flash">
+					<div class="notification is-warning is-light" id="flash">
 						<button class="delete" onclick="hide()"></button>
 						{{ message }}
 					</div>
