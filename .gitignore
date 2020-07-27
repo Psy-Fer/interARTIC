@@ -2,3 +2,4 @@
 *.fastq
 *.txt
 dump.rdb
+.DS_Store
