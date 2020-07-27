@@ -199,36 +199,14 @@ class Job:
 
         return minion_cmd
 
-    def executeCmds(self):
-        cmd_combine = ""
-        if self._num_samples == "single":
-            #create string of all cmds want to run
-            cmd_combine = self._gather_cmd + ";" + self._min_cmd
+    # def executeCmds(self):
+    #     cmd_combine = ""
+    #     if self._num_samples == "single":
+    #         #create string of all cmds want to run
+    #         cmd_combine = self._gather_cmd + ";" + self._min_cmd
 
-        if self._num_samples == "multiple":
-            cmd_combine = self._gather_cmd + ";" + self._demult_cmd + ";" + minion_string
+    #     if self._num_samples == "multiple":
+    #         cmd_combine = self._gather_cmd + ";" + self._demult_cmd + ";" + minion_string
 
-        #start process that runs these cmds in the background
-        p = subprocess.Popen(cmd_combine, shell=True)
-
-    def execute(self):
-        # Execute this job
-        # Run gather command
-        # Run minion command
-        # print("EXECUTING JOB: ", self._job_name)
-        # os.system(self._gather_cmd)
-        # os.system(self._min_cmd)
-        # # Not sure if i need to do anything here to direct output???
-        # os.system('mv ' + self._job_name + '* ' + self._output_folder)
-        print("IN JOB")
-
-        #task = celery.current_app.send_task('myapp.tasks.executeJob')
-        #print(task.get())
-        #print(task.state())
-        print("IN JOB PT 2")
-        #return jsonify({}), 202, {'Location': url_for('taskstatus',task_id=task.id)}
-
-
-    def abort(self):
-        # If job is running, abort it and remove output
-        pass
+    #     #start process that runs these cmds in the background
+    #     p = subprocess.Popen(cmd_combine, shell=True)s

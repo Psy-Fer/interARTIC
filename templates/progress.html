@@ -18,9 +18,17 @@
     {% block content %}
     <div class="hero-body">
 		<div class="container is-fluid">
-			<div id="alert" style="display:none">
-				{{ over_errors }}
-			</div>
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+					<div class="notification is-warning" id="flash">
+						<button class="delete" onclick="hide()"></button>
+						{{ message }}
+					</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+	
 			<center>
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
 				<h2 class="title is-5">Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
@@ -89,13 +97,7 @@
 		</div>
 
 	</div>
-	<!-- <script type="text/javascript">
-		var oerror = document.getElementById("alert");
-        if (oerror.innerHTML.trim() == "True") {
-		  alert("Output Folder selected contains files. These will be overwritten.");
-		  oerror.innerHTML = "False"
-        }
-      </script> -->
+	
 	<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script>
@@ -146,7 +148,10 @@
 			}
 		});
 
-
+		function hide() {
+			var message = document.getElementById("flash");
+			message.style.display = "none";
+		}
 
 
 

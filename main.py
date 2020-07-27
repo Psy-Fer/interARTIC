@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, json, jsonify
+from flask import Flask, render_template, request, redirect, url_for, json, jsonify, flash
 #from src.job import Job
 import src.queue as q
 import os
@@ -7,6 +7,7 @@ from celery import Celery
 import subprocess
 from src.system import System
 from celery.utils.log import get_task_logger
+from celery.task.control import revoke
 import requests
 import random
 import time
@@ -21,6 +22,7 @@ app.config['SECRET_KEY'] = 'top-secret!'
 # Celery configuration
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+app.secret_key = "shhhh"
 
 # Initialize Celery
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
@@ -29,6 +31,7 @@ celery.conf.update(app.config)
 logger = get_task_logger(__name__)
 
 def check_override(output_folder, override_data, job_name):
+    error = False
     dir_files = os.listdir(output_folder)
     filematch = 0
     if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
@@ -36,11 +39,9 @@ def check_override(output_folder, override_data, job_name):
         os.system(remove)
 
     if override_data is False and len(dir_files) > 0:
-        print("CCHHHHHHHHH")
+        error = True
         for f in dir_files:
             if fnmatch.fnmatch(f, job_name+'*'):
-                global over_errors 
-                over_errors = "True"
                 filematch += 1
         if filematch > 0:
             print(filematch,"nnnnnn")
@@ -54,6 +55,8 @@ def check_override(output_folder, override_data, job_name):
     elif override_data is True:
         remove = "rm -r " + output_folder + "/*"
         os.system(remove)
+    return error
+
 
 
 @celery.task(bind=True)
@@ -152,7 +155,7 @@ gather_cmd = ""
 demul_cmd = ""
 minion_cmd = "test"
 override_data = False
-over_errors = "False"
+
 @app.route("/")
 def route():
     return redirect(url_for('home'))
@@ -252,33 +255,8 @@ def parameters():
             check_override(output_folder + "/medaka", override_data, job_name)
             check_override(output_folder + "/nanopolish", override_data, job_name)
         
-        '''
-        dir_files = os.listdir(output_folder)
-        filematch = 0
-        if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
-            remove = "rm -r " + output_folder + "/*"
-            os.system(remove)
-
-        if override_data is False and len(dir_files) > 0:
-            print("CCHHHHHHHHH")
-            for f in dir_files:
-                if fnmatch.fnmatch(f, job_name+'*'):
-                    global over_errors 
-                    over_errors = "True"
-                    filematch += 1
-            if filematch > 0:
-                print(filematch,"nnnnnn")
-                remove = 'rm -r \"' + output_folder + '\"/'+job_name+'*'
-                os.system(remove)
-                remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
-                os.system(remove)
-            else:
-                remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
-                os.system(remove)
-        elif override_data is True:
-            remove = "rm -r " + output_folder + "/*"
-            os.system(remove)
-        '''
+        if check_override(output_folder, override_data, job_name) is True:
+            flash("Output folder has been overwritten.")
 
         if pipeline != "both":
             # Make empty log file for initial progress rendering
@@ -360,9 +338,8 @@ def parameters():
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
     #print(jobQueue.getJob)
-    global over_errors
     job = qSys.getJobByName(job_name)
-    job_name = job._job_name
+    # job_name = job.job_name
 
     path = job.output_folder
     path +="/all_cmds_log.txt"
@@ -383,8 +360,8 @@ def progress(job_name):
     # queue_length = jobQueue.getNumberInQueue()
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
-    print(over_errors, "checking error")
-    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, over_errors=over_errors)
+
+    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
 
 #
 # Extra stuff:
@@ -408,6 +385,13 @@ def progress(job_name):
 #     #os.system('mv ' + job_name + '* ' + output_folder)
 #     return render_template("progress.html", gatherOutput=gatherOutput, error=error)
 
+@app.route("/abort/<job_name>", methods = ["GET"])
+def abort(job_name):
+    # job = qSys.getJobByName(job_name)
+    # revoke(job.task_id,terminate=True)
+    # qSys.removeJob(job_name)
+    # return redirect(url_for('home'))
+    return "IN THE WORKS"
 
 #not sure if this should be a get method
 @app.route("/output/<job_name>", methods = ["GET", "POST"])
