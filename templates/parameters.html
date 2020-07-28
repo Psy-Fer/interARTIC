@@ -242,6 +242,7 @@
                      btn.classList.add("is-danger");
                      btn.classList.add("is-light");
                      btn.style = "float:right";
+                     btn.id = "abort"
                      btn.href = job[key].replace("progress", "abort")
 
                      linkNode.appendChild(textNode);
@@ -262,6 +263,20 @@
              curJobRow.appendChild(curJob);
              jobsQueue.appendChild(curJobRow);
          };
+        </script>
+        <script>
+          var aElems = document.getElementById('abort');
+          for (var i = 0, len = aElems.length; i < len; i++) {
+              aElems[i].onclick = function() {
+                  var check = confirm("Are you sure you want to abort the job?");
+                  if (check == true) {
+                      return true;
+                  }
+                  else {
+                      return false;
+                  }
+              };
+          }
         </script>
 
     {% endblock %}

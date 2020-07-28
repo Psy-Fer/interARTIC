@@ -33,7 +33,7 @@
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
 				<h2 class="title is-5">Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
 			<br>
-			<button class="button is-danger is-light" id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
+			<a class="button is-danger is-light" id="abort" href='/abort/{{ job_name }}'>Abort Job</a><br><br>
 				<h1 id='status'> <h1><br>
 				<label for="file">Pipeline progress:</label><br>
 				<div id="progress-bar">
@@ -86,37 +86,34 @@
 		</div>
 	</div>
 
-	<div id="confirmModal" class="modal">
+	<!-- <div id="confirmModal" class="modal"> -->
 		<!-- Modal content -->
-		<div class="modal-content">
-			<h1>Abort Job</h1>
-			<p>You are about to abort a job which is currently running. This action is irreversible.
-				Continue?</p>
-			<button id="cancelAbortBtn" onclick="cancel()">No</button>
-			<button id="confirmAbortBtn" onclick="confirm()">Yes</button>
-		</div>
+		<!-- <div class="modal-content"> -->
+			<!-- <h1>Abort Job</h1> -->
+			<!-- <p>You are about to abort a job which is currently running. This action is irreversible. -->
+				<!-- Continue?</p> -->
+			<!-- <button id="cancelAbortBtn" onclick="cancel()">No</button> -->
+			<!-- <button id="confirmAbortBtn" onclick="confirm()">Yes</button> -->
+		<!-- </div> -->
 
-	</div>
+	<!-- </div> -->
 	
 	<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script>
-		var abortBtn = document.getElementById("abortBtn");
-		var confirmModal = document.getElementById("confirmModal");
-		var cancelAbort = document.getElementById("cancelAbortBtn");
-		var confirmAbort = document.getElementById("confirmAbortBtn");
-
-
-		function showConfirmModal() {
-			confirmModal.style.display = "block";
+		// Confirm abort
+		var aElems = document.getElementById('abort');;
+		for (var i = 0, len = aElems.length; i < len; i++) {
+			aElems[i].onclick = function() {
+				var check = confirm("Are you sure you want to abort the job?");
+				if (check == true) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			};
 		}
-		function cancel() {
-  			confirmModal.style.display = "none";
-		}
-		function confirm() {
-  			
-		}
-
 
 		const status_div = document.getElementById('status');
 		//const para = document.createElement("p");

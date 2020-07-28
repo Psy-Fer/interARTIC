@@ -256,13 +256,13 @@ def parameters():
                 make_dir = 'mkdir "' + output_folder + '"'
                 os.system(make_dir)
         
+        if check_override(output_folder, override_data, job_name) is True:
+            flash("Output folder has been overwritten.")
+
         #override files in output folder checks
         if pipeline == "both":
             check_override(output_folder + "/medaka", override_data, job_name)
             check_override(output_folder + "/nanopolish", override_data, job_name)
-        
-        if check_override(output_folder, override_data, job_name) is True:
-            flash("Output folder has been overwritten.")
 
         if pipeline != "both":
             # Make empty log file for initial progress rendering
