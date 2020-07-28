@@ -8,12 +8,13 @@ import celery
 import csv, subprocess, time
 
 class Job:
-    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples):
+    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples):
         self._job_name = job_name
         self._input_folder = input_folder
         self._read_file = read_file
         self._primer_scheme_dir = primer_scheme_dir
         self._primer_scheme = primer_scheme
+        self._primer_type = primer_type
         self._output_folder = output_folder
         self._normalise = normalise
         self._num_threads = num_threads
@@ -50,6 +51,10 @@ class Job:
     @property
     def primer_scheme(self):
         return self._primer_scheme
+
+    @property
+    def primer_type(self):
+        return self._primer_type
 
     @property
     def output_folder(self):
@@ -128,7 +133,9 @@ class Job:
         return gather_cmd
 
     def __generateDemultCmd(self):
-        demult_cmd = "echo '*****STARTING DEMULTUIPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+        demult_cmd = ""
+        if self._num_samples == "multiple":
+            demult_cmd = "echo '*****STARTING DEMULTUIPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
         return demult_cmd
 
     def __generateMinionCmd(self):
@@ -165,10 +172,8 @@ class Job:
                     for row in data:
                         sample_name = row[0]
                         barcode = row[1]
-                        #TODO - need to add this as option for user input
-                        primer_type = 'artic'
                         #create directory for barcode with naming system
-                        dir_path = self._output_folder + "/" + primer_type + "_" + sample_name + "_" + run_name + "_" + barcode + "_" + self._pipeline
+                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + run_name + "_" + barcode + "_" + self._pipeline
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
@@ -188,10 +193,8 @@ class Job:
                     for row in data:
                         sample_name = row[0]
                         barcode = row[1]
-                        #TODO - need to add this as option for user input
-                        primer_type = 'artic'
                         #create directory for barcode with naming system
-                        dir_path = self._output_folder + "/" + primer_type + "_" + sample_name + "_" + run_name + "_" + barcode + "_" + self._pipeline
+                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + run_name + "_" + barcode + "_" + self._pipeline
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
