@@ -191,6 +191,7 @@ def parameters():
         job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
         read_file = request.form.get('read_file')
+        primer_scheme_dir = request.form.get('primer_scheme_dir')
         primer_scheme = request.form.get('primer_scheme')
         output_folder = request.form.get('output_folder')
         normalise = request.form.get('normalise')
@@ -301,16 +302,16 @@ def parameters():
 
         if pipeline != "both":
             #Create a new instance of the Job class
-            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
 
             #Add job to queue
             qSys.addJob(new_job)
         #if both pipelines
         else:
             #Create a new medaka instance of the Job class
-            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
             #Create a new nanopolish instance of the Job class
-            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
