@@ -1,29 +1,46 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
+    <style>
+		
+	</style>
+	<meta charset="utf-8">
     <title>Progress</title>
 	<link rel="stylesheet" href="/static/css/bulma.min.css"/>
 	<link rel="stylesheet" href="/static/css/confirm_modal.css"/>	
 	<link rel="stylesheet" href="/static/css/page_template.css"/>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	
   </head>
   <body>
     {% extends "page_template.html" %}
     {% block content %}
     <div class="hero-body">
 		<div class="container is-fluid">
-			<div id="alert" style="display:none">
-				{{ over_errors }}
-			</div>
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+					<div class="notification is-warning is-light" id="flash">
+						<button class="delete" onclick="hide()"></button>
+						{{ message }}
+					</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+	
 			<center>
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
 				<h2 class="title is-5">Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
 			<br>
-			<label for="file">Pipeline progress:</label><br>
 			<button class="button is-danger is-light" id="abortBtn" onclick="showConfirmModal()">Abort Job</button><br><br>
+				<h1 id='status'> <h1><br>
+				<label for="file">Pipeline progress:</label><br>
 				<div id="progress-bar">
+
+			</div>
+
+			
 
 				</div>
 			<br><br>
@@ -45,15 +62,16 @@
 			<!-- <p>
     			{{ min_cmd }} <br>
     		</p> -->
-			<br>
+			
 
 			<center>
 				<h1 class="title is-5">Output from the ARTIC Pipeline:</h1>
 			</center>
 				<div id="outputLog">
-				<br>
-				<pre>{{ outputLog|safe }}<pre><br><br>
-			</div>
+					<br>
+					<pre style="white-space: pre-wrap; word-wrap: break-word;"><code>{{ outputLog|safe }}
+					</code></pre><br><br>
+				</div>
 			
 			<br><br>
 			<center>
@@ -130,7 +148,10 @@
 			}
 		});
 
-
+		function hide() {
+			var message = document.getElementById("flash");
+			message.style.display = "none";
+		}
 
 
 

@@ -21,12 +21,41 @@ app.config['SECRET_KEY'] = 'top-secret!'
 # Celery configuration
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+app.secret_key = "shhhh"
 
 # Initialize Celery
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 logger = get_task_logger(__name__)
+
+def check_override(output_folder, override_data, job_name):
+    error = False
+    dir_files = os.listdir(output_folder)
+    filematch = 0
+    if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
+        remove = "rm -r " + output_folder + "/*"
+        os.system(remove)
+
+    if override_data is False and len(dir_files) > 0:
+        error = True
+        for f in dir_files:
+            if fnmatch.fnmatch(f, job_name+'*'):
+                filematch += 1
+        if filematch > 0:
+            print(filematch,"nnnnnn")
+            remove = 'rm -r \"' + output_folder + '\"/'+job_name+'*'
+            os.system(remove)
+            remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
+            os.system(remove)
+        else:
+            remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
+            os.system(remove)
+    elif override_data is True:
+        remove = "rm -r " + output_folder + "/*"
+        os.system(remove)
+    return error
+
 
 
 @celery.task(bind=True)
@@ -85,6 +114,7 @@ def task(job_name):
     job = qSys.getJobByName(job_name)
     task = executeJob.apply_async(args=[job.gather_cmd, job.demult_cmd, job.min_cmd])
     #task = longTask.apply_async()
+    job.task_id = task.id
     return jsonify({}), 202, {'Location': url_for('task_status', task_id = task.id)}
 
 @app.route('/status/<task_id>')
@@ -125,7 +155,7 @@ gather_cmd = ""
 demul_cmd = ""
 minion_cmd = "test"
 override_data = False
-over_errors = "False"
+
 @app.route("/")
 def route():
     return redirect(url_for('home'))
@@ -159,7 +189,9 @@ def parameters():
         job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
         read_file = request.form.get('read_file')
+        primer_scheme_dir = request.form.get('primer_scheme_dir')
         primer_scheme = request.form.get('primer_scheme')
+        primer_type = request.form.get('primer_type')
         output_folder = request.form.get('output_folder')
         normalise = request.form.get('normalise')
         num_threads = request.form.get('num_threads')
@@ -179,10 +211,17 @@ def parameters():
             override_data = False
         
         errors = {}
+        #give error if input folder path is invalid or empty
         if not os.path.isdir(input_folder):
             errors['input_folder'] = "Invalid path."
         elif len(os.listdir(input_folder)) == 0:
             errors['input_folder'] = "Directory is empty."
+
+        #give error if primer schemes folder path is invalid or empty
+        if not os.path.isdir(primer_scheme_dir):
+            errors['primer_scheme_dir'] = "Invalid path."
+        elif len(os.listdir(primer_scheme_dir)) == 0:
+            errors['primer_scheme_dir'] = "Directory is empty."
 
         #if read file is specified by user
         if read_file:
@@ -196,36 +235,46 @@ def parameters():
         if not output_folder:
             output_folder = input_folder + "/output"
 
-        #if the output folder does not exist, it is created
-        #maybe need to put in checks for this?
-        if not os.path.exists(output_folder):
-            make_dir = 'mkdir "' + output_folder + '"'
-            os.system(make_dir)
+        #both pipelines running
+        if pipeline == "both":
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder + "/medaka"):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
+                make_dir_m = 'mkdir "' + output_folder + '/medaka"'
+                os.system(make_dir_m)
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder + "/nanopolish"):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
+                make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
+                os.system(make_dir_n)
+        #only one pipeline running
+        else:
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
         
-        dir_files = os.listdir(output_folder)
-        filematch = 0
-        if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
-            remove = "rm -r " + output_folder + "/*"
-            os.system(remove)
+        #override files in output folder checks
+        if pipeline == "both":
+            check_override(output_folder + "/medaka", override_data, job_name)
+            check_override(output_folder + "/nanopolish", override_data, job_name)
+        
+        if check_override(output_folder, override_data, job_name) is True:
+            flash("Output folder has been overwritten.")
 
-        if override_data is False and len(dir_files) > 0:
-            print("CCHHHHHHHHH")
-            for f in dir_files:
-                if fnmatch.fnmatch(f, job_name+'*'):
-                    global over_errors 
-                    over_errors = "True"
-                    filematch += 1
-            if filematch > 0:
-                print(filematch,"nnnnnn")
-                remove = "rm -r " + output_folder + "/*"
-                os.system(remove)
-        elif override_data is True:
-            remove = "rm -r " + output_folder + "/*"
-            os.system(remove)
+        if pipeline != "both":
+            # Make empty log file for initial progress rendering
+            make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
+            os.system(make_log)
+        else:
+            # Make empty log file for initial progress rendering
+            make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
+            make_log_n = 'touch \"' + output_folder + '\"/nanopolish/all_cmds_log.txt'
+            os.system(make_log_m)
+            os.system(make_log_n)
 
-        # Make empty log file for initial progress rendering
-        make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
-        os.system(make_log)
         #check length parameters are valid
         if min_length.isdigit() == False:
             errors['invalid_length'] = "Invalid minimum length."
@@ -257,14 +306,28 @@ def parameters():
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
 
-        #Create a new instance of the Job class
-        new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
-        print("HEHE")
+        if pipeline != "both":
+            #Create a new instance of the Job class
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
 
-        #Add job to queue
-        qSys.addJob(new_job)
+            #Add job to queue
+            qSys.addJob(new_job)
+        #if both pipelines
+        else:
+            #Create a new medaka instance of the Job class
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+            #Create a new nanopolish instance of the Job class
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
 
-        return redirect(url_for('progress', job_name=job_name))
+            #Add medaka job to queue
+            qSys.addJob(new_job_m)
+            #Add nanopolish job to queue
+            qSys.addJob(new_job_n)
+
+        if pipeline == "both":
+            return redirect(url_for('progress', job_name=job_name+"_medaka"))
+        else:
+            return redirect(url_for('progress', job_name=job_name))
     
     #Update displayed queue on home page
     queueList = []
@@ -281,9 +344,8 @@ def parameters():
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
     #print(jobQueue.getJob)
-    global over_errors
     job = qSys.getJobByName(job_name)
-    job_name = job._job_name
+    # job_name = job.job_name
 
     path = job.output_folder
     path +="/all_cmds_log.txt"
@@ -304,8 +366,8 @@ def progress(job_name):
     # queue_length = jobQueue.getNumberInQueue()
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
-    print(over_errors, "cheking eorrr")
-    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, over_errors=over_errors)
+
+    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
 
 #
 # Extra stuff:
@@ -331,14 +393,13 @@ def progress(job_name):
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):
-    # job = qSys.getJobByName(job_name)
-    # task = job.task_id
-    # print("queue:", qSys.queue)
-    # print("task_id:", task)
-    # task.revoke(terminate=True, signal='SIGKILL')
-    # qSys.removeJob(job_name)
-    # return render_template("home.html")
-    return "TRYING TO ABORT"
+    job = qSys.getJobByName(job_name)
+    task = job.task_id
+    celery.control.revoke(task,terminate=True, signal='SIGKILL')
+    qSys.removeJob(job_name)
+    
+    return redirect(url_for("home"))
+    # return "TRYING TO ABORT"
 
 #not sure if this should be a get method
 @app.route("/output/<job_name>", methods = ["GET", "POST"])
@@ -350,6 +411,8 @@ def output(job_name): #need to update to take in job name as parameter
     output_files = []
     barplot = ''
     boxplot = ''
+    static = os.path.dirname(os.path.realpath(__file__)) + '/static'
+    print(static)
 
     if output_folder:
         if os.path.exists(output_folder):
@@ -357,25 +420,33 @@ def output(job_name): #need to update to take in job name as parameter
                 for name in filenames:
                     if fnmatch.fnmatch(name, '*barplot.png'):
                         barplot = name
+                        os.system('cp  '+ output_folder + '/' + barplot +' ' + static)
                     if fnmatch.fnmatch(name, '*boxplot.png'):
                         boxplot = name
+                        os.system('cp  '+ output_folder + '/' + boxplot + ' ' + static)
                 output_files.extend(filenames)
 
         if request.method == "POST":
-            plots = {}
-            if request.form.get('barplot') == "yes":
-                if barplot:
-                    #plots['barplot'] = '../'+output_folder[2:]+'/'+barplot
-                    plots['barplot'] = '../static/'+barplot
-            if request.form.get('boxplot') == "yes":
-                if boxplot:
-                    #plots['boxplot'] = '../'+output_folder[2:]+'/'+boxplot
-                    plots['boxplot'] = '../static/'+boxplot
+            plot = request.form.get('plot')
+            if request.form['submit_button'] == 'Remove':
+                if plot == 'barplot' or plot == 'both':
+                    os.system('rm '+ static + '/' + barplot)
+                if plot == 'boxplot' or plot == 'both':
+                    os.system('rm '+ static + '/' + boxplot)
+                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
+            else:
+                plots = {}
+                if plot == 'barplot' or plot == 'both':
+                    if barplot:
+                        plots['barplot'] = '../static/'+barplot
+                if plot == 'boxplot' or plot == 'both':
+                    if boxplot:
+                        plots['boxplot'] = '../static/'+boxplot
 
-            if request.form['submit_button'] == 'Preview':
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots)
-            if request.form['submit_button'] == 'Download':
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots)
+                if request.form['submit_button'] == 'Preview':
+                    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots)
+                if request.form['submit_button'] == 'Download':
+                    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots)
 
     return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
 

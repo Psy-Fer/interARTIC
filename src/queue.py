@@ -53,7 +53,7 @@ class JobsQueue:
         #Remove a job from the queue
         job = self.getJobByName(job_name)
         for job in self._items:
-            if job.job_name == job_name:
+            if job._job_name == job_name:
                 self._items.remove(job)
                 
     def getJobNumber(self, job_name):

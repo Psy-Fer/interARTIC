@@ -81,7 +81,11 @@
 
                 <h1 class="subtitle">Primer Scheme: *</h1>
 
-                <!-- primer scheme name - Medaka/ Nanopolish-->
+                <!-- primer scheme directory -->
+                <label for="primer_scheme">Scheme folder: *</label><br>
+                <input type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br><br>
+
+                <!-- primer scheme name -->
                 <label for="primer_scheme">Name: *</label><br>
                 <small> e.g. nCoV-2019/V1 </small><br>
                 <input type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
@@ -94,6 +98,7 @@
                     <label for="artic">Artic</label><br>
                     <input type="radio" id="kirby" name="primer_type" value="kirby" onclick="setParams()">
                     <label for="kirby">Kirby</label><br>
+                    Other <input type="text" name="primer_type" size="20">
                   </div>
                 </div>
 
@@ -231,12 +236,13 @@
                      const textNode = document.createTextNode(key);
                      linkNode.href = job[key];
 
-                     const btn = document.createElement("BUTTON");
+                     const btn = document.createElement("a");
                      btn.innerHTML = "Abort";
                      btn.classList.add("button");
                      btn.classList.add("is-danger");
                      btn.classList.add("is-light");
                      btn.style = "float:right";
+                     btn.href = job[key].replace("progress", "abort")
 
                      linkNode.appendChild(textNode);
                      curJob.appendChild(linkNode);
