@@ -345,22 +345,21 @@ def output(job_name): #need to update to take in job name as parameter
     if(save_graphs):
         save_able = 'Enabled'
     output_files = []
-    barplot = ''
-    boxplot = ''
-    static = os.getcwd()+'/static/' #works with windows, need to get the version that works with Mac/Linux
-
+    barplots = []
+    boxplots = []
+    static = os.path.dirname(os.path.realpath(__file__))+'/static/'  # instead of os.getcwd()
     if output_folder:
         if os.path.exists(output_folder):
             for (dirpath, dirnames, filenames) in os.walk(output_folder):
                 for name in filenames:
                     if fnmatch.fnmatch(name, '*barplot.png'):
-                        barplot = name
+                        barplots.append('../static/'+name)
                         if save_graphs:
-                            os.system('cp -t '+ static + ' ' + output_folder + '/' + barplot)
+                            os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
                     if fnmatch.fnmatch(name, '*boxplot.png'):
-                        boxplot = name
+                        boxplots.append('../static/'+name)
                         if save_graphs:
-                            os.system('cp -t '+ static + ' ' + output_folder + '/' + boxplot)
+                            os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
                 output_files.extend(filenames)
 
         if request.method == "POST":
@@ -371,27 +370,25 @@ def output(job_name): #need to update to take in job name as parameter
                     job.enableSave()
                     save_able = 'Enabled'
                 if save == 'disable':
-                    os.system('rm '+ static + '/' + barplot)
-                    os.system('rm '+ static + '/' + boxplot)
+                    for plot in barplots:
+                        os.system('rm '+ plot[3:])
+                    for plot in boxplots:
+                        os.system('rm '+ plot[3:])
                     job.disableSave()
                     save_able = 'Disabled'
                 return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
             else:
-                plots = {}
                 if save_graphs:
-                    if plot == 'barplot' or plot == 'both':
-                        if barplot:
-                            plots['barplot'] = '../static/'+barplot
-                            #plots['barplot'] = 'file://'+output_folder+'/'+barplot
-                    if plot == 'boxplot' or plot == 'both':
-                        if boxplot:
-                            plots['boxplot'] = '../static/'+boxplot
-                            #plots['boxplot'] = 'file://'+output_folder+'/'+boxplot
-
                     if request.form['submit_button'] == 'Preview':
-                        return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots, save_graphs=save_able)
-                    if request.form['submit_button'] == 'Download':
-                        return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots, save_graphs=save_able)
+                        if plot == 'barplot':
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able)
+                        if plot == 'boxplot':
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
+                        if plot == 'both':
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able)
+
+                    #if request.form['submit_button'] == 'Download':
+                    #    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
 
     return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
 

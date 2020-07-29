@@ -30,13 +30,15 @@
                 <br>
                 <div id="preview">
                   <text> Previewing plots: </text>
-                    {% if preview_plots %}
-                    {% if preview_plots['barplot'] %}
-                    <img src="{{preview_plots['barplot']}}" alt="barplot">
+                    {% if barplots %}
+                      {% for plot in barplots %}
+                        <img src="{{ plot }}" alt="{{ plot }}">
+                      {% endfor %}
                     {% endif %}
-                    {% if preview_plots['boxplot'] %}
-                    <img src= "{{preview_plots['boxplot']}}" alt="boxplot">
-                    {% endif %}
+                    {% if boxplots %}
+                      {% for plot in boxplots %}
+                        <img src= "{{ plot }}" alt="{{ plot }}">
+                      {% endfor %}
                     {% endif %}
                 </div>
                 <br>
