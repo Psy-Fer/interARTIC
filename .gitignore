@@ -7,4 +7,4 @@ dump.rdb
 *.bam
 *.bai
 *.index*
-
+**/redis-stable
