@@ -29,8 +29,13 @@ celery.conf.update(app.config)
 
 logger = get_task_logger(__name__)
 
-def check_override(output_folder, override_data, job_name):
-    error = False
+def check_override(output_folder, override_data):
+    dir_files = os.listdir(output_folder)
+    if len(dir_files) > 0:
+        return True
+    return False
+
+def removeFiles(output_folder, override_data, job_name):
     dir_files = os.listdir(output_folder)
     filematch = 0
     if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
@@ -38,12 +43,10 @@ def check_override(output_folder, override_data, job_name):
         os.system(remove)
 
     if override_data is False and len(dir_files) > 0:
-        error = True
         for f in dir_files:
             if fnmatch.fnmatch(f, job_name+'*'):
                 filematch += 1
         if filematch > 0:
-            print(filematch,"nnnnnn")
             remove = 'rm -r \"' + output_folder + '\"/'+job_name+'*'
             os.system(remove)
             remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
@@ -54,8 +57,6 @@ def check_override(output_folder, override_data, job_name):
     elif override_data is True:
         remove = "rm -r " + output_folder + "/*"
         os.system(remove)
-    return error
-
 
 
 @celery.task(bind=True)
@@ -149,12 +150,6 @@ def task_status(task_id):
 
 max_queue_size = 10
 qSys = System(10)
-
-#initialise variables
-gather_cmd = ""
-demul_cmd = ""
-minion_cmd = "test"
-override_data = False
 
 @app.route("/")
 def route():
@@ -255,16 +250,24 @@ def parameters():
             if not os.path.exists(output_folder):
                 make_dir = 'mkdir "' + output_folder + '"'
                 os.system(make_dir)
-        
-        if check_override(output_folder, override_data, job_name) is True:
-            flash("Output folder has been overwritten.")
 
         #override files in output folder checks
         if pipeline == "both":
-            check_override(output_folder + "/medaka", override_data, job_name)
-            check_override(output_folder + "/nanopolish", override_data, job_name)
+            if check_override(output_folder + "/medaka", override_data):
+                # removeFiles(output_folder + "/medaka", override_data, job_name)
+                os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
+                flash("Output folder has been overwritten.")
+            
+            if check_override(output_folder + "/medaka", override_data):
+                # removeFiles(output_folder + "/nanopolish", override_data, job_name)
+                os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
+                flash("Output folder has been overwritten.")
 
         if pipeline != "both":
+            if check_override(output_folder, override_data):
+                # removeFiles(output_folder, override_data, job_name)
+                os.system('rm ' + output_folder + '/all_cmds_log.txt')
+                flash("Output folder has been overwritten.")
             # Make empty log file for initial progress rendering
             make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
             os.system(make_log)
