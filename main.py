@@ -205,6 +205,16 @@ def parameters():
         else:
             override_data = False
         
+        # Check if path has a '/' at the end, if yes then remove
+        if input_folder[-1] == "/":
+            input_folder = input_folder[:-1]
+
+        if output_folder[-1] == "/":
+            output_folder = output_folder[:-1]    
+
+        if primer_scheme_dir[-1] == "/":
+            primer_scheme_dir = primer_scheme_dir[:-1]
+
         errors = {}
         #give error if input folder path is invalid or empty
         if not os.path.isdir(input_folder):
