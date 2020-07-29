@@ -178,7 +178,7 @@ def about():
 
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
-   
+
     if request.method == "POST":
         #get parameters
         job_name = request.form.get('job_name')
@@ -204,13 +204,13 @@ def parameters():
             override_data = True
         else:
             override_data = False
-        
+
         # Check if path has a '/' at the end, if yes then remove
         if input_folder[-1] == "/":
             input_folder = input_folder[:-1]
 
         if output_folder[-1] == "/":
-            output_folder = output_folder[:-1]    
+            output_folder = output_folder[:-1]
 
         if primer_scheme_dir[-1] == "/":
             primer_scheme_dir = primer_scheme_dir[:-1]
@@ -267,7 +267,7 @@ def parameters():
                 # removeFiles(output_folder + "/medaka", override_data, job_name)
                 os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
                 flash("Output folder has been overwritten.")
-            
+
             if check_override(output_folder + "/medaka", override_data):
                 # removeFiles(output_folder + "/nanopolish", override_data, job_name)
                 os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
@@ -341,7 +341,7 @@ def parameters():
             return redirect(url_for('progress', job_name=job_name+"_medaka"))
         else:
             return redirect(url_for('progress', job_name=job_name))
-    
+
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
@@ -397,7 +397,7 @@ def abort(job_name):
     task = job.task_id
     celery.control.revoke(task,terminate=True, signal='SIGKILL')
     qSys.removeJob(job_name)
-    
+
     return redirect(url_for("home"))
     # return "TRYING TO ABORT"
 
@@ -408,47 +408,57 @@ def output(job_name): #need to update to take in job name as parameter
     #output_folder = request.args.get('output_folder')
     job = qSys.getJobByName(job_name)
     output_folder = job._output_folder
+    save_graphs = job.save_graphs
+    save_able = 'Disabled'
+    if(save_graphs):
+        save_able = 'Enabled'
     output_files = []
-    barplot = ''
-    boxplot = ''
-    static = os.path.dirname(os.path.realpath(__file__)) + '/static'
-    print(static)
-
+    barplots = []
+    boxplots = []
+    static = os.path.dirname(os.path.realpath(__file__))+'/static/'  # instead of os.getcwd()
     if output_folder:
         if os.path.exists(output_folder):
             for (dirpath, dirnames, filenames) in os.walk(output_folder):
                 for name in filenames:
                     if fnmatch.fnmatch(name, '*barplot.png'):
-                        barplot = name
-                        os.system('cp  '+ output_folder + '/' + barplot +' ' + static)
+                        barplots.append('../static/'+name)
+                        if save_graphs:
+                            os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
                     if fnmatch.fnmatch(name, '*boxplot.png'):
-                        boxplot = name
-                        os.system('cp  '+ output_folder + '/' + boxplot + ' ' + static)
+                        boxplots.append('../static/'+name)
+                        if save_graphs:
+                            os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
                 output_files.extend(filenames)
 
         if request.method == "POST":
             plot = request.form.get('plot')
-            if request.form['submit_button'] == 'Remove':
-                if plot == 'barplot' or plot == 'both':
-                    os.system('rm '+ static + '/' + barplot)
-                if plot == 'boxplot' or plot == 'both':
-                    os.system('rm '+ static + '/' + boxplot)
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
+            save = request.form.get('save')
+            if request.form['submit_button'] == 'Confirm':
+                if save == 'enable':
+                    job.enableSave()
+                    save_able = 'Enabled'
+                if save == 'disable':
+                    for plot in barplots:
+                        os.system('rm '+ plot[3:])
+                    for plot in boxplots:
+                        os.system('rm '+ plot[3:])
+                    job.disableSave()
+                    save_able = 'Disabled'
+                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
             else:
-                plots = {}
-                if plot == 'barplot' or plot == 'both':
-                    if barplot:
-                        plots['barplot'] = '../static/'+barplot
-                if plot == 'boxplot' or plot == 'both':
-                    if boxplot:
-                        plots['boxplot'] = '../static/'+boxplot
+                if save_graphs:
+                    if request.form['submit_button'] == 'Preview':
+                        if plot == 'barplot':
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able)
+                        if plot == 'boxplot':
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
+                        if plot == 'both':
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able)
 
-                if request.form['submit_button'] == 'Preview':
-                    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, preview_plots=plots)
-                if request.form['submit_button'] == 'Download':
-                    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, download_plots=plots)
+                    #if request.form['submit_button'] == 'Download':
+                    #    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
 
-    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files)
+    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
 
 
 if __name__ == "__main__":

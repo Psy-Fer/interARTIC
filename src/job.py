@@ -26,6 +26,7 @@ class Job:
         self._dry_run = dry_run
         self._override_data = override_data
         self._num_samples = num_samples
+        self._save_graphs = True
         self._gather_cmd = self.__generateGatherCmd()
         self._demult_cmd = self.__generateDemultCmd()
         self._min_cmd = self.__generateMinionCmd()
@@ -99,6 +100,10 @@ class Job:
     @property
     def num_samples(self):
         return self._num_samples
+
+    @property
+    def save_graphs(self):
+        return self._save_graphs
 
     @property
     def gather_cmd(self):
@@ -203,7 +208,7 @@ class Job:
             elif self._pipeline == "both":
                 minion_cmd = "echo 'no minion command for both pipelines yet'"
 
-        minion_cmd = minion_cmd + "; mv ./" + self._job_name + "* " + self._output_folder + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt" 
+        minion_cmd = minion_cmd + "; mv ./" + self._job_name + "* " + self._output_folder + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 
         return minion_cmd
 
@@ -218,3 +223,9 @@ class Job:
 
     #     #start process that runs these cmds in the background
     #     p = subprocess.Popen(cmd_combine, shell=True)s
+
+    def disableSave(self):
+        self._save_graphs = False
+
+    def enableSave(self):
+        self._save_graphs = True

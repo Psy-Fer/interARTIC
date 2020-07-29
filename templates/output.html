@@ -13,13 +13,13 @@
         <div class="container is-fluid">
           <div class="columns">
             <div class="column">
-              <h1 class="title is-6"> Files produced </h1>
+              <h1 class="title is-4"> Files produced </h1>
               <text> These are the files produced from "</text><text style="color:#0066cc">{{ job_name }}</text><text>".</text>
               <text> They have been saved into the selected folder "</text><text style="color:#0066cc">{{ output_folder }}</text><text>".</text><br>
               <text id="files"> {{output_files}} </text>
             </div>
             <div class="column">
-              <h1 class="title is-6"> Data Visualisation </h1>
+              <h1 class="title is-4"> Data Visualisation </h1>
               <form method=POST>
                 <input type="radio" id="barplot" name="plot" value="barplot" required>
                 <label for="barplot"> Barplot </label><br>
@@ -30,15 +30,15 @@
                 <br>
                 <div id="preview">
                   <text> Previewing plots: </text>
-                    {% if preview_plots %}
-                    {% if preview_plots['barplot'] %}
-                    <img src="{{preview_plots['barplot']}}" alt="barplot">
+                    {% if barplots %}
+                      {% for plot in barplots %}
+                        <img src="{{ plot }}" alt="{{ plot }}">
+                      {% endfor %}
                     {% endif %}
-                    {% endif %}
-                    {% if preview_plots %}
-                    {% if preview_plots['boxplot'] %}
-                    <img src= "{{preview_plots['boxplot']}}" alt="boxplot">
-                    {% endif %}
+                    {% if boxplots %}
+                      {% for plot in boxplots %}
+                        <img src= "{{ plot }}" alt="{{ plot }}">
+                      {% endfor %}
                     {% endif %}
                 </div>
                 <br>
@@ -46,8 +46,18 @@
                 <br>
                 <br><input class="button is-small" type="submit" name="submit_button" value="Preview">
                 <input class="button is-small" type="submit" name="submit_button" value="Download">
-                <input class="button is-small" type="submit" name="submit_button" value="Remove">
-              </form>
+                </form>
+                <br>
+                <b> Enable plots produced to be previewed? </b><br>
+                <text> Current status: </text><i>{{save_graphs}}</i><br>
+                <small> This requires the plots to be saved to a static folder. Please disable if you would not like this feature. <br>
+                <form method=POST>
+                  <input type="radio" id="enable" name="save" value="enable" required>
+                  <label for="enable"> Enable </label><br>
+                  <input type="radio" id="disable" name="save" value="disable">
+                  <label for="disable"> Disable </label><br>
+                  <input class="button is-small" type="submit" name="submit_button" value="Confirm"> </small>
+                <form>
             </div>
           </div>
             <input class="button is-small" type="submit" id="direct_to_progress" value="Go to progress"><br>
