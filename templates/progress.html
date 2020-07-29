@@ -103,17 +103,16 @@
 	<script>
 		// Confirm abort
 		var aElems = document.getElementById('abort');;
-		for (var i = 0, len = aElems.length; i < len; i++) {
-			aElems[i].onclick = function() {
-				var check = confirm("Are you sure you want to abort the job?");
-				if (check == true) {
-					return true;
-				}
-				else {
-					return false;
-				}
-			};
-		}
+		aElems.onclick = function() {
+			var check = confirm("Are you sure you want to abort the job?");
+			if (check == true) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		};
+		
 
 		const status_div = document.getElementById('status');
 		//const para = document.createElement("p");
