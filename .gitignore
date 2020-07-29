@@ -3,3 +3,8 @@
 *.txt
 dump.rdb
 .DS_Store
+*.vcf
+*.bam
+*.bai
+*.index*
+
