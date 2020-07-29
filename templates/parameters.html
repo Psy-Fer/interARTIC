@@ -43,11 +43,11 @@
                   <div class="control">
                     <!-- pipeline select -->
                     <h1 class="subtitle">Select a pipeline to run: *</h1>
-                    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" onclick="showNano()" required>
+                    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" required>
                     <label for="nanopolish">Nanopolish</label><br>
-                    <input type="radio" id="medaka" name="pipeline" value="medaka" onclick="showMedaka()">
+                    <input type="radio" id="medaka" name="pipeline" value="medaka">
                     <label for="medaka">Medaka</label><br>
-                    <input type="radio" id="both" name="pipeline" value="both" onclick="showBoth()">
+                    <input type="radio" id="both" name="pipeline" value="both">
                     <label for="both">Both</label>
                   </div>
                 </div>
@@ -179,22 +179,6 @@
       </div>
 
       <script>
-        /*var medakaParams = document.getElementById("medakaParams");
-        var nanoParams = document.getElementById("nanoParams");
-
-        function showMedaka() {
-          medakaParams.style.display = "block";
-          nanoParams.style.display = "none";
-        }
-        function showNano() {
-          nanoParams.style.display = "block";
-      		medakaParams.style.display = "none";
-        }
-        function showBoth(){
-          nanoParams.style.display = "block";
-          medakaParams.style.display = "block";
-        }*/
-
         //primers
         var artic = document.getElementById("artic");
         var kirby = document.getElementById("kirby");

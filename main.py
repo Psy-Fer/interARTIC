@@ -367,6 +367,15 @@ def progress(job_name):
     with open(path, "r") as f:
         gatherOutput = f.read().replace("\n","<br/>")
 
+    if re.findall(r':D', gatherOutput):
+        frac = "3"
+    elif len(re.findall(r'STARTING', gatherOutput)) == 2:
+        frac = "1"
+    elif len(re.findall(r'STARTING', gatherOutput)) > 2:
+        frac = "2"
+    else:
+        frac = "0"
+
     #pattern = "^ERROR"
     #error = {}
     #with open(path, "r") as f:
@@ -380,29 +389,7 @@ def progress(job_name):
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
 
-    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name)
-
-#
-# Extra stuff:
-# @app.route("/progress", methods = ["GET", "POST"])
-# def progress():
-#     #job = jobQueue.getJobByName(job_name)
-#     #print(job)
-
-#     #gather_cmd = job.gather_cmd
-#     #output_folder = job.output_folder
-#     #min_cmd = job.min_cmd
-#    # print(gather_cmd, output_folder, min_cmd)
-#     #decode
-#     #gather_cmd = base64.b64decode(gather_cmd).decode()
-#     #output_folder = base64.b64decode(output_folder).decode()
-#     #min_cmd = base64.b64decode(min_cmd).decode()
-#     #run minion cmd
-# #    os.system(gather_cmd)
-# #    os.system(min_cmd)
-#     #move output files into output folder
-#     #os.system('mv ' + job_name + '* ' + output_folder)
-#     return render_template("progress.html", gatherOutput=gatherOutput, error=error)
+    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, frac=frac)
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):

@@ -33,9 +33,13 @@
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
 				<h2 class="title is-5">Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
 			<br>
-			<a class="button is-danger is-light" id="abort" href='/abort/{{ job_name }}'>Abort Job</a><br><br>
+			<a class="button is-danger is-light" id="abort" href='/abort/{{ job_name }}'>Abort Job</a>
+			<button id="direct_to_output" class="button float-left submit-button" style="display:none">Go to output</button>
+			<br><br>
 				<h1 id='status'> <h1><br>
-				<label for="file">Pipeline progress:</label><br><br>
+				<label for="file">Pipeline progress:</label><br>
+				<p id="frac">{{ frac }}/3 steps complete</p>
+				<br>
 				<div id="progress-bar">
 
 			</div>
@@ -74,9 +78,6 @@
 				</div>
 			
 			<br><br>
-			<center>
-			<button id="direct_to_output" class="button float-left submit-button">Go to output</button>
-			</center>
 			<script type="text/javascript">
 				document.getElementById("direct_to_output").onclick = function () {
 					location.href = "/output/{{ job_name }}";
@@ -85,24 +86,12 @@
 
 		</div>
 	</div>
-
-	<!-- <div id="confirmModal" class="modal"> -->
-		<!-- Modal content -->
-		<!-- <div class="modal-content"> -->
-			<!-- <h1>Abort Job</h1> -->
-			<!-- <p>You are about to abort a job which is currently running. This action is irreversible. -->
-				<!-- Continue?</p> -->
-			<!-- <button id="cancelAbortBtn" onclick="cancel()">No</button> -->
-			<!-- <button id="confirmAbortBtn" onclick="confirm()">Yes</button> -->
-		<!-- </div> -->
-
-	<!-- </div> -->
 	
 	<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script>
 		// Confirm abort
-		var aElems = document.getElementById('abort');;
+		var aElems = document.getElementById('abort');
 		aElems.onclick = function() {
 			var check = confirm("Are you sure you want to abort the job?");
 			if (check == true) {
@@ -112,7 +101,13 @@
 				return false;
 			}
 		};
-		
+
+		var frac = document.getElementById('frac').innerText;
+		if (frac === "3/3 steps complete") {
+			console.log(frac)
+			document.getElementById('abort').style = "display:none"
+			document.getElementById('direct_to_output').style = ""
+		}
 
 		const status_div = document.getElementById('status');
 		//const para = document.createElement("p");
@@ -177,14 +172,14 @@
 				}
 			});
     	}
-
-
+	
 	</script>
 
 	<script>
 		$(document).ready(function() {
 			setInterval(function() {
 				$( "#outputLog" ).load(window.location.href + " #outputLog" );
+				$( "#frac" ).load(window.location.href + " #frac" );
 				//ß$( "#dialog-confirm" ).load(window.location.href + " #dialog-confirm" );
 			}, 900); 
 		});
