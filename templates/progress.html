@@ -102,13 +102,6 @@
 			}
 		};
 
-		var frac = document.getElementById('frac').innerText;
-		if (frac === "3/3 steps complete") {
-			console.log(frac)
-			document.getElementById('abort').style = "display:none"
-			document.getElementById('direct_to_output').style = ""
-		}
-
 		const status_div = document.getElementById('status');
 		//const para = document.createElement("p");
 		//para.innerHTML = JSON.stringify(stat);
@@ -176,10 +169,23 @@
 	</script>
 
 	<script>
+		function updateButton() {
+			var frac = document.getElementById('frac').innerText;
+			console.log("inside function")
+			if (frac === "3/3 steps complete") {
+				console.log(frac);
+				document.getElementById('abort').style = "display:none";
+				document.getElementById('direct_to_output').style = "";
+			}
+		}
+
 		$(document).ready(function() {
 			setInterval(function() {
+				console.log("reloading....")
 				$( "#outputLog" ).load(window.location.href + " #outputLog" );
 				$( "#frac" ).load(window.location.href + " #frac" );
+				updateButton();
+				console.log("checking!!!")
 				//ß$( "#dialog-confirm" ).load(window.location.href + " #dialog-confirm" );
 			}, 900); 
 		});
