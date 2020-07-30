@@ -40,7 +40,7 @@
                         <th>Completed Jobs</td>
                     </tr>
                 </thead>
-                <tbody id=jobsQueue>
+                <tbody id=completedJobs>
                 </tbody>
             </table>
             
@@ -54,43 +54,86 @@
          var jobsJson = JSON.parse({{ queue|tojson|safe }});
          console.log("Jobs Queue: ", jobsJson);
          
-         if (jobsJson != null) {
-             var jobs = jobsJson.jobs;
-             jobs.forEach(job => {
-                 for (var key of Object.keys(job)) {
-                     const curJobRow = document.createElement("tr");
-                     const curJob = document.createElement("td");
-                     const linkNode = document.createElement("a");
-                     const textNode = document.createTextNode(key);
-                     linkNode.href = job[key];
-                     
-                     const btn = document.createElement("a"); 
-                     btn.innerHTML = "Abort"; 
-                     btn.classList.add("button");
-                     btn.classList.add("is-danger");
-                     btn.classList.add("is-light");
-                     btn.style = "float:right";
-                     btn.id = "abort"
-                     btn.href = job[key].replace('progress', 'abort');
+          if (jobsJson != null) {
+            var jobs = jobsJson.jobs;
+            jobs.forEach(job => {
+              for (var key of Object.keys(job)) {
+                  const curJobRow = document.createElement("tr");
+                  const curJob = document.createElement("td");
+                  const linkNode = document.createElement("a");
+                  const textNode = document.createTextNode(key);
+                  linkNode.href = job[key];
+                  
+                  const btn = document.createElement("a"); 
+                  btn.innerHTML = "Abort"; 
+                  btn.classList.add("button");
+                  btn.classList.add("is-danger");
+                  btn.classList.add("is-light");
+                  btn.style = "float:right";
+                  btn.id = "abort"
+                  btn.href = job[key].replace('progress', 'abort');
 
-                     linkNode.appendChild(textNode);
-                     curJob.appendChild(linkNode);
-                     curJob.appendChild(btn);
-                     curJobRow.appendChild(curJob);
-                     jobsQueue.appendChild(curJobRow);
-                 };
-             });
-         } else {
-             const curJobRow = document.createElement("tr");
-             const curJob = document.createElement("td");
-             const textNode = document.createTextNode("You currently have no queued jobs.");
-             curJob.classList.add("has-text-grey-light");
-             curJob.classList.add("is-italic");
-             
-             curJob.appendChild(textNode);
-             curJobRow.appendChild(curJob);
-             jobsQueue.appendChild(curJobRow);
-         };
+                  linkNode.appendChild(textNode);
+                  curJob.appendChild(linkNode);
+                  curJob.appendChild(btn);
+                  curJobRow.appendChild(curJob);
+                  jobsQueue.appendChild(curJobRow);
+              };
+            });
+          } else {
+            const curJobRow = document.createElement("tr");
+            const curJob = document.createElement("td");
+            const textNode = document.createTextNode("You currently have no queued jobs.");
+            curJob.classList.add("has-text-grey-light");
+            curJob.classList.add("is-italic");
+            
+            curJob.appendChild(textNode);
+            curJobRow.appendChild(curJob);
+            jobsQueue.appendChild(curJobRow);
+          };
+
+          const completedJobs = document.getElementById("completedJobs");
+
+          var completedJson = JSON.parse({{ completed|tojson|safe }});
+          console.log("Completed Jobs: ", completedJson);
+
+          if (completedJson != null) {
+            var jobs = completedJson.jobs;
+            jobs.forEach(job => {
+              for (var key of Object.keys(job)) {
+                  const curJobRow = document.createElement("tr");
+                  const curJob = document.createElement("td");
+                  const linkNode = document.createElement("a");
+                  const textNode = document.createTextNode(key);
+                  linkNode.href = job[key];
+                  
+                  const btn = document.createElement("a"); 
+                  btn.innerHTML = "Delete"; 
+                  btn.classList.add("button");
+                  btn.classList.add("is-danger");
+                  btn.classList.add("is-light");
+                  btn.style = "float:right";
+                  btn.id = "abort"
+                  btn.href = job[key].replace('progress', 'abort');
+
+                  linkNode.appendChild(textNode);
+                  curJob.appendChild(linkNode);
+                  curJob.appendChild(btn);
+                  curJobRow.appendChild(curJob);
+                  completedJobs.appendChild(curJobRow);
+              };
+            });
+          } else {
+            const curJobRow = document.createElement("tr");
+            const curJob = document.createElement("td");
+            const textNode = document.createTextNode("You currently have no completed jobs.");
+            curJob.classList.add("has-text-grey-light");
+            curJob.classList.add("is-italic");
+            
+            curJob.appendChild(textNode);
+            curJobRow.appendChild(curJob);
+            completedJobs.appendChild(curJobRow);
+          };
     </script>
     <script>
       var aElems = document.getElementById('abort');

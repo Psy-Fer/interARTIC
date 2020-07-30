@@ -34,7 +34,7 @@ class Job:
 
 
     @property
-    def get_job_name(self):
+    def job_name(self):
         return self._job_name
 
     @property
@@ -209,20 +209,7 @@ class Job:
                 minion_cmd = "echo 'no minion command for both pipelines yet'"
 
         minion_cmd = minion_cmd + "; mv ./" + self._job_name + "* " + self._output_folder + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
-
         return minion_cmd
-
-    # def executeCmds(self):
-    #     cmd_combine = ""
-    #     if self._num_samples == "single":
-    #         #create string of all cmds want to run
-    #         cmd_combine = self._gather_cmd + ";" + self._min_cmd
-
-    #     if self._num_samples == "multiple":
-    #         cmd_combine = self._gather_cmd + ";" + self._demult_cmd + ";" + minion_string
-
-    #     #start process that runs these cmds in the background
-    #     p = subprocess.Popen(cmd_combine, shell=True)s
 
     def disableSave(self):
         self._save_graphs = False
