@@ -20,6 +20,12 @@
             </div>
             <div class="column">
               <h1 class="title is-4"> Data Visualisation </h1>
+              <h1 class="title is-6"> Variants found </h1>
+              <div id="vcf">
+                <input class="button is-small" type="submit" id="produce_graphs" value="Produce graphs" onClick="produceGraphs({{variant_graphs}})"><br>
+                <!--canvas id="{{graph}}" width="1000" height="500" style="border:1px solid #000000"></canvas><br><br-->
+              </div>
+              <h1 class="title is-6"> Plots produced from pipeline </h1>
               <form method=POST>
                 <input type="radio" id="barplot" name="plot" value="barplot" required>
                 <label for="barplot"> Barplot </label><br>
@@ -41,11 +47,8 @@
                       {% endfor %}
                     {% endif %}
                 </div>
-                <br>
-                  <text> Downloading plots: {{download_plots}} </text>
-                <br>
                 <br><input class="button is-small" type="submit" name="submit_button" value="Preview">
-                <input class="button is-small" type="submit" name="submit_button" value="Download">
+                <!--input class="button is-small" type="submit" name="submit_button" value="Download"-->
                 </form>
                 <br>
                 <b> Enable plots produced to be previewed? </b><br>
@@ -69,6 +72,36 @@
       document.getElementById("direct_to_progress").onclick = function () {
         location.href = "/progress/{{ job_name }}";
       };
+      function produceGraphs(variant_graphs){
+        var vcfs = document.getElementById("vcf");
+        console.log(variant_graphs)
+        for (i = 0, len = variant_graphs.length, text = ""; i < len; i++){
+          span = variant_graphs[i][variant_graphs[i].length-1][1] - variant_graphs[i][0][1]
+          x_increment = 1000/span
+          var canvas = document.createElement("CANVAS");
+          canvas.id = i;
+          canvas.width = 1010;
+          canvas.height = 500;
+          var ctx = canvas.getContext("2d");
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(1005, 495);
+          ctx.lineTo(5, 495);
+          ctx.closePath();
+          ctx.stroke();
+          for(j = 0, leng = variant_graphs[i].length, text = ""; j < leng; j++){
+            snp = variant_graphs[i][j][3] + "->" + variant_graphs[i][j][4];
+            ctx.fillText(snp, variant_graphs[i][j][1]*x_increment, 200);
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(variant_graphs[i][j][1]*x_increment, 495);
+            ctx.lineTo(variant_graphs[i][j][1]*x_increment, 250);
+            ctx.closePath();
+            ctx.stroke();
+          }
+          vcfs.appendChild(canvas)
+        }
+      }
     </script>
 
   {% endblock %}

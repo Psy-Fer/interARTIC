@@ -15,6 +15,7 @@ import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
 import sys
 import re
+import gzip
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
@@ -199,6 +200,10 @@ def parameters():
         dry_run = request.form.get('dry_run')
         num_samples = request.form.get('num_samples')
 
+        #if no output folder entered, creates one inside of input folder
+        if not output_folder:
+            output_folder = input_folder + "/output"
+
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
             override_data = True
@@ -235,10 +240,6 @@ def parameters():
         else:
             #to be filled later
             read_file = ""
-
-        #if no output folder entered, creates one inside of input folder
-        if not output_folder:
-            output_folder = input_folder + "/output"
 
         #both pipelines running
         if pipeline == "both":
@@ -412,9 +413,7 @@ def abort(job_name):
 
 #not sure if this should be a get method
 @app.route("/output/<job_name>", methods = ["GET", "POST"])
-def output(job_name): #need to update to take in job name as parameter
-    #job_name = request.args.get('job_name')
-    #output_folder = request.args.get('output_folder')
+def output(job_name):
     job = qSys.getJobByName(job_name)
     output_folder = job._output_folder
     save_graphs = job.save_graphs
@@ -424,6 +423,8 @@ def output(job_name): #need to update to take in job name as parameter
     output_files = []
     barplots = []
     boxplots = []
+    vcfs = []
+    variant_graphs = []
     static = os.path.dirname(os.path.realpath(__file__))+'/static/'  # instead of os.getcwd()
     if output_folder:
         if os.path.exists(output_folder):
@@ -437,7 +438,20 @@ def output(job_name): #need to update to take in job name as parameter
                         boxplots.append('../static/'+name)
                         if save_graphs:
                             os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
+                    if fnmatch.fnmatch(name, '*.pass.vcf.gz'):
+                        vcfs.append(os.path.join(dirpath,name))
                 output_files.extend(filenames)
+
+        #change to not happen everytime, store info somewhere?
+        for vcf in vcfs:
+            with gzip.open(vcf, "rt") as f:
+                data = []
+                for line in f:
+                    if not re.match("^#", line):
+                        m = re.split("\\t", line)
+                        if m:
+                            data.append(m)
+            variant_graphs.append(data)
 
         if request.method == "POST":
             plot = request.form.get('plot')
@@ -467,7 +481,7 @@ def output(job_name): #need to update to take in job name as parameter
                     #if request.form['submit_button'] == 'Download':
                     #    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
 
-    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
+    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs)
 
 
 if __name__ == "__main__":
