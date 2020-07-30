@@ -590,8 +590,9 @@ def progress(job_name):
     primer_scheme = job.primer_scheme
     primer_type = job.primer_type
     num_samples = job.num_samples
+    barcode_type = job.barcode_type
 
-    return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples, error=error)
+    return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,error=error)
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):
