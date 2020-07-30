@@ -11,9 +11,9 @@
     <!-- Titles -->
     <div class="hero-body">
       <div class="container is-fluid">
-        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis</h1> <br>
+        <center><h1 class="title is-4">Input parameters here:</h1> <br></center>
       </div>
-      <div class="container is-fluid">
+      <div class="container is-widescreen">
         <div class="columns">
           <div class="column is-one-quarter">
             <table class="table is-hoverable is-bordered is-fullwidth">
@@ -35,7 +35,7 @@
                     <!-- Job name input -->
                     <b> * = required parameter </b><br><br>
                     <h1 class="subtitle">Job Name: *</h1>
-                    <input class="input is-info" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{ job_name }}" required>
+                    <input class="input" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{ job_name }}" required>
                   </div>
                 </div>
 
@@ -68,7 +68,7 @@
                 <b>These must be absolute file paths. Must start with either "/" or "C:\".</b><br><br>
                 <!-- input folder file path - Medaka/ Nanopolish-->
                 <label for="input_folder">Input folder: *</label><br>
-                <input type="text" id="input_folder" name="input_folder" size="80" value="{{input_folder}}"  required><br>
+                <input class="input" type="text" id="input_folder" name="input_folder" size="80" value="{{input_folder}}"  required><br>
                 
                 {% if errors %}
                 {% if errors['input_folder'] %}
@@ -79,13 +79,13 @@
                 <!-- read file path - Medaka/ Nanopolish-->
                 <br><label for="scheme_folder">Read file:</label><br>
                 <small>(only input if you already have this file, otherwise artic gather/ demultiplex will generate it)</small><br>
-                <input type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br><br>
+                <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br><br>
 
 
                 <!-- output folder file path - Medaka/ Nanopolish-->
                 <label for="output_folder">Output folder: </label><br>
                 <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
-                <input type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
+                <input class="input" type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
 
                 <!-- override output data?-->
                 <input type="checkbox" id="override_data" name="override_data">
@@ -95,12 +95,12 @@
 
                 <!-- primer scheme directory -->
                 <label for="primer_scheme">Scheme folder: *</label><br>
-                <input type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br><br>
+                <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br><br>
 
                 <!-- primer scheme name -->
                 <label for="primer_scheme">Name: *</label><br>
                 <small> e.g. nCoV-2019/V1 </small><br>
-                <input type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
+                <input class="input" type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
 
                 <div class="field">
                   <div class="control">
@@ -157,15 +157,15 @@
                     {% endif %}
                     {% endif %}
                     <label for="min_length">Minimum Length: *</label>
-                    <input type="number" id="min_length" name="min_length" value="{{ min_length }}" required><br>
+                    <input class="input" type="number" id="min_length" name="min_length" value="{{ min_length }}" required><br>
                     <label for="max_length">Maximum Length: *</label>
-                    <input type="number" id="max_length" name="max_length" value="{{ max_length }}" required><br><br>
+                    <input class="input" type="number" id="max_length" name="max_length" value="{{ max_length }}" required><br><br>
                     <h1 class="title is-6">Other parameters: *</h1>
                     <label for="num_threads">Thread usage: *</label>
-                    <input type="number" id="num_threads" name="num_threads" value="4" required><br>
+                    <input class="input" type="number" id="num_threads" name="num_threads" value="4" required><br>
                     <!-- normalise - Medaka/ Nanopolish-->
                       <label for="normalise">Normalise: *</label>
-                      <input type="number" id="normalise" name="normalise" value="200" required><br>
+                      <input class="input" type="number" id="normalise" name="normalise" value="200" required><br>
                     <!--<br>
                     <div id="nanoParams" style="display:none">
                       <h1 class="title is-6">Nanopolish parameters:</h1>
