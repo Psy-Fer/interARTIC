@@ -35,7 +35,7 @@
                     <!-- Job name input -->
                     <b> * = required parameter </b><br><br>
                     <h1 class="subtitle">Job Name: *</h1>
-                    <input class="input is-info" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{name}}" required>
+                    <input class="input is-info" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{ job_name }}" required>
                   </div>
                 </div>
 
@@ -43,12 +43,23 @@
                   <div class="control">
                     <!-- pipeline select -->
                     <h1 class="subtitle">Select a pipeline to run: *</h1>
-                    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" required>
-                    <label for="nanopolish">Nanopolish</label><br>
-                    <input type="radio" id="medaka" name="pipeline" value="medaka">
-                    <label for="medaka">Medaka</label><br>
-                    <input type="radio" id="both" name="pipeline" value="both">
-                    <label for="both">Both</label>
+                        <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" checked="checked">
+                        <label for="nanopolish">Nanopolish</label><br>
+                        <input type="radio" id="medaka" name="pipeline" value="medaka">
+                        <label for="medaka">Medaka</label><br>
+                        <input type="radio" id="both" name="pipeline" value="both">
+                        <label for="both">Both</label>
+                    <script>
+                      console.log
+                      if ( {{ pipeline }} == "nanopolish") {
+                        document.getElementById("nanopolish").checked = true;
+                      } else if ( {{ pipeline }} == "medaka") {
+                         document.getElementById("medaka").checked = true;
+                      } else if ( {{ pipeline }} == "both") {
+                        document.getElementById("both").checked = true;
+                      } 
+                    </script>
+                    
                   </div>
                 </div>
 
@@ -58,6 +69,7 @@
                 <!-- input folder file path - Medaka/ Nanopolish-->
                 <label for="input_folder">Input folder: *</label><br>
                 <input type="text" id="input_folder" name="input_folder" size="80" value="{{input_folder}}"  required><br>
+                
                 {% if errors %}
                 {% if errors['input_folder'] %}
                 <p class="has-text-danger"> {{ errors['input_folder'] }} </p>
@@ -98,8 +110,18 @@
                     <label for="artic">Artic</label><br>
                     <input type="radio" id="kirby" name="primer_type" value="kirby" onclick="setParams()">
                     <label for="kirby">Kirby</label><br>
-                    Other <input type="text" name="primer_type" size="20">
+                    Other <input type="text" id="other" name="primer_type" size="20">
                   </div>
+
+                  <script>
+                      if ( {{ primer_type }}.id == "artic") {
+                        document.getElementById("artic").checked = true;
+                      } else if ( {{ primer_type }}.id == "kirby") {
+                         document.getElementById("kirby").checked = true;
+                      } else {
+                        document.getElementById("other").value = {{ primer_type }};
+                      } 
+                    </script>
                 </div>
 
                 <div class="field">
@@ -111,8 +133,15 @@
                     <input type="radio" id="rapid" name="barcode_type" value="rapid" onclick="setParams()">
                     <label for="rapid">Rapid</label><br>
                   </div>
+                 
                 </div>
-
+                 <script>
+                    if ( {{ barcode_type }}.id == "native") {
+                      document.getElementById("native").checked = true;
+                    } else if ( {{ barcode_type }}.id == "rapid") {
+                       document.getElementById("rapid").checked = true;
+                    } 
+                  </script>
                 <br>
 
                 <div class="field">
@@ -128,9 +157,9 @@
                     {% endif %}
                     {% endif %}
                     <label for="min_length">Minimum Length: *</label>
-                    <input type="number" id="min_length" name="min_length" required><br>
+                    <input type="number" id="min_length" name="min_length" value="{{ min_length }}" required><br>
                     <label for="max_length">Maximum Length: *</label>
-                    <input type="number" id="max_length" name="max_length" required><br><br>
+                    <input type="number" id="max_length" name="max_length" value="{{ max_length }}" required><br><br>
                     <h1 class="title is-6">Other parameters: *</h1>
                     <label for="num_threads">Thread usage: *</label>
                     <input type="number" id="num_threads" name="num_threads" value="4" required><br>
@@ -158,6 +187,14 @@
                     <label for="multiple">Multiple samples</label><br>
                   </div>
                 </div>
+                
+                <script>
+                    if ( {{ num_samples }}.id == "single") {
+                      document.getElementById("single").checked = true;
+                    } else if ( {{ num_samples }}.id == "multiple") {
+                       document.getElementById("multiple").checked = true;
+                    } 
+                  </script>
 
                 <br>
                 <div class="field">

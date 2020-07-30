@@ -43,8 +43,6 @@
 			<button id="direct_to_output" class="button float-left submit-button" style="display:none">Go to output</button>
 			<br><br>
 
-			
-
 				<h1 id='status'> <h1><br>
 				<label for="file">Pipeline progress:</label><br>
 				<p id="frac">{{ frac }}/3 steps complete</p>
@@ -72,7 +70,7 @@
 				
 				<script type="text/javascript">
 					document.getElementById("myButton").onclick = function () {
-						location.href = "/parameters";
+						location.href = "/error/{{ job_name }}";
 					};
 				</script>
 				<script>

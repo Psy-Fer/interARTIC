@@ -178,7 +178,201 @@ def about():
 
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
+    print("hitting this one");
+    if request.method == "POST":
+        #get parameters
+        job_name = request.form.get('job_name')
+        input_folder = request.form.get('input_folder')
+        read_file = request.form.get('read_file')
+        primer_scheme_dir = request.form.get('primer_scheme_dir')
+        primer_scheme = request.form.get('primer_scheme')
+        primer_type = request.form.get('primer_type')
+        output_folder = request.form.get('output_folder')
+        normalise = request.form.get('normalise')
+        num_threads = request.form.get('num_threads')
+        pipeline = request.form.get('pipeline')
+        num_samples = request.form.get('num_samples')
+        min_length = request.form.get('min_length')
+        max_length = request.form.get('max_length')
+        bwa = request.form.get('bwa')
+        skip_nanopolish = request.form.get('skip_nanopolish')
+        dry_run = request.form.get('dry_run')
+        num_samples = request.form.get('num_samples')
+        barcode_type = request.form.get('barcode_type')
 
+        #if user agrees output can override files with the same name in output folder
+        if request.form.get('override_data'):
+            override_data = True
+        else:
+            override_data = False
+
+        # Check if path has a '/' at the end, if yes then remove
+        if input_folder[-1] == "/":
+            input_folder = input_folder[:-1]
+
+        if output_folder[-1] == "/":
+            output_folder = output_folder[:-1]
+
+        if primer_scheme_dir[-1] == "/":
+            primer_scheme_dir = primer_scheme_dir[:-1]
+
+        errors = {}
+        #give error if input folder path is invalid or empty
+        if not os.path.isdir(input_folder):
+            errors['input_folder'] = "Invalid path."
+        elif len(os.listdir(input_folder)) == 0:
+            errors['input_folder'] = "Directory is empty."
+
+        #give error if primer schemes folder path is invalid or empty
+        if not os.path.isdir(primer_scheme_dir):
+            errors['primer_scheme_dir'] = "Invalid path."
+        elif len(os.listdir(primer_scheme_dir)) == 0:
+            errors['primer_scheme_dir'] = "Directory is empty."
+
+        #if read file is specified by user
+        if read_file:
+            if not os.path.isfile(read_file):
+                errors['read_file'] = "Invalid path/file."
+        else:
+            #to be filled later
+            read_file = ""
+
+        #if no output folder entered, creates one inside of input folder
+        if not output_folder:
+            output_folder = input_folder + "/output"
+
+        #both pipelines running
+        if pipeline == "both":
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder + "/medaka"):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
+                make_dir_m = 'mkdir "' + output_folder + '/medaka"'
+                os.system(make_dir_m)
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder + "/nanopolish"):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
+                make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
+                os.system(make_dir_n)
+        #only one pipeline running
+        else:
+            #if the output folder does not exist, it is created
+            if not os.path.exists(output_folder):
+                make_dir = 'mkdir "' + output_folder + '"'
+                os.system(make_dir)
+
+        #override files in output folder checks
+        if pipeline == "both":
+            if check_override(output_folder + "/medaka", override_data):
+                # removeFiles(output_folder + "/medaka", override_data, job_name)
+                os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
+                flash("Output folder has been overwritten.")
+
+            if check_override(output_folder + "/medaka", override_data):
+                # removeFiles(output_folder + "/nanopolish", override_data, job_name)
+                os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
+                flash("Output folder has been overwritten.")
+
+        if pipeline != "both":
+            if check_override(output_folder, override_data):
+                # removeFiles(output_folder, override_data, job_name)
+                os.system('rm ' + output_folder + '/all_cmds_log.txt')
+                flash("Output folder has been overwritten.")
+            # Make empty log file for initial progress rendering
+            make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
+            os.system(make_log)
+        else:
+            # Make empty log file for initial progress rendering
+            make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
+            make_log_n = 'touch \"' + output_folder + '\"/nanopolish/all_cmds_log.txt'
+            os.system(make_log_m)
+            os.system(make_log_n)
+
+        #check length parameters are valid
+        if min_length.isdigit() == False:
+            errors['invalid_length'] = "Invalid minimum length."
+            if max_length.isdigit() == False:
+                errors['invalid_length'] = "Invalid maximum and minimum length."
+        elif max_length.isdigit() == False:
+            errors['invalid_length'] = "Invalid maximum length."
+        elif int(max_length) < int(min_length):
+            errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
+
+        if qSys.queue.full():
+            errors['full_queue'] = "Job queue is full."
+
+        print("Errors: ", errors)
+        if len(errors) != 0:
+            #Update displayed queue on home page
+            queueList = []
+            if qSys.queue.empty():
+                return render_template("parameters.html", job_name=job_name, queue = None, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type)
+
+            for item in qSys.queue.getItems():
+                queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+
+            queueDict = {'jobs': queueList}
+            displayQueue = json.htmlsafe_dumps(queueDict)
+
+            return render_template("parameters.html", job_name=job_name, queue = None, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type)
+
+        #no spaces in the job name - messes up commands
+        job_name = job_name.replace(" ", "_")
+
+        if pipeline != "both":
+            #Create a new instance of the Job class
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type)
+
+            #Add job to queue
+            qSys.addJob(new_job)
+        #if both pipelines
+        else:
+            #Create a new medaka instance of the Job class
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type)
+            #Create a new nanopolish instance of the Job class
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type)
+
+            #Add medaka job to queue
+            qSys.addJob(new_job_m)
+            #Add nanopolish job to queue
+            qSys.addJob(new_job_n)
+
+        if pipeline == "both":
+            return redirect(url_for('progress', job_name=job_name+"_medaka"))
+        else:
+            return redirect(url_for('progress', job_name=job_name))
+
+    #Update displayed queue on home page
+    queueList = []
+    if qSys.queue.empty():
+        return render_template("parameters.html", queue = None)
+
+    for item in qSys.queue.getItems():
+        queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+
+    queueDict = {'jobs': queueList}
+    displayQueue = json.htmlsafe_dumps(queueDict)
+    return render_template("parameters.html", job_name=job_name, queue = None, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type)
+
+
+@app.route("/error/<job_name>", methods = ["POST","GET"])
+def error(job_name):
+    print("does it also hit this?")
+    job = qSys.getJobByName(job_name)
+    if (job != None):
+        input_folder = job.input_folder
+        output_folder = job.output_folder
+        read_file = job.read_file
+        pipeline = job.pipeline
+        min_length = job.min_length
+        max_length = job.max_length
+        primer_scheme = job.primer_scheme
+        primer_scheme_dir = job.primer_scheme_dir
+        primer_type = job.primer_type
+        num_samples = job.num_samples
+        barcode_type = job.barcode_type   
+        
     if request.method == "POST":
         #get parameters
         job_name = request.form.get('job_name')
@@ -306,31 +500,30 @@ def parameters():
             #Update displayed queue on home page
             queueList = []
             if qSys.queue.empty():
-                return render_template("parameters.html", queue = None, errors=errors,name=job_name, input_folder=input_folder,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
-
+                return render_template("parameters.html", name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir)
             for item in qSys.queue.getItems():
                 queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template('parameters.html', errors=errors, queue=displayQueue,name=job_name, input_folder=input_folder,read_file=read_file,primer_scheme=primer_scheme,output_folder=output_folder)
+            return render_template("parameters.html", job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
 
         if pipeline != "both":
             #Create a new instance of the Job class
-            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type)
 
             #Add job to queue
             qSys.addJob(new_job)
         #if both pipelines
         else:
             #Create a new medaka instance of the Job class
-            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type)
             #Create a new nanopolish instance of the Job class
-            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples)
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type)
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
@@ -345,14 +538,14 @@ def parameters():
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
-        return render_template("parameters.html", queue = None)
+        return render_template("parameters.html", job_name=job_name, queue = None, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type)
 
     for item in qSys.queue.getItems():
         queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", queue = displayQueue)
+    return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir,barcode_type=barcode_type)
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
