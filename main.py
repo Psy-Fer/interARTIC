@@ -388,8 +388,17 @@ def progress(job_name):
     # queue_length = jobQueue.getNumberInQueue()
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
+    input_folder = job.input_folder
+    output_folder = job.output_folder
+    read_file = job.read_file
+    pipeline = job.pipeline
+    min_length = job.min_length
+    max_length = job.max_length
+    primer_scheme = job.primer_scheme
+    primer_type = job.primer_type
+    num_samples = job.num_samples
 
-    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, frac=frac)
+    return render_template("progress.html", outputLog=gatherOutput, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples)
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):

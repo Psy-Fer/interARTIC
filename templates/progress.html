@@ -42,13 +42,45 @@
 				<br>
 				<div id="progress-bar">
 
-			</div>
+				</div>
+				<button id="myButton" class="button is-small" >Return to Parameters</button>
 
+				<input type="button" class="button is-small" name="answer" value="View Job Parameters here" onclick="showDiv()" />
+				</center>
+				<div id="parameterDiv"  style="display:none;"> 
+					<br> 
+					<b>Input Folder:</b> {{ input_folder }}<br>
+					<b>Output Folder:</b> {{ output_folder }} <br>
+					<b>Read File:</b> {{ read_file }}<br>
+					<b>Primer Scheme:</b> {{ primer_scheme }} <br>
+					<b>Primer Type:</b> {{ primer_type }}<br>
+					<b>Pipeline(s) used:</b> {{ pipeline }} <br>
+					<b>Minimum Length:</b> {{ min_length }}<br>
+					<b>Maximum Length:</b>  {{ max_length }}<br>
+					<b>Number of Samples:</b>  {{ num_samples }}
+				
+				</div><br>
+				
+				<script type="text/javascript">
+					document.getElementById("myButton").onclick = function () {
+						location.href = "/parameters";
+					};
+				</script>
+				<script>
+					function showDiv() {
+						if (document.getElementById('parameterDiv').style.display == "block") {
+							document.getElementById('parameterDiv').style.display = "none";
+						} else {
+							document.getElementById('parameterDiv').style.display = "block";
+						}
+						
+					}
+				</script>
 			
 
 				</div>
-			<br><br>
-			</center>
+			<br>
+			
 
 			<!--<div id="dialog-confirm" style="background:#ffffff;border:1px solid">
 				{% if error %}
