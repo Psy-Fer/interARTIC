@@ -29,6 +29,11 @@ celery.conf.update(app.config)
 
 logger = get_task_logger(__name__)
 
+#Define maximum queue size
+max_queue_size = 10
+#Create a System object with a queue of length maximum_queue_size
+qSys = System(max_queue_size)
+
 def check_override(output_folder, override_data):
     dir_files = os.listdir(output_folder)
     if len(dir_files) > 0:
@@ -58,33 +63,12 @@ def removeFiles(output_folder, override_data, job_name):
         remove = "rm -r " + output_folder + "/*"
         os.system(remove)
 
-
 @celery.task(bind=True)
-def longTask(self):
-    """Background task that runs a long function with progress reports."""
-    verb = ['Starting up', 'Booting', 'Repairing', 'Loading', 'Checking']
-    adjective = ['master', 'radiant', 'silent', 'harmonic', 'fast']
-    noun = ['solar array', 'particle reshaper', 'cosmic ray', 'orbiter', 'bit']
-    message = ''
-    total = random.randint(10, 50)
-    for i in range(total):
-        if not message or random.random() < 0.25:
-            message = '{0} {1} {2}...'.format(random.choice(verb),
-                                              random.choice(adjective),
-                                              random.choice(noun))
-        self.update_state(state='PROGRESS',
-                          meta={'current': i, 'total': total,
-                                'status': message})
-        time.sleep(1)
-    return {'current': 100, 'total': 100, 'status': 'Task completed!',
-            'result': 42}
+def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd):
+    logger.info("In celery task, executing job...")
 
-@celery.task(bind=True)
-def executeJob(self, gather_cmd, demult_cmd, min_cmd):
-    logger.info("In tasks.py, executing job...")
-    print(gather_cmd, demult_cmd, min_cmd)
+    self.update_state(state='PROGRESS', meta={'current':10, 'status':'Beginning execution'})
 
-    #command = "echo running; for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do sleep 1; echo i; done ; echo FINISHING JOB"
     commands = [gather_cmd, demult_cmd, min_cmd]
     for i, cmd in enumerate(commands):
         po = subprocess.Popen(cmd, shell=True,
@@ -99,24 +83,34 @@ def executeJob(self, gather_cmd, demult_cmd, min_cmd):
             n = 50
         else:
             status = "Successfully ran minion"
-            n = 100
+            n = 90
 
         self.update_state(state='PROGRESS', meta={'current': n, 'status': status, 'command': cmd})
         returnCode = po.returncode
         if returnCode != 0:
+            self.update_state(state='FAILURE', meta={'current': n, 'status': 'Command failed', 'command': cmd})
             raise Exception("Command {} got return code {}.\nSTDOUT: {}\nSTDERR: {}".format(cmd, returnCode, stdout, stderr))
+
         print("JOB CMD {} RETURNED: {}".format(cmd, returnCode))
 
+    #Job is completing
+    #Remove the job from the queue, add it to the completed jobs list
+    #qSys.completed.remove(job)
+
+    #a = requests.post(url=url_for('task', job_name = job_name))
+    #print(a)
+
+    self.update_state(state='FINISHED', meta={'current': 100, 'status': 'Finishing', 'result': returnCode}) #Don't know if this is actually used
     return {'current': 100, 'total': 100, 'status': 'Task completed!', 'result': returnCode}
 
 
 @app.route('/task/<job_name>', methods = ['POST'])
 def task(job_name):
     job = qSys.getJobByName(job_name)
-    task = executeJob.apply_async(args=[job.gather_cmd, job.demult_cmd, job.min_cmd])
+    #task = executeJob.apply_async(args=[job.job_name])
     #task = longTask.apply_async()
-    job.task_id = task.id
-    return jsonify({}), 202, {'Location': url_for('task_status', task_id = task.id)}
+    #job.task_id = task.id
+    return jsonify({}), 202, {'Location': url_for('task_status', task_id = job.task_id, job_name = job.job_name)}
 
 @app.route('/status/<task_id>')
 def task_status(task_id):
@@ -147,30 +141,47 @@ def task_status(task_id):
         }
     return json.htmlsafe_dumps(response)
 
-
-max_queue_size = 10
-qSys = System(10)
-
 @app.route("/")
 def route():
     return redirect(url_for('home'))
 
 @app.route("/home")
 def home():
-    #Update displayed queue on home page
+    #Update displayed queue and completed jobs on home page
     queueList = []
+    completedList = []
+
+    def completedToJSON():
+        for item in qSys.completed:
+            completedList.append({item.job_name : url_for('output', job_name=item.job_name)})
+
+        completedDict = {'jobs': completedList}
+        for key, value in completedDict.items():
+            print(key, value)
+
+        return json.htmlsafe_dumps(completedDict)
+
+    def queueToJSON():
+        for item in qSys.queue.getItems():
+            queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
+
+        queueDict = {'jobs': queueList}
+        for key, value in queueDict.items():
+            print(key, value)
+
+        return json.htmlsafe_dumps(queueDict)
+
     if qSys.queue.empty():
-        return render_template("home.html", queue = None)
+        displayQueue = None
+    else:
+        displayQueue = queueToJSON()
 
-    for item in qSys.queue.getItems():
-        queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+    if not qSys.completed:
+        displayCompleted = None
+    else:
+        displayCompleted = completedToJSON()
 
-    queueDict = {'jobs': queueList}
-    for key, value in queueDict.items():
-        print(key, value)
-
-    displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("home.html", queue = displayQueue)
+    return render_template("home.html", queue = displayQueue, completed = displayCompleted)
 
 @app.route("/about")
 def about():
@@ -422,7 +433,7 @@ def error(job_name):
             if qSys.queue.empty():
                 return render_template("parameters.html", name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir, errors=errors)
             for item in qSys.queue.getItems():
-                queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+                queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
@@ -438,6 +449,10 @@ def error(job_name):
 
             #Add job to queue
             qSys.addJob(new_job)
+            print("qSys has jobs: ", qSys.printQueue())
+            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.demult_cmd, new_job.min_cmd])
+            new_job.task_id = new_task.id
+
         #if both pipelines
         else:
             #Create a new medaka instance of the Job class
@@ -447,8 +462,12 @@ def error(job_name):
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
+            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.demult_cmd, new_job_m.min_cmd])
+            new_job_m.task_id = task_m.id
             #Add nanopolish job to queue
             qSys.addJob(new_job_n)
+            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd])
+            new_job_n.task_id = task_n.id
 
         if pipeline == "both":
             return redirect(url_for('progress', job_name=job_name+"_medaka"))
@@ -461,7 +480,7 @@ def error(job_name):
         return render_template("parameters.html", job_name=job_name, queue = None, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors)
 
     for item in qSys.queue.getItems():
-        queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+        queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
@@ -471,11 +490,11 @@ def error(job_name):
 def progress(job_name):
     #print(jobQueue.getJob)
     job = qSys.getJobByName(job_name)
-    # job_name = job.job_name
 
     path = job.output_folder
     path +="/all_cmds_log.txt"
 
+    ################## TODO: NEED TO CHANGE 
     print(path)
     with open(path, "r") as f:
         outputLog = f.read().replace("\n","<br/>")
@@ -519,7 +538,7 @@ def abort(job_name):
     job = qSys.getJobByName(job_name)
     task = job.task_id
     celery.control.revoke(task,terminate=True, signal='SIGKILL')
-    qSys.removeJob(job_name)
+    qSys.removeQueuedJob(job_name)
 
     return redirect(url_for("home"))
     # return "TRYING TO ABORT"
