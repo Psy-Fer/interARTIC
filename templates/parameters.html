@@ -72,7 +72,10 @@
                 
                 {% if errors %}
                 {% if errors['input_folder'] %}
-                <p class="has-text-danger"> {{ errors['input_folder'] }} </p>
+                <script>
+                  document.getElementById("input_folder").className = "input is-danger";
+                </script>
+                <p class="help is-danger"> {{ errors['input_folder'] }} </p>
                 {% endif %}
                 {% endif %}
 
@@ -151,15 +154,21 @@
                     <!-- threads - Medaka/ Nanopolish-->
                     <h1 class="subtitle">Select parameters: *</h1>
                     <h1 class="title is-6">Gather command: *</h1>
-                    {% if errors %}
-                    {% if errors['invalid_length'] %}
-                    <p class="has-text-danger"> {{ errors['invalid_length'] }} </p>
-                    {% endif %}
-                    {% endif %}
+                   
                     <label for="min_length">Minimum Length: *</label>
                     <input class="input" type="number" id="min_length" name="min_length" value="{{ min_length }}" required><br>
                     <label for="max_length">Maximum Length: *</label>
-                    <input class="input" type="number" id="max_length" name="max_length" value="{{ max_length }}" required><br><br>
+                    <input class="input" type="number" id="max_length" name="max_length" value="{{ max_length }}" required><br>
+                    {% if errors %}
+                    {% if errors['invalid_length'] %}
+                      <script>
+                        document.getElementById("min_length").className = "input is-danger";
+                        document.getElementById("max_length").className = "input is-danger";
+                      </script>
+                      <p class="help is-danger"> {{ errors['invalid_length'] }} </p>
+                    {% endif %}
+                    {% endif %}
+                    <br><br>
                     <h1 class="title is-6">Other parameters: *</h1>
                     <label for="num_threads">Thread usage: *</label>
                     <input class="input" type="number" id="num_threads" name="num_threads" value="4" required><br>
