@@ -17,7 +17,7 @@
     {% extends "page_template.html" %}
     {% block content %}
     <div class="hero-body">
-		<div class="container is-fluid">
+		<div class="container is-widescreen">
 			{% with messages = get_flashed_messages() %}
 				{% if messages %}
 					{% for message in messages %}
@@ -38,7 +38,7 @@
 				<button class="delete" onclick="hideError()"></button>
 				An error has occurred. Please check the output log.
 			</div>
-			<button id="errorParams" class="button is-small" style="display:none">Return to Parameters</button>
+			<button id="errorParams" class="button is-small is-light" style="display:none">Return to Parameters</button>
 			<script type="text/javascript">
 				document.getElementById("errorParams").onclick = function () {
 					location.href = "/error/{{ job_name }}";
@@ -92,11 +92,11 @@
 
 			<center>
 				<h1 class="title is-5">Output from the ARTIC Pipeline:</h1>
-			</center>
+			
 				<div id="outputLog">
 					<br>
-					<pre style="white-space: pre-wrap; word-wrap: break-word;"><code>{{ outputLog|safe }}
-					</code></pre><br><br>
+					<pre style="width:1152px;white-space: pre-wrap; word-wrap: break-word;"><code><p style="text-align:left;">{{ outputLog|safe }}</p>
+					</code></pre><br><br></center>
 				</div>
 			
 			<br><br>
