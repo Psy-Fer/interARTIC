@@ -242,11 +242,11 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
             os.system(make_dir_n)
         #only one pipeline running
-        else:
-            #if the output folder does not exist, it is created
-            if not os.path.exists(output_folder):
-                make_dir = 'mkdir "' + output_folder + '"'
-                os.system(make_dir)
+    else:
+        #if the output folder does not exist, it is created
+        if not os.path.exists(output_folder):
+            make_dir = 'mkdir "' + output_folder + '"'
+            os.system(make_dir)
                 
     #override files in output folder checks
     if pipeline == "both":
@@ -265,25 +265,25 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             # removeFiles(output_folder, override_data, job_name)
             os.system('rm ' + output_folder + '/all_cmds_log.txt')
             flash("Output folder has been overwritten.")
-        # Make empty log file for initial progress rendering
-            make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
-            os.system(make_log)
-        else:
             # Make empty log file for initial progress rendering
-            make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
-            make_log_n = 'touch \"' + output_folder + '\"/nanopolish/all_cmds_log.txt'
-            os.system(make_log_m)
-            os.system(make_log_n)
+        make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
+        os.system(make_log)
+    else:
+        # Make empty log file for initial progress rendering
+        make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
+        make_log_n = 'touch \"' + output_folder + '\"/nanopolish/all_cmds_log.txt'
+        os.system(make_log_m)
+        os.system(make_log_n)
 
-        #check length parameters are valid
-        if min_length.isdigit() == False:
-            errors['invalid_length'] = "Invalid minimum length."
-            if max_length.isdigit() == False:
-                errors['invalid_length'] = "Invalid maximum and minimum length."
-        elif max_length.isdigit() == False:
-            errors['invalid_length'] = "Invalid maximum length."
-        elif int(max_length) < int(min_length):
-            errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
+    #check length parameters are valid
+    if min_length.isdigit() == False:
+        errors['invalid_length'] = "Invalid minimum length."
+        if max_length.isdigit() == False:
+            errors['invalid_length'] = "Invalid maximum and minimum length."
+    elif max_length.isdigit() == False:
+        errors['invalid_length'] = "Invalid maximum length."
+    elif int(max_length) < int(min_length):
+        errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
 
     return errors
     
