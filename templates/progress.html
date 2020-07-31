@@ -38,7 +38,12 @@
 				<button class="delete" onclick="hideError()"></button>
 				An error has occurred. Please check the output log.
 			</div>
-			
+			<button id="errorParams" class="button is-small" style="display:none">Return to Parameters</button>
+			<script type="text/javascript">
+				document.getElementById("errorParams").onclick = function () {
+					location.href = "/error/{{ job_name }}";
+				};
+			</script>
 			<a class="button is-danger is-light" id="abort" href='/abort/{{ job_name }}'>Abort Job</a>
 			<button id="direct_to_output" class="button float-left submit-button" style="display:none">Go to output</button>
 			<br><br>
@@ -50,12 +55,7 @@
 				<div id="progress-bar">
 
 				</div>
-				<button id="errorParams" class="button is-small" style="display:none">Return to Parameters</button>
-				<script type="text/javascript">
-					document.getElementById("errorParams").onclick = function () {
-						location.href = "/error/{{ job_name }}";
-					};
-				</script>
+				
 				
 				<br>
 				<input type="button" class="button is-small" name="answer" value="View Job Parameters here" onclick="showDiv()" />

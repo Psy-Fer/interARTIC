@@ -8,7 +8,7 @@ import celery
 import csv, subprocess, time
 
 class Job:
-    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples):
+    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type):
         self._job_name = job_name
         self._input_folder = input_folder
         self._read_file = read_file
@@ -31,7 +31,7 @@ class Job:
         self._demult_cmd = self.__generateDemultCmd()
         self._min_cmd = self.__generateMinionCmd()
         self._task_id = None
-
+        self._barcode_type = barcode_type
 
     @property
     def job_name(self):
@@ -121,6 +121,10 @@ class Job:
     @property
     def task_id(self):
         return self._task_id
+    
+    @property
+    def barcode_type(self):
+        return self._barcode_type
 
     @task_id.setter
     def task_id(self, val):
