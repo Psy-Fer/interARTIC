@@ -374,7 +374,7 @@ def parameters():
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", queue = None)
+    return render_template("parameters.html", queue = displayQueue)
 
 
 @app.route("/error/<job_name>", methods = ["POST","GET"])
