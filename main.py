@@ -489,7 +489,7 @@ def error(job_name):
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", job_name=job_name, queue = displayQueue)
+    return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir)
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
