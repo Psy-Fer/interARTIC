@@ -37,6 +37,14 @@
                     <b> * = required parameter </b><br><br>
                     <h1 class="subtitle">Job Name: *</h1>
                     <input class="input" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{ job_name }}" required>
+                    {% if errors %}
+                    {% if errors['job_name'] %}
+                    <script>
+                      document.getElementById("job_name").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['job_name'] }} </p>
+                    {% endif %}
+                    {% endif %}
                   </div>
                 </div>
 

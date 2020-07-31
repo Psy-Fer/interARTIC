@@ -62,22 +62,24 @@
 				<br>
 				<input type="button" class="button is-small" name="answer" value="View Job Parameters here" onclick="showDiv()" />
 				</center>
-				<div id="parameterDiv"  style="display:none;"> 
-					<br> 
-					<b>Input Folder:</b> {{ input_folder }}<br>
-					<b>Output Folder:</b> {{ output_folder }} <br>
-					<b>Pipeline(s) used:</b> {{ pipeline }} <br>
-					<b>Read File:</b> {{ read_file }}<br>
-					<b>Primer Scheme:</b> {{ primer_scheme }} <br>
-					<b>Primer Type:</b> {{ primer_type }}<br>
-					<b>Barcode Type:</b> {{ barcode_type}}<br>
-					<b>Minimum Length:</b> {{ min_length }}<br>
-					<b>Maximum Length:</b>  {{ max_length }}<br>
-					<b>Number of Samples:</b> {{ num_samples }}
-				
-				</div><br>
-				
-				
+				<center>
+					<div id="parameterDiv"  style="display:none;width:1152px;"> 
+						<br> 
+						<p style="text-align:left;"><br> 
+							<b>Input Folder:</b> {{ input_folder }}<br>
+							<b>Output Folder:</b> {{ output_folder }} <br>
+							<b>Pipeline(s) used:</b> {{ pipeline }} <br>
+							<b>Read File:</b> {{ read_file }}<br>
+							<b>Primer Scheme:</b> {{ primer_scheme }} <br>
+							<b>Primer Type:</b> {{ primer_type }}<br>
+							<b>Barcode Type:</b> {{ barcode_type}}<br>
+							<b>Minimum Length:</b> {{ min_length }}<br>
+							<b>Maximum Length:</b>  {{ max_length }}<br>
+							<b>Number of Samples:</b> {{ num_samples }}
+						</p>
+					
+					</div><br>
+				</center>
 				<script>
 					function showDiv() {
 						if (document.getElementById('parameterDiv').style.display == "block") {

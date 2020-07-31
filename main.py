@@ -187,7 +187,7 @@ def home():
 def about():
 	return render_template("about.html")
 
-def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length):
+def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name):
 
     errors = {}
     
@@ -199,7 +199,11 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
     if primer_scheme_dir[-1] == "/":
         primer_scheme_dir = primer_scheme_dir[:-1]
-    
+
+    #Check of jobname is used
+    if qSys.getJobByName(job_name) is not None:
+        errors['job_name'] = "Job Name Exists."
+
     #give error if input folder path is invalid or empty
     if not os.path.isdir(input_folder):
         errors['input_folder'] = "Invalid path."
@@ -317,7 +321,7 @@ def parameters():
             override_data = False
 
         errors = {}
-        errors = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length)
+        errors = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
         
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
@@ -335,7 +339,7 @@ def parameters():
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", job_name=job_name, queue = None, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
