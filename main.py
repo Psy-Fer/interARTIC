@@ -285,8 +285,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     elif int(max_length) < int(min_length):
         errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
 
-    return errors
-    
+    return errors  
 
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
@@ -347,6 +346,9 @@ def parameters():
 
             #Add job to queue
             qSys.addJob(new_job)
+            print("qSys has jobs: ", qSys.printQueue())
+            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.demult_cmd, new_job.min_cmd])
+            new_job.task_id = new_task.id
         #if both pipelines
         else:
             #Create a new medaka instance of the Job class
@@ -356,8 +358,12 @@ def parameters():
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
+            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.demult_cmd, new_job_m.min_cmd])
+            new_job_m.task_id = task_m.id
             #Add nanopolish job to queue
             qSys.addJob(new_job_n)
+            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd])
+            new_job_n.task_id = task_n.id
 
         if pipeline == "both":
             return redirect(url_for('progress', job_name=job_name+"_medaka"))
@@ -468,7 +474,6 @@ def error(job_name):
             qSys.addJob(new_job_n)
             task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd])
             new_job_n.task_id = task_n.id
-
         if pipeline == "both":
             return redirect(url_for('progress', job_name=job_name+"_medaka"))
         else:
