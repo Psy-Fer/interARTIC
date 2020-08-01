@@ -445,13 +445,20 @@ def output(job_name):
         #change to not happen everytime, store info somewhere?
         for vcf in vcfs:
             with gzip.open(vcf, "rt") as f:
-                data = []
+                graph = []
                 for line in f:
+                    point = []
                     if not re.match("^#", line):
                         m = re.split("\\t", line)
                         if m:
-                            data.append(m)
-            variant_graphs.append(data)
+                            point.append(int(m[1]))  #position of variant
+                            point.append(m[3])  #original/reference value
+                            point.append(m[4])  #original/reference value
+                            depth = re.sub(r';.*', "", m[7])
+                            depth = re.sub("DP=","",depth)
+                            point.append(depth)  #read depth value
+                            graph.append(point)
+            variant_graphs.append(graph)
 
         if request.method == "POST":
             plot = request.form.get('plot')

@@ -76,7 +76,7 @@
         var vcfs = document.getElementById("vcf");
         console.log(variant_graphs)
         for (i = 0, len = variant_graphs.length, text = ""; i < len; i++){
-          span = variant_graphs[i][variant_graphs[i].length-1][1] - variant_graphs[i][0][1]
+          span = variant_graphs[i][variant_graphs[i].length-1][0] - variant_graphs[i][0][0]
           x_increment = 1000/span
           var canvas = document.createElement("CANVAS");
           canvas.id = i;
@@ -90,12 +90,12 @@
           ctx.closePath();
           ctx.stroke();
           for(j = 0, leng = variant_graphs[i].length, text = ""; j < leng; j++){
-            snp = variant_graphs[i][j][3] + "->" + variant_graphs[i][j][4];
-            ctx.fillText(snp, variant_graphs[i][j][1]*x_increment, 200);
+            snp = variant_graphs[i][j][1] + "->" + variant_graphs[i][j][2];
+            ctx.fillText(snp, variant_graphs[i][j][0]*x_increment, 500 - variant_graphs[i][j][3]);
             ctx.lineWidth = 0.5;
             ctx.beginPath();
-            ctx.moveTo(variant_graphs[i][j][1]*x_increment, 495);
-            ctx.lineTo(variant_graphs[i][j][1]*x_increment, 250);
+            ctx.moveTo(variant_graphs[i][j][0]*x_increment, 495);
+            ctx.lineTo(variant_graphs[i][j][0]*x_increment, 495-variant_graphs[i][j][3]);
             ctx.closePath();
             ctx.stroke();
           }
