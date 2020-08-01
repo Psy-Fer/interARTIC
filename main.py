@@ -15,6 +15,7 @@ import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
 import sys
 import re
+import threading
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
@@ -33,6 +34,15 @@ logger = get_task_logger(__name__)
 max_queue_size = 10
 #Create a System object with a queue of length maximum_queue_size
 qSys = System(max_queue_size)
+
+def checkTasks():
+    threading.Timer(2.0, checkTasks).start()
+    for job in qSys.queue.getItems():
+        if job.task_id:
+            task = executeJob.AsyncResult(job.task_id)
+            if task.ready():
+                qSys.moveJobToComplete(job.job_name)
+                
 
 def check_override(output_folder, override_data):
     dir_files = os.listdir(output_folder)
@@ -93,13 +103,6 @@ def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd):
 
         print("JOB CMD {} RETURNED: {}".format(cmd, returnCode))
 
-    #Job is completing
-    #Remove the job from the queue, add it to the completed jobs list
-    #qSys.completed.remove(job)
-
-    #a = requests.post(url=url_for('task', job_name = job_name))
-    #print(a)
-
     self.update_state(state='FINISHED', meta={'current': 100, 'status': 'Finishing', 'result': returnCode}) #Don't know if this is actually used
     return {'current': 100, 'total': 100, 'status': 'Task completed!', 'result': returnCode}
 
@@ -107,14 +110,12 @@ def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd):
 @app.route('/task/<job_name>', methods = ['POST'])
 def task(job_name):
     job = qSys.getJobByName(job_name)
-    #task = executeJob.apply_async(args=[job.job_name])
-    #task = longTask.apply_async()
-    #job.task_id = task.id
     return jsonify({}), 202, {'Location': url_for('task_status', task_id = job.task_id, job_name = job.job_name)}
 
 @app.route('/status/<task_id>')
 def task_status(task_id):
     task = executeJob.AsyncResult(task_id)
+    print("TASK.READY: ", task.ready())
     if task.state == 'PENDING':
         response = {
             'state': task.state,
@@ -151,6 +152,8 @@ def home():
     queueList = []
     completedList = []
 
+    checkTasks()
+
     def completedToJSON():
         for item in qSys.completed:
             completedList.append({item.job_name : url_for('output', job_name=item.job_name)})
@@ -179,6 +182,8 @@ def home():
     if not qSys.completed:
         displayCompleted = None
     else:
+        for j in qSys.completed:
+            print("COMPLETED JOB: ", j)
         displayCompleted = completedToJSON()
 
     return render_template("home.html", queue = displayQueue, completed = displayCompleted)
@@ -190,6 +195,10 @@ def about():
 def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name):
 
     errors = {}
+
+    #if no output folder entered, creates one inside of input folder
+    if not output_folder:
+        output_folder = input_folder + "/output"
     
     if input_folder[-1] == "/":
         input_folder = input_folder[:-1]
@@ -210,9 +219,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     elif len(os.listdir(input_folder)) == 0:
         errors['input_folder'] = "Directory is empty."
 
-    #if no output folder entered, creates one inside of input folder
-    if not output_folder:
-        output_folder = input_folder + "/output"
+
     
    # if not os.path.isdir(output_folder):
     #    errors['output_folder'] = "Invalid path."
@@ -246,14 +253,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
             os.system(make_dir_n)
         #only one pipeline running
-    else:
-        #if the output folder does not exist, it is created
-        if not os.path.exists(output_folder):
-            make_dir = 'mkdir "' + output_folder + '"'
-            os.system(make_dir)
-                
-    #override files in output folder checks
-    if pipeline == "both":
+
         if check_override(output_folder + "/medaka", override_data):
             # removeFiles(output_folder + "/medaka", override_data, job_name)
             os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
@@ -264,20 +264,26 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
             flash("Output folder has been overwritten.")
 
-    if pipeline != "both":
-        if check_override(output_folder, override_data):
-            # removeFiles(output_folder, override_data, job_name)
-            os.system('rm ' + output_folder + '/all_cmds_log.txt')
-            flash("Output folder has been overwritten.")
-            # Make empty log file for initial progress rendering
-        make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
-        os.system(make_log)
-    else:
         # Make empty log file for initial progress rendering
         make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
         make_log_n = 'touch \"' + output_folder + '\"/nanopolish/all_cmds_log.txt'
         os.system(make_log_m)
         os.system(make_log_n)
+
+    else:
+        #if the output folder does not exist, it is created
+        if not os.path.exists(output_folder):
+            make_dir = 'mkdir "' + output_folder + '"'
+            os.system(make_dir)
+
+        if check_override(output_folder, override_data):
+            # removeFiles(output_folder, override_data, job_name)
+            os.system('rm ' + output_folder + '/all_cmds_log.txt')
+            flash("Output folder has been overwritten.")
+            # Make empty log file for initial progress rendering
+
+        make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
+        os.system(make_log)
 
     #check length parameters are valid
     if min_length.isdigit() == False:
@@ -289,7 +295,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     elif int(max_length) < int(min_length):
         errors['invalid_length'] = "Invalid parameters: Maximum length smaller than minimum length."
 
-    return errors  
+    return errors, output_folder
 
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
@@ -321,8 +327,11 @@ def parameters():
             override_data = False
 
         errors = {}
-        errors = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
         
+        if not output_folder:
+            output_folder = output_folder_checked
+
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
             
