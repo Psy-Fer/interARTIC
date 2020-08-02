@@ -409,7 +409,7 @@ def parameters():
             return redirect(url_for('progress', job_name=job_name+"_medaka"))
         else:
             return redirect(url_for('progress', job_name=job_name))
-
+    
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
@@ -422,12 +422,11 @@ def parameters():
     displayQueue = json.htmlsafe_dumps(queueDict)
     return render_template("parameters.html", queue = displayQueue)
 
-
 @app.route("/error/<job_name>", methods = ["POST","GET"])
 def error(job_name):
-    print("does it also hit this?")
     job = qSys.getJobByName(job_name)
-    if (job != None):
+    
+    if job != None:
         input_folder = job.input_folder
         output_folder = job.output_folder
         read_file = job.read_file
@@ -439,7 +438,11 @@ def error(job_name):
         primer_type = job.primer_type
         num_samples = job.num_samples
         barcode_type = job.barcode_type   
-        
+        # abort existing job 
+        task = job.task_id
+        celery.control.revoke(task, terminate=True, signal='SIGKILL')
+        qSys.removeQueuedJob(job_name)
+
     if request.method == "POST":
         #get parameters
         job_name = request.form.get('job_name')
@@ -459,6 +462,7 @@ def error(job_name):
         skip_nanopolish = request.form.get('skip_nanopolish')
         dry_run = request.form.get('dry_run')
         num_samples = request.form.get('num_samples')
+        barcode_type = request.form.get('barcode_type')
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
@@ -467,7 +471,10 @@ def error(job_name):
             override_data = False
 
         errors = {}
-        errors = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
+        
+        if not output_folder:
+            output_folder = output_folder_checked
         
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
@@ -477,14 +484,14 @@ def error(job_name):
             #Update displayed queue on home page
             queueList = []
             if qSys.queue.empty():
-                return render_template("parameters.html", name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir, errors=errors)
+                return render_template("parameters.html", queue=None, job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir, errors=errors)
             for item in qSys.queue.getItems():
                 queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors)
+            return render_template("parameters.html", queue=displayQueue, job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -522,14 +529,14 @@ def error(job_name):
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
-        return render_template("parameters.html", job_name=job_name, queue = None)
+        return render_template("parameters.html", job_name=job_name, queue = None, pipeline=pipeline, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir)
 
     for item in qSys.queue.getItems():
         queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir)
+    return render_template("parameters.html", job_name=job_name, queue = displayQueue, pipeline=pipeline, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir)
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):

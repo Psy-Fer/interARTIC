@@ -52,18 +52,18 @@
                   <div class="control">
                     <!-- pipeline select -->
                     <h1 class="subtitle">Select a pipeline to run: *</h1>
-                        <input type="radio" id="nanopolish" name="pipeline" value="nanopolish" checked="checked">
+                        <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
                         <label for="nanopolish">Nanopolish</label><br>
                         <input type="radio" id="medaka" name="pipeline" value="medaka">
                         <label for="medaka">Medaka</label><br>
                         <input type="radio" id="both" name="pipeline" value="both">
                         <label for="both">Both</label>
                     <script>
-                      if ( {{ pipeline }} == "nanopolish") {
+                      if ( {{ pipeline }}.value == "nanopolish") {
                         document.getElementById("nanopolish").checked = true;
-                      } else if ( {{ pipeline }} == "medaka") {
-                         document.getElementById("medaka").checked = true;
-                      } else if ( {{ pipeline }} == "both") {
+                      } else if ( {{ pipeline }}.value == "medaka") {
+                        document.getElementById("medaka").checked = true;
+                      } else if ( {{ pipeline }}.value == "both") {
                         document.getElementById("both").checked = true;
                       } 
                     </script>
