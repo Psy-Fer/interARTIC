@@ -216,8 +216,11 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         errors['input_folder'] = "Directory is empty."
 
     #if no output folder entered, creates one inside of input folder
-    if not output_folder:
+    if not output_folder and not os.path.isdir(input_folder):
+        return errors, output_folder
+    elif not output_folder and os.path.isdir(input_folder):
         output_folder = input_folder + "/output"
+    
 
     if output_folder[-1] == "/":
         output_folder = output_folder[:-1]
@@ -341,6 +344,7 @@ def parameters():
         
         if not output_folder:
             output_folder = output_folder_checked
+        print("output folder:", output_folder)
 
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
