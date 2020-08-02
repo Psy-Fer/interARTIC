@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/static/css/bulma.min.css" />
     <link rel="icon" type="image/png" href="/static/icon.png" sizes="400x400">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <title>Home</title>
   </head>
   <body>
@@ -24,7 +26,7 @@
             <table class="table is-hoverable is-bordered is-fullwidth">
                 <thead>
                     <tr>
-                        <th>Jobs Queue</td>
+                        <th>Queued Jobs</td>
                     </tr>
                 </thead>
                 <tbody id=jobsQueue>
@@ -50,91 +52,134 @@
       </div>
     </div>
     <script>
-         const jobsQueue = document.getElementById("jobsQueue");
+        var jobsQueue = document.getElementById("jobsQueue")
+        var completedJobs = document.getElementById("completedJobs")
 
-         var jobsJson = JSON.parse({{ queue|tojson|safe }});
-         console.log("Jobs Queue: ", jobsJson);
+
+        $.ajax({
+          type: 'POST',
+          url: '/getCheckTasksUrl',
+          success: function(data, status, request) {
+            checkTasksUrl = request.getResponseHeader('Location');
+            update_jobs(checkTasksUrl);
+          },
+          error: function() {
+            alert('Unexpected error');
+          }
+        });
+
+        function update_jobs(checkTasksUrl) {
+          $.getJSON(checkTasksUrl, function(data) {
+            changed = data['changed']
+            queue = data['queue']
+            completed = data['completed']
+            console.log("CHANGED: ", changed)
+            console.log("QUEUE: ", queue)
+            console.log("COMPLETED: ", completed)
+
+            // console.log(jobsQueue.childElementCount)
+            // if (jobsQueue.childElementCount == 0) {
+            //   console.log("HEREEEEEE")
+            // }
+
+            if (changed == true || jobsQueue.childElementCount == 0) {
+              //Remove child nodes from jobsQueue and completedJobs
+              while (jobsQueue.hasChildNodes()) {  
+                jobsQueue.removeChild(jobsQueue.firstChild);
+              }
+              while (completedJobs.hasChildNodes()) {  
+                completedJobs.removeChild(completedJobs.firstChild);
+              }
+
+              if (queue.jobs.length) {
+                var jobs = queue.jobs;
+                jobs.forEach(job => {
+                  for (var key of Object.keys(job)) {
+                    const curJobRow = document.createElement("tr");
+                    const curJob = document.createElement("td");
+                    const linkNode = document.createElement("a");
+                    const textNode = document.createTextNode(key);
+                    linkNode.href = job[key]; 
+                    
+                    const btn = document.createElement("a"); 
+                    btn.innerHTML = "Abort"; 
+                    btn.classList.add("button");
+                    btn.classList.add("is-danger");
+                    btn.classList.add("is-light");
+                    btn.style = "float:right";
+                    btn.id = "abort"
+                    btn.href = job[key].replace('progress', 'abort');
+
+                    linkNode.appendChild(textNode);
+                    curJob.appendChild(linkNode);
+                    curJob.appendChild(btn);
+                    curJobRow.appendChild(curJob);
+                    jobsQueue.appendChild(curJobRow);
+                  };
+                });
+              } else {
+                console.log("HERE")
+
+                const curJobRow = document.createElement("tr");
+                const curJob = document.createElement("td");
+                const textNode = document.createTextNode("You currently have no queued jobs.");
+                curJob.classList.add("has-text-grey-light");
+                curJob.classList.add("is-italic");
+                
+                curJob.appendChild(textNode);
+                curJobRow.appendChild(curJob);
+                jobsQueue.appendChild(curJobRow);
+              };
+
+              if (completed.jobs.length) {
+                var jobs = completed.jobs;
+                jobs.forEach(job => {
+                  for (var key of Object.keys(job)) {
+                      const curJobRow = document.createElement("tr");
+                      const curJob = document.createElement("td");
+                      const linkNode = document.createElement("a");
+                      const textNode = document.createTextNode(key);
+                      linkNode.href = job[key];
+                      
+                      const btn = document.createElement("a"); 
+                      btn.innerHTML = "Delete"; 
+                      btn.classList.add("button");
+                      btn.classList.add("is-danger");
+                      btn.classList.add("is-light");
+                      btn.style = "float:right";
+                      btn.id = "abort"
+                      btn.href = job[key].replace('progress', 'abort');
+
+                      linkNode.appendChild(textNode);
+                      curJob.appendChild(linkNode);
+                      curJob.appendChild(btn);
+                      curJobRow.appendChild(curJob);
+                      completedJobs.appendChild(curJobRow);
+                  };
+                });
+              } else {
+                const curJobRow = document.createElement("tr");
+                const curJob = document.createElement("td");
+                const textNode = document.createTextNode("You currently have no completed jobs.");
+                curJob.classList.add("has-text-grey-light");
+                curJob.classList.add("is-italic");
+                
+                curJob.appendChild(textNode);
+                curJobRow.appendChild(curJob);
+                completedJobs.appendChild(curJobRow);
+              };
+            }
+
+            // rerun in 2 seconds
+            setTimeout(function() {
+              update_jobs(checkTasksUrl);
+            }, 2000);
+            
+          });
+        }
+
+
          
-          if (jobsJson != null) {
-            var jobs = jobsJson.jobs;
-            jobs.forEach(job => {
-              for (var key of Object.keys(job)) {
-                  const curJobRow = document.createElement("tr");
-                  const curJob = document.createElement("td");
-                  const linkNode = document.createElement("a");
-                  const textNode = document.createTextNode(key);
-                  linkNode.href = job[key];
-                  
-                  const btn = document.createElement("a"); 
-                  btn.innerHTML = "Abort"; 
-                  btn.classList.add("button");
-                  btn.classList.add("is-danger");
-                  btn.classList.add("is-light");
-                  btn.style = "float:right";
-                  btn.id = "abort"
-                  btn.href = job[key].replace('progress', 'abort');
-
-                  linkNode.appendChild(textNode);
-                  curJob.appendChild(linkNode);
-                  curJob.appendChild(btn);
-                  curJobRow.appendChild(curJob);
-                  jobsQueue.appendChild(curJobRow);
-              };
-            });
-          } else {
-            const curJobRow = document.createElement("tr");
-            const curJob = document.createElement("td");
-            const textNode = document.createTextNode("You currently have no queued jobs.");
-            curJob.classList.add("has-text-grey-light");
-            curJob.classList.add("is-italic");
-            
-            curJob.appendChild(textNode);
-            curJobRow.appendChild(curJob);
-            jobsQueue.appendChild(curJobRow);
-          };
-
-          const completedJobs = document.getElementById("completedJobs");
-
-          var completedJson = JSON.parse({{ completed|tojson|safe }});
-          console.log("Completed Jobs: ", completedJson);
-
-          if (completedJson != null) {
-            var jobs = completedJson.jobs;
-            jobs.forEach(job => {
-              for (var key of Object.keys(job)) {
-                  const curJobRow = document.createElement("tr");
-                  const curJob = document.createElement("td");
-                  const linkNode = document.createElement("a");
-                  const textNode = document.createTextNode(key);
-                  linkNode.href = job[key];
-                  
-                  const btn = document.createElement("a"); 
-                  btn.innerHTML = "Delete"; 
-                  btn.classList.add("button");
-                  btn.classList.add("is-danger");
-                  btn.classList.add("is-light");
-                  btn.style = "float:right";
-                  btn.id = "abort"
-                  btn.href = job[key].replace('progress', 'abort');
-
-                  linkNode.appendChild(textNode);
-                  curJob.appendChild(linkNode);
-                  curJob.appendChild(btn);
-                  curJobRow.appendChild(curJob);
-                  completedJobs.appendChild(curJobRow);
-              };
-            });
-          } else {
-            const curJobRow = document.createElement("tr");
-            const curJob = document.createElement("td");
-            const textNode = document.createTextNode("You currently have no completed jobs.");
-            curJob.classList.add("has-text-grey-light");
-            curJob.classList.add("is-italic");
-            
-            curJob.appendChild(textNode);
-            curJobRow.appendChild(curJob);
-            completedJobs.appendChild(curJobRow);
-          };
     </script>
     <script>
       var aElems = document.getElementById('abort');

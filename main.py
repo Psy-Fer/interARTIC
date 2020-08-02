@@ -35,14 +35,39 @@ max_queue_size = 10
 #Create a System object with a queue of length maximum_queue_size
 qSys = System(max_queue_size)
 
+@app.route('/getCheckTasksUrl', methods = ['POST'])
+def getCheckTasksUrl():
+    return jsonify({}), 202, {'Location': url_for('checkTasks')}
+
+@app.route('/checkTasks')
 def checkTasks():
-    threading.Timer(2.0, checkTasks).start()
+    queueList = []
+    completedList = []
+    changed = False
+
     for job in qSys.queue.getItems():
         if job.task_id:
             task = executeJob.AsyncResult(job.task_id)
             if task.ready():
                 qSys.moveJobToComplete(job.job_name)
-                
+                changed = True
+                #Don't add this job to queueList (we don't want it to display in the queue)
+                continue
+        queueList.append({job.job_name : url_for('progress', job_name=job.job_name, task_id = job.task_id)})
+
+    for job in qSys.completed:
+        completedList.append({job.job_name : url_for('output', job_name=job.job_name)})
+
+    queueDict = {'jobs': queueList}
+    for key, value in queueDict.items():
+        print(key, value)
+
+    completedDict = {'jobs': completedList}
+    for key, value in completedDict.items():
+        print(key, value)
+    
+    return json.htmlsafe_dumps({'changed': changed, 'queue': queueDict, 'completed': completedDict})
+
 
 def check_override(output_folder, override_data):
     dir_files = os.listdir(output_folder)
@@ -149,44 +174,46 @@ def route():
 @app.route("/home")
 def home():
     #Update displayed queue and completed jobs on home page
-    queueList = []
-    completedList = []
+    # queueList = []
+    # completedList = []
 
-    checkTasks()
+    # checkTasks()
 
-    def completedToJSON():
-        for item in qSys.completed:
-            completedList.append({item.job_name : url_for('output', job_name=item.job_name)})
+    # def completedToJSON():
+    #     for item in qSys.completed:
+    #         completedList.append({item.job_name : url_for('output', job_name=item.job_name)})
 
-        completedDict = {'jobs': completedList}
-        for key, value in completedDict.items():
-            print(key, value)
+    #     completedDict = {'jobs': completedList}
+    #     for key, value in completedDict.items():
+    #         print(key, value)
 
-        return json.htmlsafe_dumps(completedDict)
+    #     return json.htmlsafe_dumps(completedDict)
 
-    def queueToJSON():
-        for item in qSys.queue.getItems():
-            queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
+    # def queueToJSON():
+    #     for item in qSys.queue.getItems():
+    #         queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
-        queueDict = {'jobs': queueList}
-        for key, value in queueDict.items():
-            print(key, value)
+    #     queueDict = {'jobs': queueList}
+    #     for key, value in queueDict.items():
+    #         print(key, value)
 
-        return json.htmlsafe_dumps(queueDict)
+    #     return json.htmlsafe_dumps(queueDict)
 
-    if qSys.queue.empty():
-        displayQueue = None
-    else:
-        displayQueue = queueToJSON()
+    # if qSys.queue.empty():
+    #     displayQueue = None
+    # else:
+    #     displayQueue = queueToJSON()
 
-    if not qSys.completed:
-        displayCompleted = None
-    else:
-        for j in qSys.completed:
-            print("COMPLETED JOB: ", j)
-        displayCompleted = completedToJSON()
+    # if not qSys.completed:
+    #     displayCompleted = None
+    # else:
+    #     for j in qSys.completed:
+    #         print("COMPLETED JOB: ", j)
+    #     displayCompleted = completedToJSON()
 
-    return render_template("home.html", queue = displayQueue, completed = displayCompleted)
+    #return render_template("home.html", queue = displayQueue, completed = displayCompleted)
+    return render_template("home.html")
+
 
 @app.route("/about")
 def about():
@@ -549,7 +576,10 @@ def progress(job_name):
     num_samples = job.num_samples
     barcode_type = job.barcode_type
 
-    return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue, queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,error=error)
+    return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue, 
+                            queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder,
+                            read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme,
+                            primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,error=error)
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):
