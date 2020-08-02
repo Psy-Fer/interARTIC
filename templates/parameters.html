@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="/static/css/bulma.min.css" />
+    <link rel="stylesheet" href="/static/css/bulma.css" />
     <link rel="icon" type="image/png" href="/static/icon.png" sizes="400x400">
     <title>Home</title>
 </head>
@@ -11,6 +11,16 @@
     {% block content %}
     <!-- Titles -->
     <div class="hero-body">
+      {% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+					<div class="notification is-danger is-light" id="flash">
+						<button class="delete" onclick="hide()"></button>
+						{{ message }}
+					</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
       <div class="container is-widescreen">
         <center><h1 class="title is-4">Input parameters here:</h1> <br></center>
       </div>
@@ -22,6 +32,11 @@
                   <tr>
                       <th>Queued Jobs</td>
                   </tr>
+                  {% if qLen %}
+                    <tr>
+                      <td class="has-text-grey-light is-italic">You currently have {{ qLen }} remaining spots out of 10 left in the queue.</td>
+                    </tr>
+                  {% endif %}
               </thead>
               <tbody id=jobsQueue>
               </tbody>
@@ -222,7 +237,7 @@
                         {% endif %}
                         {% endif %}
                         <br>
-                        <input class="button" name="submit_job" type="submit" value="Submit Job(s)"><br>
+                        <input class="button" id="submit_job" name="submit_job" type="submit" value="Submit Job(s)"><br>
                     </div>
                 </div>
                 <br>
@@ -256,6 +271,10 @@
             max_length.value = '';
             min_length.value = '';
           }
+        }
+        function hide() {
+          var message = document.getElementById("flash");
+          message.style.display = "none";
         }
 
         // Displaying the Queue

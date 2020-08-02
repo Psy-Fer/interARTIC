@@ -19,16 +19,6 @@
     {% block content %}
     <div class="hero-body">
 		<div class="container is-widescreen">
-			{% with messages = get_flashed_messages() %}
-				{% if messages %}
-					{% for message in messages %}
-					<div class="notification is-warning is-light" id="flash">
-						<button class="delete" onclick="hide()"></button>
-						{{ message }}
-					</div>
-					{% endfor %}
-				{% endif %}
-			{% endwith %}
 	
 			<center>
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
@@ -164,11 +154,6 @@
 				alert('Unexpected error');
 			}
 		});
-
-		function hide() {
-			var message = document.getElementById("flash");
-			message.style.display = "none";
-		}
 
 		function hideError() {
 			var message = document.getElementById("errorMsg");

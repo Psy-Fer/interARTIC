@@ -71,32 +71,10 @@ def checkTasks():
 
 def check_override(output_folder, override_data):
     dir_files = os.listdir(output_folder)
-    if len(dir_files) > 0:
+    if len(dir_files) > 0 and override_data is False:
         return True
     return False
 
-def removeFiles(output_folder, override_data, job_name):
-    dir_files = os.listdir(output_folder)
-    filematch = 0
-    if "all_cmds_log.txt" in dir_files and len(dir_files) == 1:
-        remove = "rm -r " + output_folder + "/*"
-        os.system(remove)
-
-    if override_data is False and len(dir_files) > 0:
-        for f in dir_files:
-            if fnmatch.fnmatch(f, job_name+'*'):
-                filematch += 1
-        if filematch > 0:
-            remove = 'rm -r \"' + output_folder + '\"/'+job_name+'*'
-            os.system(remove)
-            remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
-            os.system(remove)
-        else:
-            remove = 'rm -r \"' + output_folder + '\"/all_cmds_log.txt'
-            os.system(remove)
-    elif override_data is True:
-        remove = "rm -r " + output_folder + "/*"
-        os.system(remove)
 
 @celery.task(bind=True)
 def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd):
@@ -176,6 +154,7 @@ def home():
     #Update displayed queue and completed jobs on home page
     # queueList = []
     # completedList = []
+    qLen = None
 
     # checkTasks()
 
@@ -198,11 +177,12 @@ def home():
     #         print(key, value)
 
     #     return json.htmlsafe_dumps(queueDict)
-
     # if qSys.queue.empty():
     #     displayQueue = None
     # else:
     #     displayQueue = queueToJSON()
+    #     qLen = 10 - qSys.queue.getNumberInQueue()
+
 
     # if not qSys.completed:
     #     displayCompleted = None
@@ -214,6 +194,7 @@ def home():
     #return render_template("home.html", queue = displayQueue, completed = displayCompleted)
     return render_template("home.html")
 
+    # return render_template("home.html", queue = displayQueue, completed = displayCompleted, qLen=qLen)
 
 @app.route("/about")
 def about():
@@ -246,18 +227,13 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     elif len(os.listdir(input_folder)) == 0:
         errors['input_folder'] = "Directory is empty."
 
-
-    
-   # if not os.path.isdir(output_folder):
-    #    errors['output_folder'] = "Invalid path."
-
-        #give error if primer schemes folder path is invalid or empty
+    #give error if primer schemes folder path is invalid or empty
     if not os.path.isdir(primer_scheme_dir):
         errors['primer_scheme_dir'] = "Invalid path."
     elif len(os.listdir(primer_scheme_dir)) == 0:
         errors['primer_scheme_dir'] = "Directory is empty."
 
-        #if read file is specified by user
+    #if read file is specified by user
     if read_file:
         if not os.path.isfile(read_file):
             errors['read_file'] = "Invalid path/file."
@@ -279,17 +255,22 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             os.system(make_dir)
             make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
             os.system(make_dir_n)
-        #only one pipeline running
+        
+        if override_data is True:
+            remove = "rm -r " + output_folder + "/*"
+            os.system(remove)
+        else:
+            if check_override(output_folder + "/medaka", override_data):
+                # removeFiles(output_folder + "/medaka", override_data, job_name)
+                os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
+                flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+                errors['override'] = True
 
-        if check_override(output_folder + "/medaka", override_data):
-            # removeFiles(output_folder + "/medaka", override_data, job_name)
-            os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
-            flash("Output folder has been overwritten.")
-
-        if check_override(output_folder + "/medaka", override_data):
-            # removeFiles(output_folder + "/nanopolish", override_data, job_name)
-            os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
-            flash("Output folder has been overwritten.")
+            if check_override(output_folder + "/medaka", override_data):
+                # removeFiles(output_folder + "/nanopolish", override_data, job_name)
+                os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
+                flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+                errors['override'] = True
 
         # Make empty log file for initial progress rendering
         make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
@@ -302,13 +283,16 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         if not os.path.exists(output_folder):
             make_dir = 'mkdir "' + output_folder + '"'
             os.system(make_dir)
-
-        if check_override(output_folder, override_data):
+        
+        if override_data is True:
+            remove = "rm -r " + output_folder + "/*"
+            os.system(remove)
+        elif check_override(output_folder, override_data):
             # removeFiles(output_folder, override_data, job_name)
             os.system('rm ' + output_folder + '/all_cmds_log.txt')
-            flash("Output folder has been overwritten.")
-            # Make empty log file for initial progress rendering
-
+            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+            errors['override'] = True
+        # Make empty log file for initial progress rendering
         make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
         os.system(make_log)
 
@@ -374,8 +358,9 @@ def parameters():
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
+            qLen = 10 - qSys.queue.getNumberInQueue()
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,qLen=qLen)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -420,7 +405,8 @@ def parameters():
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", queue = displayQueue)
+    qLen = 10 - qSys.queue.getNumberInQueue()
+    return render_template("parameters.html", queue = displayQueue, qLen=qLen)
 
 @app.route("/error/<job_name>", methods = ["POST","GET"])
 def error(job_name):
@@ -490,6 +476,7 @@ def error(job_name):
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
+            qLen = 10 - qSys.queue.getNumberInQueue()
 
             return render_template("parameters.html", queue=displayQueue, job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors)
 
@@ -561,12 +548,12 @@ def progress(job_name):
         frac = "0"
 
     pattern = "^ERROR"
-    error = 0;
+    error = 0
     with open(path, "r") as f:
         for line in f:
             result = re.match(pattern, line)
             if (result):
-                error = 1;
+                error = 1
 
     # num_in_queue = jobQueue.getJobNumber(job_name)
     # queue_length = jobQueue.getNumberInQueue()

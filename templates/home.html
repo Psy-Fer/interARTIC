@@ -28,6 +28,11 @@
                     <tr>
                         <th>Queued Jobs</td>
                     </tr>
+                    {% if qLen %}
+                    <tr>
+                      <td class="has-text-grey-light is-italic">You currently have {{ qLen }} remaining spots out of 10 left in the queue.</td>
+                    </tr>
+                    {% endif %}
                 </thead>
                 <tbody id=jobsQueue>
                 </tbody>
