@@ -154,7 +154,6 @@ def home():
     #Update displayed queue and completed jobs on home page
     # queueList = []
     # completedList = []
-    qLen = None
 
     # checkTasks()
 
@@ -181,7 +180,6 @@ def home():
     #     displayQueue = None
     # else:
     #     displayQueue = queueToJSON()
-    #     qLen = 10 - qSys.queue.getNumberInQueue()
 
 
     # if not qSys.completed:
@@ -194,7 +192,6 @@ def home():
     #return render_template("home.html", queue = displayQueue, completed = displayCompleted)
     return render_template("home.html")
 
-    # return render_template("home.html", queue = displayQueue, completed = displayCompleted, qLen=qLen)
 
 @app.route("/about")
 def about():
@@ -243,6 +240,10 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     
     #both pipelines running
     if pipeline == "both":
+        
+        if override_data is True and os.path.exists(output_folder):
+            remove = "rm -r " + output_folder + "/*"
+            os.system(remove)
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder + "/medaka"):
             make_dir = 'mkdir "' + output_folder + '"'
@@ -255,22 +256,18 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             os.system(make_dir)
             make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
             os.system(make_dir_n)
-        
-        if override_data is True:
-            remove = "rm -r " + output_folder + "/*"
-            os.system(remove)
-        else:
-            if check_override(output_folder + "/medaka", override_data):
-                # removeFiles(output_folder + "/medaka", override_data, job_name)
-                os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
-                flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
-                errors['override'] = True
 
-            if check_override(output_folder + "/medaka", override_data):
-                # removeFiles(output_folder + "/nanopolish", override_data, job_name)
-                os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
-                flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
-                errors['override'] = True
+        if check_override(output_folder + "/medaka", override_data):
+            # removeFiles(output_folder + "/medaka", override_data, job_name)
+            os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
+            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+            errors['override'] = True
+
+        if check_override(output_folder + "/medaka", override_data):
+            # removeFiles(output_folder + "/nanopolish", override_data, job_name)
+            os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
+            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+            errors['override'] = True
 
         # Make empty log file for initial progress rendering
         make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
@@ -358,9 +355,8 @@ def parameters():
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
-            qLen = 10 - qSys.queue.getNumberInQueue()
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,qLen=qLen)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -405,8 +401,7 @@ def parameters():
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    qLen = 10 - qSys.queue.getNumberInQueue()
-    return render_template("parameters.html", queue = displayQueue, qLen=qLen)
+    return render_template("parameters.html", queue = displayQueue)
 
 @app.route("/error/<job_name>", methods = ["POST","GET"])
 def error(job_name):
@@ -476,7 +471,6 @@ def error(job_name):
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
-            qLen = 10 - qSys.queue.getNumberInQueue()
 
             return render_template("parameters.html", queue=displayQueue, job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors)
 
@@ -580,8 +574,15 @@ def abort(job_name):
     job = qSys.getJobByName(job_name)
     task = job.task_id
     celery.control.revoke(task,terminate=True, signal='SIGKILL')
-    qSys.removeQueuedJob(job_name)
+    
+    # Remove files
+    currdir = os.path.dirname(os.path.realpath(__file__))
+    path = currdir +'/'+job_name
+    print("removing after abort:",path)
+    os.system('rm -r ' + path +'*')
+    os.system('rm -r ' + currdir + '/tmp*' )
 
+    qSys.removeQueuedJob(job_name)
     return redirect(url_for("home"))
     # return "TRYING TO ABORT"
 

@@ -6,6 +6,33 @@
     <link rel="icon" type="image/png" href="/static/icon.png" sizes="400x400">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      window.onload = function() {
+        console.log("loaded window")
+        var buttons = document.getElementsByClassName("abort");
+        for (var i=0; i<buttons.length;i++) {
+          buttons[i].addEventListener('click', function(){ 
+            console.log("clicked!!!!")
+            var check = confirm("Are you sure you want to abort the job?");
+            if (check == true) {
+              var del = confirm("Do you want to delete the files created?")
+              if (del == true) {
+                return true;
+              }
+              else {
+                event.preventDefault();
+                return false;
+              }
+            }
+            else {
+              event.preventDefault();
+              return false;
+            }
+          });
+        }
+        
+      }
+    </script>
     <title>Home</title>
   </head>
   <body>
@@ -28,11 +55,6 @@
                     <tr>
                         <th>Queued Jobs</td>
                     </tr>
-                    {% if qLen %}
-                    <tr>
-                      <td class="has-text-grey-light is-italic">You currently have {{ qLen }} remaining spots out of 10 left in the queue.</td>
-                    </tr>
-                    {% endif %}
                 </thead>
                 <tbody id=jobsQueue>
                 </tbody>
@@ -72,7 +94,7 @@
             alert('Unexpected error');
           }
         });
-
+      
         function update_jobs(checkTasksUrl) {
           $.getJSON(checkTasksUrl, function(data) {
             changed = data['changed']
@@ -112,7 +134,7 @@
                     btn.classList.add("is-danger");
                     btn.classList.add("is-light");
                     btn.style = "float:right";
-                    btn.id = "abort"
+                    btn.classList.add("abort")
                     btn.href = job[key].replace('progress', 'abort');
 
                     linkNode.appendChild(textNode);
@@ -183,21 +205,8 @@
           });
         }
 
+    </script>
 
-         
-    </script>
-    <script>
-      var aElems = document.getElementById('abort');
-      aElems.onclick = function() {
-          var check = confirm("Are you sure you want to abort the job?");
-          if (check == true) {
-              return true;
-          }
-          else {
-              return false;
-          }
-      };
-    </script>
     {% endblock %}
   </body>
 </html>
