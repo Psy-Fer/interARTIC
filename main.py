@@ -36,7 +36,7 @@ qSys = System(max_queue_size)
 
 def check_override(output_folder, override_data):
     dir_files = os.listdir(output_folder)
-    if len(dir_files) > 0:
+    if len(dir_files) > 0 and override_data is False:
         return True
     return False
 
@@ -150,6 +150,7 @@ def home():
     #Update displayed queue and completed jobs on home page
     queueList = []
     completedList = []
+    qLen = None
 
     def completedToJSON():
         for item in qSys.completed:
@@ -175,13 +176,14 @@ def home():
         displayQueue = None
     else:
         displayQueue = queueToJSON()
+        qLen = 10 - qSys.queue.getNumberInQueue()
 
     if not qSys.completed:
         displayCompleted = None
     else:
         displayCompleted = completedToJSON()
 
-    return render_template("home.html", queue = displayQueue, completed = displayCompleted)
+    return render_template("home.html", queue = displayQueue, completed = displayCompleted, qLen=qLen)
 
 @app.route("/about")
 def about():
@@ -217,13 +219,13 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
    # if not os.path.isdir(output_folder):
     #    errors['output_folder'] = "Invalid path."
 
-        #give error if primer schemes folder path is invalid or empty
+    #give error if primer schemes folder path is invalid or empty
     if not os.path.isdir(primer_scheme_dir):
         errors['primer_scheme_dir'] = "Invalid path."
     elif len(os.listdir(primer_scheme_dir)) == 0:
         errors['primer_scheme_dir'] = "Directory is empty."
 
-        #if read file is specified by user
+    #if read file is specified by user
     if read_file:
         if not os.path.isfile(read_file):
             errors['read_file'] = "Invalid path/file."
@@ -257,19 +259,22 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         if check_override(output_folder + "/medaka", override_data):
             # removeFiles(output_folder + "/medaka", override_data, job_name)
             os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
-            flash("Output folder has been overwritten.")
+            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+            errors['override'] = True
 
         if check_override(output_folder + "/medaka", override_data):
             # removeFiles(output_folder + "/nanopolish", override_data, job_name)
             os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
-            flash("Output folder has been overwritten.")
+            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+            errors['override'] = True
 
     if pipeline != "both":
         if check_override(output_folder, override_data):
             # removeFiles(output_folder, override_data, job_name)
             os.system('rm ' + output_folder + '/all_cmds_log.txt')
-            flash("Output folder has been overwritten.")
-            # Make empty log file for initial progress rendering
+            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+            errors['override'] = True
+        # Make empty log file for initial progress rendering
         make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
         os.system(make_log)
     else:
@@ -338,8 +343,9 @@ def parameters():
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
+            qLen = 10 - qSys.queue.getNumberInQueue()
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,qLen=qLen)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -384,7 +390,8 @@ def parameters():
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", queue = displayQueue)
+    qLen = 10 - qSys.queue.getNumberInQueue()
+    return render_template("parameters.html", queue = displayQueue, qLen=qLen)
 
 
 @app.route("/error/<job_name>", methods = ["POST","GET"])
@@ -431,7 +438,7 @@ def error(job_name):
             override_data = False
 
         errors = {}
-        errors = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length)
+        errors = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
         
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
@@ -447,8 +454,9 @@ def error(job_name):
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
+            qLen = 10 - qSys.queue.getNumberInQueue()
 
-            return render_template("parameters.html", job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors)
+            return render_template("parameters.html", job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors, qLen=qLen)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -493,7 +501,8 @@ def error(job_name):
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir)
+    qLen = 10 - qSys.queue.getNumberInQueue()
+    return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,qLen=qLen)
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
@@ -518,12 +527,12 @@ def progress(job_name):
         frac = "0"
 
     pattern = "^ERROR"
-    error = 0;
+    error = 0
     with open(path, "r") as f:
         for line in f:
             result = re.match(pattern, line)
             if (result):
-                error = 1;
+                error = 1
 
     # num_in_queue = jobQueue.getJobNumber(job_name)
     # queue_length = jobQueue.getNumberInQueue()
