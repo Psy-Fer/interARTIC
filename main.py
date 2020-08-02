@@ -70,6 +70,8 @@ def checkTasks():
 
 
 def check_override(output_folder, override_data):
+    if(not os.path.exists(output_folder)):
+        return True
     dir_files = os.listdir(output_folder)
     if len(dir_files) > 0 and override_data is False:
         return True
@@ -201,28 +203,28 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
     errors = {}
 
-    #if no output folder entered, creates one inside of input folder
-    if not output_folder:
-        output_folder = input_folder + "/output"
+    #Check of jobname is used
+    if qSys.getJobByName(job_name) is not None:
+        errors['job_name'] = "Job Currently Running."
     
     if input_folder[-1] == "/":
         input_folder = input_folder[:-1]
+    #give error if input folder path is invalid or empty
+    if not os.path.isdir(input_folder):
+        errors['input_folder'] = "Invalid path."
+    elif len(os.listdir(input_folder)) == 0:
+        errors['input_folder'] = "Directory is empty."
+
+    #if no output folder entered, creates one inside of input folder
+    if not output_folder:
+        output_folder = input_folder + "/output"
 
     if output_folder[-1] == "/":
         output_folder = output_folder[:-1]
 
     if primer_scheme_dir[-1] == "/":
         primer_scheme_dir = primer_scheme_dir[:-1]
-
-    #Check of jobname is used
-    if qSys.getJobByName(job_name) is not None:
-        errors['job_name'] = "Job Name Exists."
-
-    #give error if input folder path is invalid or empty
-    if not os.path.isdir(input_folder):
-        errors['input_folder'] = "Invalid path."
-    elif len(os.listdir(input_folder)) == 0:
-        errors['input_folder'] = "Directory is empty."
+    
 
     #give error if primer schemes folder path is invalid or empty
     if not os.path.isdir(primer_scheme_dir):
@@ -257,13 +259,13 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
             os.system(make_dir_n)
 
-        if check_override(output_folder + "/medaka", override_data):
+        if check_override(output_folder + "/medaka", override_data) and os.path.exists(input_folder):
             # removeFiles(output_folder + "/medaka", override_data, job_name)
             os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
 
-        if check_override(output_folder + "/medaka", override_data):
+        if check_override(output_folder + "/medaka", override_data) and os.path.exists(input_folder):
             # removeFiles(output_folder + "/nanopolish", override_data, job_name)
             os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
@@ -284,7 +286,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         if override_data is True:
             remove = "rm -r " + output_folder + "/*"
             os.system(remove)
-        elif check_override(output_folder, override_data):
+        elif check_override(output_folder, override_data) and os.path.exists(input_folder):
             # removeFiles(output_folder, override_data, job_name)
             os.system('rm ' + output_folder + '/all_cmds_log.txt')
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")

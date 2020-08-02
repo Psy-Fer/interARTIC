@@ -127,8 +127,16 @@
                 <!-- read file path - Medaka/ Nanopolish-->
                 <br><label for="scheme_folder">Read file:</label><br>
                 <small>(only input if you already have this file, otherwise artic gather/ demultiplex will generate it)</small><br>
-                <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br><br>
-
+                <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
+                {% if errors %}
+                {% if errors['read_file'] %}
+                <script>
+                  document.getElementById("read_file").className = "input is-danger";
+                </script>
+                <p class="help is-danger"> {{ errors['read_file'] }} </p>
+                {% endif %}
+                {% endif %}
+                <br>
 
                 <!-- output folder file path - Medaka/ Nanopolish-->
                 <label for="output_folder">Output folder: </label><br>
@@ -143,8 +151,16 @@
 
                 <!-- primer scheme directory -->
                 <label for="primer_scheme">Scheme folder: *</label><br>
-                <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br><br>
-
+                <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br>
+                {% if errors %}
+                {% if errors['primer_scheme_dir'] %}
+                <script>
+                  document.getElementById("primer_scheme_dir").className = "input is-danger";
+                </script>
+                <p class="help is-danger"> {{ errors['primer_scheme_dir'] }} </p>
+                {% endif %}
+                {% endif %}
+                <br>
                 <!-- primer scheme name -->
                 <label for="primer_scheme">Name: *</label><br>
                 <small> e.g. nCoV-2019/V1 </small><br>
