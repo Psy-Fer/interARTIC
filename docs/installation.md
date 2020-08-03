@@ -26,7 +26,7 @@ python --version
 pip --version
 ```
 
-If Python is not installed, go to: https://www.python.org/downloads/ and follow the prompts there.
+If Python is not installed, go to: ```https://www.python.org/downloads/``` and follow the prompts there.
 
 If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary.
 
@@ -35,11 +35,11 @@ pip --version
 pip install --upgrade pip
 ```
 
-If pip is not installed, go to: https://pip.pypa.io/en/stable/installing/ and follow the prompts there.
+If pip is not installed, go to: ```https://pip.pypa.io/en/stable/installing/``` and follow the prompts there.
 
 ## Installing miniconda
 
-The miniconda installation guide can be found here: https://conda.io/projects/conda/en/latest/user-guide/install/index.htm
+The miniconda installation guide can be found here: ```https://conda.io/projects/conda/en/latest/user-guide/install/index.htm```
 
 We suggest you undergo the 'Regular Installation' process.
 
@@ -56,7 +56,7 @@ conda env create -f environment.yml
 
 ## Installing the Redis Server and Celery
 
-To install the Redis Server (https://redis.io/topics/quickstart), enter the following into your command prompt:
+To install the Redis Server ```https://redis.io/topics/quickstart```, enter the following into your command prompt:
 ```
 bash run-redis.sh
 ```
@@ -93,5 +93,5 @@ conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
 python3 main.py
 ```
 
-Navigate to your browser and go to http://127.0.0.1:5000 to access InterARTIC.
+Navigate to your browser and go to ```http://127.0.0.1:5000``` to access InterARTIC.
 

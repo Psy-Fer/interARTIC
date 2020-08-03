@@ -26,7 +26,6 @@ $ cd documents                                                  # change directo
 $ cd inputFolder                                                # change directory to input folder
 $ pwd
 /Users/YOURNAME/documents/inputFolder
-
 ```
 
 #### Input directory file structure
@@ -43,38 +42,38 @@ ADD IN IMG
 A sample file structure is as below:
 
 ```
-input_directory
-┣ fast5_pass
-┃ ┣ A_30.fast5
-┃ ┣ A_31.fast5
-┣ fast5_fail
-┃ ┣ A_0.fast5
-┃ ┣ A_1.fast5
-┣ fastq_pass
-┃ ┣ B_0.fastq
-┃ ┣ B_1.fastq
-┣ fastq_fail
-┃ ┣ B_10.fast5
-┃ ┣ B_11.fast5
-┣ primer-schemes
-┃ ┣ IturiEBOV
-┃ ┃ ┗ V1
-┃ ┃ ┃ ┣ IturiEBOV.log
-┃ ┃ ┃ ┣ IturiEBOV.pdf
-┃ ┃ ┃ ┣ IturiEBOV.pickle
-┃ ┃ ┃ ┣ IturiEBOV.reference.fasta
-┃ ┃ ┃ ┣ IturiEBOV.reference.fasta.amb
-┃ ┃ ┃ ┣ IturiEBOV.reference.fasta.ann
-┃ ┃ ┃ ┣ IturiEBOV.reference.fasta.bwt
-┃ ┃ ┃ ┣ IturiEBOV.reference.fasta.fai
-┃ ┃ ┃ ┣ IturiEBOV.reference.fasta.pac
-┃ ┃ ┃ ┣ IturiEBOV.reference.fasta.sa
-┃ ┃ ┃ ┣ IturiEBOV.scheme.bed
-┃ ┃ ┃ ┣ IturiEBOV.svg
-┃ ┃ ┃ ┗ IturiEBOV.tsv
-┣ sample-barcode.csv
-┣ sequencing_summary.txt
-┗ readfile
+input_directory/
+    fast5_pass/
+        A_30.fast5
+        A_31.fast5
+    fast5_fail/
+        A_0.fast5
+        A_1.fast5
+    fastq_pass/
+        B_0.fastq
+        B_1.fastq
+    fastq_fail/
+        B_10.fast5
+        B_11.fast5
+    primer-schemes/
+        IturiEBOV/
+              V1/
+                IturiEBOV.log
+                IturiEBOV.pdf
+                IturiEBOV.pickle
+                IturiEBOV.reference.fasta
+                IturiEBOV.reference.fasta.amb
+                IturiEBOV.reference.fasta.ann
+                IturiEBOV.reference.fasta.bwt
+                IturiEBOV.reference.fasta.fai
+                IturiEBOV.reference.fasta.pac
+                IturiEBOV.reference.fasta.sa
+                IturiEBOV.scheme.bed
+                IturiEBOV.svg
+                IturiEBOV.tsv
+    sample-barcode.csv
+    sequencing_summary.txt
+    readfile
 ```
 
 ### Parameters
@@ -136,7 +135,6 @@ You can make any changes necessary, and the new job will be added to the end of 
 ### What happens when a job is completed?
 
 When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page.
-
 
 ## Output Page
 
