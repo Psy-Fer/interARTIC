@@ -4,3 +4,5 @@ nav:
     - Home: index.md
     - Installation: installation.md
 
+plugins:
+    - mkdocstrings
