@@ -7,7 +7,6 @@ from celery import Celery
 import subprocess
 from src.system import System
 from celery.utils.log import get_task_logger
-import requests
 import random
 import time
 import fnmatch

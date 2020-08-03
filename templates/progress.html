@@ -44,7 +44,7 @@
 			<br>
 			<a class="button is-danger is-light" id="abort" href='/abort/{{ job_name }}'>Abort Job</a>
 
-			<button id="direct_to_output" class="button float-left submit-button" style="display:none">Go to output</button>
+			<button id="direct_to_output" class="button float-left submit-button" style="display:none;">Go to output</button>
 			<br><br>
 
 				<h1 id='status'> <h1><br>
@@ -199,11 +199,11 @@
 	<script>
 		function updateButton() {
 			var frac = document.getElementById('frac').innerText;
-			console.log("inside function")
-			if (frac === "3/3 steps complete") {
+			console.log("inside function");
+			if (frac === "3/3 steps complete\n") {
 				console.log(frac);
-				document.getElementById('abort').style = "display:none";
-				document.getElementById('direct_to_output').style = "";
+				document.getElementById('abort').style.display = "none";
+				document.getElementById('direct_to_output').style.display = "block";
 			}
 		}
 
