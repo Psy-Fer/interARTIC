@@ -13,7 +13,7 @@ term=$1
 if [ $term == "xterm" ]
 then
     xterm -title "Redis Server" -e "bash $script_full_path/run-redis.sh" 
-    xterm -title "Celery" -e "cd $script_full_path; conda activate artic-ncov2019;celery worker -A main.celery -loglevel=info" 
+    xterm -title "Celery" -e "cd $script_full_path; conda activate artic-ncov2019;celery worker -A main.celery --loglevel=info" 
     xterm -title "Web App" -e "python3 $script_full_path/main.py"
 elif [ $term == "macos" ]
 then
@@ -23,7 +23,7 @@ then
 elif [ $term == "konsole" ]
 then
     konsole -e "bash $script_full_path/run-redis.sh"
-    konsole -e "cd $script_full_path; conda activate artic-ncov2019;celery worker -A main.celery -loglevel=info" 
+    konsole -e "cd $script_full_path; conda activate artic-ncov2019;celery worker -A main.celery --loglevel=info" 
     konsole -e "python3 $script_full_path/main.py"
 elif [ $term == "git" ]
 then

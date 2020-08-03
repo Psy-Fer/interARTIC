@@ -1,5 +1,5 @@
 site_name: InterARTIC Documentation
-theme: readthedocs
+theme: gitbook
 nav:
     - Home: index.md
     - Installation: installation.md
