@@ -4,6 +4,33 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/static/css/bulma.css" />
     <link rel="icon" type="image/png" href="/static/icon.png" sizes="400x400">
+    <script>
+      window.onload = function() {
+        console.log("loaded window")
+        var buttons = document.getElementsByClassName("abort");
+        for (var i=0; i<buttons.length;i++) {
+          buttons[i].addEventListener('click', function(){ 
+            console.log("clicked!!!!")
+            var check = confirm("Are you sure you want to abort the job?");
+            if (check == true) {
+              var del = confirm("Do you want to delete the files created?")
+              if (del == true) {
+                return true;
+              }
+              else {
+                event.preventDefault();
+                return false;
+              }
+            }
+            else {
+              event.preventDefault();
+              return false;
+            }
+          });
+        }
+        
+      }
+    </script>
     <title>Home</title>
 </head>
 <body>
@@ -31,11 +58,6 @@
                   <tr>
                       <th>Queued Jobs</td>
                   </tr>
-                  {% if qLen %}
-                    <tr>
-                      <td class="has-text-grey-light is-italic">You currently have {{ qLen }} remaining spots out of 10 left in the queue.</td>
-                    </tr>
-                  {% endif %}
               </thead>
               <tbody id=jobsQueue>
               </tbody>
@@ -105,9 +127,17 @@
                 <!-- read file path - Medaka/ Nanopolish-->
                 <label class="subtitle is-5" for="scheme_folder">Read file:</label><br>
                 <small>(only input if you already have this file, otherwise artic gather/ demultiplex will generate it)</small><br>
-                <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br><br>
-                
-                
+                <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
+                {% if errors %}
+                {% if errors['read_file'] %}
+                <script>
+                  document.getElementById("read_file").className = "input is-danger";
+                </script>
+                <p class="help is-danger"> {{ errors['read_file'] }} </p>
+                {% endif %}
+                {% endif %}
+                <br>
+
                 <!-- output folder file path - Medaka/ Nanopolish-->
                 <label class="subtitle is-5" for="output_folder">Output folder: </label><br>
                 <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
@@ -121,7 +151,16 @@
 
                 <!-- primer scheme directory -->
                 <label class="subtitle is-5" for="primer_scheme">Scheme folder: *</label><br>
-                <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br><br>
+                <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br>
+                {% if errors %}
+                {% if errors['primer_scheme_dir'] %}
+                <script>
+                  document.getElementById("primer_scheme_dir").className = "input is-danger";
+                </script>
+                <p class="help is-danger"> {{ errors['primer_scheme_dir'] }} </p>
+                {% endif %}
+                {% endif %}
+                <br>
 
                 <!-- primer scheme name -->
                 <label class="subtitle is-5" for="primer_scheme">Primer Name: *</label><br>
@@ -302,7 +341,7 @@
                      btn.classList.add("is-danger");
                      btn.classList.add("is-light");
                      btn.style = "float:right";
-                     btn.id = "abort"
+                     btn.classList.add("abort")
                      btn.href = job[key].replace("progress", "abort")
 
                      linkNode.appendChild(textNode);
@@ -323,18 +362,6 @@
              curJobRow.appendChild(curJob);
              jobsQueue.appendChild(curJobRow);
          };
-        </script>
-        <script>
-          var aElems = document.getElementById('abort');
-          aElems.onclick = function() {
-              var check = confirm("Are you sure you want to abort the job?");
-              if (check == true) {
-                  return true;
-              }
-              else {
-                  return false;
-              }
-          };
         </script>
 
     {% endblock %}
