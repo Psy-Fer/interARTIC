@@ -15,12 +15,33 @@ Your operating systems command line will be used to install the dependencies.
 * For Windows: Typing “cmd” into your search bar in the Start menu, then hit Enter.
 * For Linux: Entering Ctrl+Alt+T
 
+## Installing Python and pip
+
+In order to use InterARTIC, you’ll need Python and its package manager pip installed on your system.
+
+Check if they're already installed by entering the following into your command prompt:
+
+```
+python --version
+pip --version
+```
+
+If Python is not installed, go to: https://www.python.org/downloads/ and follow the prompts there.
+
+If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary.
+
+```
+pip --version
+pip install --upgrade pip
+```
+
+If pip is not installed, go to: https://pip.pypa.io/en/stable/installing/ and follow the prompts there.
+
 ## Installing miniconda
 
 The miniconda installation guide can be found here: https://conda.io/projects/conda/en/latest/user-guide/install/index.htm
 
 We suggest you undergo the 'Regular Installation' process.
-
 
 ## Installing the ARTIC pipeline
 
@@ -37,10 +58,7 @@ conda env create -f environment.yml
 
 To install the Redis Server (https://redis.io/topics/quickstart), enter the following into your command prompt:
 ```
-wget http://download.redis.io/redis-stable.tar.gz
-tar xvzf redis-stable.tar.gz
-cd redis-stable
-make
+bash run-redis.sh
 ```
 
 ## Installing Python packages for Redis, Celery and Flask
@@ -59,7 +77,7 @@ git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
 
 ## Running InterARTIC
 
-To start InterARTIC, go to the directory where the repository was cloned and enter the following command.
+To start InterARTIC, navigate to the directory where the repository was cloned and enter the following command.
 
 ```
 cd SARS-CoV-2-NanoporeAnalysisWebApp
