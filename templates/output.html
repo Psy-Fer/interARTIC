@@ -22,8 +22,9 @@
               <h1 class="title is-4"> Data Visualisation </h1>
               <h1 class="title is-6"> Variants found </h1>
               <div id="vcf">
-                <input class="button is-small" type="submit" name="submit_button" id="produce_graphs" value="Produce graphs" onClick="produceGraphs({{variant_graphs}})"><br>
+              <input class="button is-small" type="submit" name="submit_button" id="produce_graphs" value="Produce graphs" onClick="produceGraphs({{variant_graphs}})">
               </div><br>
+              {% if save_graphs == "Enabled" %}
               <h1 class="title is-6"> Plots produced from pipeline </h1>
               <form method=POST>
                 <input type="radio" id="barplot" name="plot" value="barplot" required>
@@ -49,6 +50,7 @@
                 <br><input class="button is-small" type="submit" name="submit_button" value="Preview">
                 <!--input class="button is-small" type="submit" name="submit_button" value="Download"-->
                 </form>
+                {% endif %}
                 <br>
                 <b> Enable plots produced to be previewed? </b><br>
                 <text> Current status: </text><i>{{save_graphs}}</i><br>
@@ -71,7 +73,7 @@
       document.getElementById("direct_to_progress").onclick = function () {
         location.href = "/progress/{{ job_name }}";
       };
-      function produceGraphs(variant_graphs){
+      function produceGraphs(variant_graphs, job_name){
         var vcfs = document.getElementById("vcf");
         var button = document.getElementById("produce_graphs");
         button.style.display = "none";
@@ -117,9 +119,15 @@
           var dataURL = canvas.toDataURL();
           var vcf_graph = document.createElement("img");
           vcf_graph.src = dataURL;
-          vcfs.appendChild(vcf_graph)
-        }
+          var dl = document.createElement('a');
+          dl.href = dataURL;
+          dl.setAttribute('download', "graph of "+name+".png");
+          /*dl.innerHTML = "Download";*/
+          dl.appendChild(vcf_graph);
+          vcfs.appendChild(dl);
+          }
       }
+
     </script>
 
   {% endblock %}

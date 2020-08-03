@@ -442,7 +442,7 @@ def output(job_name):
                         vcfs.append(os.path.join(dirpath,name))
                 output_files.extend(filenames)
 
-        #change to not happen everytime, store info somewhere?
+        '''if not job.vcf_made:'''
         for vcf in vcfs:
             with gzip.open(vcf, "rt") as f:
                 graph = []
@@ -450,7 +450,7 @@ def output(job_name):
                 graph.append(vcf)
                 for line in f:
                     point = []
-                    if not re.match("^#", line):
+                    if re.match("^[A-Z]", line):
                         m = re.split("\\t", line)
                         if m:
                             point.append(int(m[1]))  #position of variant
@@ -468,6 +468,8 @@ def output(job_name):
         if request.method == "POST":
             plot = request.form.get('plot')
             save = request.form.get('save')
+            '''if request.form['submit_button'] == 'Produce graphs':
+                job.madeVCF()'''
             if request.form['submit_button'] == 'Confirm':
                 if save == 'enable':
                     job.enableSave()
@@ -479,16 +481,16 @@ def output(job_name):
                         os.system('rm '+ plot[3:])
                     job.disableSave()
                     save_able = 'Disabled'
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
+                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs)
             else:
                 if save_graphs:
                     if request.form['submit_button'] == 'Preview':
                         if plot == 'barplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able, variant_graphs=variant_graphs)
                         if plot == 'boxplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs)
                         if plot == 'both':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs)
 
                     #if request.form['submit_button'] == 'Download':
                     #    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
