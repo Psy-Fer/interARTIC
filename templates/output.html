@@ -22,9 +22,8 @@
               <h1 class="title is-4"> Data Visualisation </h1>
               <h1 class="title is-6"> Variants found </h1>
               <div id="vcf">
-                <input class="button is-small" type="submit" id="produce_graphs" value="Produce graphs" onClick="produceGraphs({{variant_graphs}})"><br>
-                <!--canvas id="{{graph}}" width="1000" height="500" style="border:1px solid #000000"></canvas><br><br-->
-              </div>
+                <input class="button is-small" type="submit" name="submit_button" id="produce_graphs" value="Produce graphs" onClick="produceGraphs({{variant_graphs}})"><br>
+              </div><br>
               <h1 class="title is-6"> Plots produced from pipeline </h1>
               <form method=POST>
                 <input type="radio" id="barplot" name="plot" value="barplot" required>
@@ -63,7 +62,7 @@
                 <form>
             </div>
           </div>
-            <input class="button is-small" type="submit" id="direct_to_progress" value="Go to progress"><br>
+            <input class="button is-small" type="submit" name="submit_button" id="direct_to_progress" value="Go to progress"><br>
         </div>
     </div>
     </div>
@@ -74,32 +73,51 @@
       };
       function produceGraphs(variant_graphs){
         var vcfs = document.getElementById("vcf");
-        console.log(variant_graphs)
+        var button = document.getElementById("produce_graphs");
+        button.style.display = "none";
         for (i = 0, len = variant_graphs.length, text = ""; i < len; i++){
-          span = variant_graphs[i][variant_graphs[i].length-1][0] - variant_graphs[i][0][0]
-          x_increment = 1000/span
+          name = variant_graphs[i][0];
+          min_pos = variant_graphs[i][1][0];
+          max_pos = variant_graphs[i][variant_graphs[i].length-2][0];
+          span = max_pos - min_pos;
+          max_depth = variant_graphs[i][variant_graphs[i].length-1];
+          x_increment = 1000/span;
           var canvas = document.createElement("CANVAS");
           canvas.id = i;
-          canvas.width = 1010;
-          canvas.height = 500;
+          canvas.width = 1020;
+          canvas.height = max_depth + 125;
+          canvas.style.border="0.5px solid"
           var ctx = canvas.getContext("2d");
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.moveTo(1005, 495);
-          ctx.lineTo(5, 495);
+          ctx.moveTo(1020, max_depth + 90);
+          ctx.lineTo(0, max_depth + 90);
           ctx.closePath();
           ctx.stroke();
-          for(j = 0, leng = variant_graphs[i].length, text = ""; j < leng; j++){
+          ctx.font = '15px Verdana'
+          ctx.textAlign = 'center'
+          ctx.fillText("Graph of "+name, canvas.width/2, 40, 1000);
+          ctx.font = '10px sans-serif'
+          ctx.textAlign = 'left'
+          for(j = 1, leng = variant_graphs[i].length-1, text = ""; j < leng; j++){
             snp = variant_graphs[i][j][1] + "->" + variant_graphs[i][j][2];
-            ctx.fillText(snp, variant_graphs[i][j][0]*x_increment, 500 - variant_graphs[i][j][3]);
-            ctx.lineWidth = 0.5;
+            ctx.save();
+            ctx.translate(0, canvas.height)
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText(snp, variant_graphs[i][j][3]+40, (variant_graphs[i][j][0]-min_pos)*x_increment+10);
+            ctx.fillText(variant_graphs[i][j][0], 5, (variant_graphs[i][j][0]-min_pos)*x_increment+10);
+            ctx.restore();
+            ctx.lineWidth = 0.3;
             ctx.beginPath();
-            ctx.moveTo(variant_graphs[i][j][0]*x_increment, 495);
-            ctx.lineTo(variant_graphs[i][j][0]*x_increment, 495-variant_graphs[i][j][3]);
+            ctx.moveTo((variant_graphs[i][j][0]-min_pos)*x_increment+10, max_depth + 90);
+            ctx.lineTo((variant_graphs[i][j][0]-min_pos)*x_increment+10, max_depth + 90 -variant_graphs[i][j][3]);
             ctx.closePath();
             ctx.stroke();
           }
-          vcfs.appendChild(canvas)
+          var dataURL = canvas.toDataURL();
+          var vcf_graph = document.createElement("img");
+          vcf_graph.src = dataURL;
+          vcfs.appendChild(vcf_graph)
         }
       }
     </script>

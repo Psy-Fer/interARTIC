@@ -446,6 +446,8 @@ def output(job_name):
         for vcf in vcfs:
             with gzip.open(vcf, "rt") as f:
                 graph = []
+                max_DP = 0
+                graph.append(vcf)
                 for line in f:
                     point = []
                     if not re.match("^#", line):
@@ -455,9 +457,12 @@ def output(job_name):
                             point.append(m[3])  #original/reference value
                             point.append(m[4])  #original/reference value
                             depth = re.sub(r';.*', "", m[7])
-                            depth = re.sub("DP=","",depth)
+                            depth = int(re.sub("DP=","",depth))
+                            if depth > max_DP:
+                                max_DP = depth;
                             point.append(depth)  #read depth value
                             graph.append(point)
+                graph.append(max_DP)
             variant_graphs.append(graph)
 
         if request.method == "POST":
