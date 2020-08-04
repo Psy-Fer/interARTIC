@@ -598,8 +598,9 @@ def abort(job_name):
     
 @app.route("/delete/<job_name>", methods = ["GET", "POST"])
 def delete(job_name):
-    job = qSys.getJobByName(job_name)
-
+    images = os.path.dirname(os.path.realpath(__file__)) + '/static/' + job_name
+    print(images)
+    os.system('rm -r ' + images + '*' )
     qSys.removeCompletedJob(job_name)
     return redirect(url_for("home"))
 
@@ -660,7 +661,7 @@ def output(job_name):
                                 depth = re.sub(r';.*', "", m[7])
                                 depth = int(re.sub("DP=","",depth))
                                 if depth > max_DP:
-                                    max_DP = depth;
+                                    max_DP = depth
                                 point.append(depth)  #read depth value
                                 graph.append(point)
                     graph.append(max_DP)
@@ -700,7 +701,7 @@ def output(job_name):
                                             depth = re.sub(r';.*', "", m[7])
                                             depth = int(re.sub("DP=","",depth))
                                             if depth > max_DP:
-                                                max_DP = depth;
+                                                max_DP = depth
                                             point.append(depth)  #read depth value
                                             graph.append(point)
                                 graph.append(max_DP)
