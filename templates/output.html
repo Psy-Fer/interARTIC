@@ -21,6 +21,29 @@
             </div>
             <div class="column">
               <h1 class="title is-4"> Data Visualisation </h1>
+              {% if vcf_found %}
+              {% if create_vcfs == "Enabled" %}
+              <h1 class="title is-6"> Variants found </h1>
+              <div id="vcf">
+              <input class="button is-small" type="submit" name="submit_button" id="produce_graphs" value="Produce graphs" onClick="produceGraphs({{variant_graphs}})">
+              </div><br>
+              {% endif %}
+              <b> Enable vcf graphs to be generated? </b><br>
+              <text> Current status: </text><i><b>{{create_vcfs}}</b></i><br>
+              <small> This creates a simple graph from the <i>sample_name.pass.vcf.gz</i> file/s in the output folder. Please disable if you would not like this feature. <br>
+              <form method=POST>
+                <input type="radio" id="enable_vcf" name="save" value="enable_vcf">
+                <label for="enable_vcf"> Enable </label><br>
+                <input type="radio" id="disable_vcf" name="save" value="disable_vcf">
+                <label for="disable_vcf"> Disable </label><br>
+                <input class="button is-small" type="submit" name="submit_button" value="Confirm"> </small>
+              </form><br>
+              {% else %}
+              <b> Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder. </b><br>
+              {% endif %}
+              {% if plots_found %}
+              {% if save_graphs == "Enabled" %}
+              <h1 class="title is-6"> Plots produced from pipeline </h1>
               <form method=POST>
                 <input type="radio" id="barplot" name="plot" value="barplot" required>
                 <label for="barplot"> Barplot </label><br>
@@ -42,15 +65,13 @@
                       {% endfor %}
                     {% endif %}
                 </div>
-                <br>
-                  <text> Downloading plots: {{download_plots}} </text>
-                <br>
                 <br><input class="button is-small" type="submit" name="submit_button" value="Preview">
-                <input class="button is-small" type="submit" name="submit_button" value="Download">
+                <!--input class="button is-small" type="submit" name="submit_button" value="Download"-->
                 </form>
+                {% endif %}
                 <br>
                 <b> Enable plots produced to be previewed? </b><br>
-                <text> Current status: </text><i>{{save_graphs}}</i><br>
+                <text> Current status: </text><i><b>{{save_graphs}}</b></i><br>
                 <small> This requires the plots to be saved to a static folder. Please disable if you would not like this feature. <br>
                 <form method=POST>
                   <input type="radio" id="enable" name="save" value="enable" required>
@@ -58,10 +79,13 @@
                   <input type="radio" id="disable" name="save" value="disable">
                   <label for="disable"> Disable </label><br>
                   <input class="button is-small" type="submit" name="submit_button" value="Confirm"> </small>
-                <form>
+                </form>
+              {% else %}
+              <b> Plots cannot be previewed: No plots were found in the output folder. </b><br>
+              {% endif %}
             </div>
           </div>
-            <input class="button is-small" type="submit" id="direct_to_progress" value="Go to progress"><br>
+            <input class="button is-small" type="submit" name="submit_button" id="direct_to_progress" value="Go to progress"><br>
         </div>
     </div>
     </div>
@@ -70,6 +94,63 @@
       document.getElementById("direct_to_progress").onclick = function () {
         location.href = "/progress/{{ job_name }}";
       };
+      function produceGraphs(variant_graphs, job_name){
+        var vcfs = document.getElementById("vcf");
+        var button = document.getElementById("produce_graphs");
+        button.style.display = "none";
+        for (i = 0, len = variant_graphs.length, text = ""; i < len; i++){
+          name = variant_graphs[i][0];
+          min_pos = variant_graphs[i][1][0];
+          max_pos = variant_graphs[i][variant_graphs[i].length-2][0];
+          span = max_pos - min_pos;
+          max_depth = variant_graphs[i][variant_graphs[i].length-1];
+          x_increment = 1000/span;
+          var canvas = document.createElement("CANVAS");
+          canvas.id = i;
+          canvas.width = 1020;
+          canvas.height = max_depth + 125;
+          canvas.style.border="0.5px solid"
+          var ctx = canvas.getContext("2d");
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(1020, max_depth + 90);
+          ctx.lineTo(0, max_depth + 90);
+          ctx.closePath();
+          ctx.stroke();
+          ctx.font = '15px Verdana'
+          ctx.textAlign = 'center'
+          ctx.fillText("Graph of "+name, canvas.width/2, 40, 1000);
+          ctx.font = '10px sans-serif'
+          ctx.textAlign = 'left'
+          for(j = 1, leng = variant_graphs[i].length-1, text = ""; j < leng; j++){
+            snp = variant_graphs[i][j][1] + "->" + variant_graphs[i][j][2];
+            ctx.save();
+            ctx.translate(0, canvas.height)
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText(snp, variant_graphs[i][j][3]+40, (variant_graphs[i][j][0]-min_pos)*x_increment+10);
+            ctx.fillText(variant_graphs[i][j][0], 5, (variant_graphs[i][j][0]-min_pos)*x_increment+10);
+            ctx.restore();
+            ctx.lineWidth = 0.3;
+            ctx.beginPath();
+            ctx.moveTo((variant_graphs[i][j][0]-min_pos)*x_increment+10, max_depth + 90);
+            ctx.lineTo((variant_graphs[i][j][0]-min_pos)*x_increment+10, max_depth + 90 -variant_graphs[i][j][3]);
+            ctx.closePath();
+            ctx.stroke();
+          }
+          var dataURL = canvas.toDataURL();
+          var vcf_graph = document.createElement("img");
+          vcf_graph.src = dataURL;
+          var dl = document.createElement('a');
+          dl.href = dataURL;
+          dl.setAttribute('download', "graph of "+name+".png");
+          var small = document.createElement("small");
+          dl.innerHTML = "Download";
+          vcfs.appendChild(vcf_graph);
+          small.appendChild(dl);
+          vcfs.appendChild(small);
+          }
+      }
+
     </script>
 
   {% endblock %}
