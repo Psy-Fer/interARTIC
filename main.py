@@ -205,7 +205,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
     #Check of jobname is used
     if qSys.getJobByName(job_name) is not None:
-        errors['job_name'] = "Job Currently Running."
+        errors['job_name'] = "Job Name has already been used."
 
     if input_folder[-1] == "/":
         input_folder = input_folder[:-1]

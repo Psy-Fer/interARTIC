@@ -202,9 +202,9 @@
 
 	<script>
 		function updateButton() {
-			var frac = document.getElementById('frac').innerText;
+			var frac = document.getElementById('frac').innerText.trim();
 			console.log("inside function");
-			if (frac === "3/3 steps complete\n") {
+			if (frac === "3/3 steps complete") {
 				console.log(frac);
 				document.getElementById('abort').style.display = "none";
 				document.getElementById('direct_to_output').style.display = "block";

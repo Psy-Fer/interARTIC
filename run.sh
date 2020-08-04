@@ -3,7 +3,7 @@
 if [ $# -eq 0 ]
 then
     echo "Usage: bash run.sh <terminal>"
-    echo "Options: xterm, macos, konsole, git (for git bash)"
+    echo "Options: xterm, macos, konsole"
     exit 1
 fi
 
@@ -25,11 +25,5 @@ then
     konsole -e "bash $script_full_path/run-redis.sh"
     konsole -e "cd $script_full_path; conda activate artic-ncov2019;celery worker -A main.celery --loglevel=info" 
     konsole -e "python3 $script_full_path/main.py"
-elif [ $term == "git" ]
-then
-    # Found this below but idk how it works
-    # (cd C:$script_full_path && start sh --login) &
-    # (cd D:/path/to/dir2 && start sh --login) &
-    echo "use git bash"
-fi 
+
 
