@@ -57,11 +57,14 @@ conda env create -f environment.yml
 ## Installing the Redis Server and Celery
 
 To install the Redis Server ```https://redis.io/topics/quickstart```, enter the following into your command prompt:
+
 ```
 bash run-redis.sh
 ```
 
 ## Installing Python packages for Redis, Celery and Flask
+
+To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt:
 
 ```
 pip install celery==4.4.6 redis==3.5.3 flask 
@@ -69,19 +72,23 @@ pip install celery==4.4.6 redis==3.5.3 flask
 
 ## Installing InterARTIC
 
-Clone the repository from github.
+Clone the repository from github by entering the following commands into your terminal.
 
 ```
 git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
 ```
 
-## Running InterARTIC
+## Setting Up InterARTIC
 
-The automatic setup will only allow one job to be run at a time. If you would like to change this and allow multiple jobs to run concurrently, follow the manual setup.
+#### Job Concurrency
+
+By default, job concurrency is turned off and the automatic and manual setups will allow one job to be run at a time. 
+
+If you wish to **turn concurrency on** and run multiple jobs at a time, the please run the ```Concurrency Manual setup```, which will allow the all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.
 
 ### Automatic setup
 
-To start InterARTIC, navigate to the directory where the repository was cloned and enter the following command. 
+To start InterARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:
 
 ```
 cd SARS-CoV-2-NanoporeAnalysisWebApp
@@ -91,13 +98,27 @@ bash run.sh <terminal type>
 
 ### Manual setup
 
-If your terminal is not listed, or if you would like to run more than one job at a time, enter the following commands:
+If your terminal is not listed, enter the following commands into your command prompt:
 
 ```
-bash redis-server &
-conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
+cd SARS-CoV-2-NanoporeAnalysisWebApp
+bash run-redis.sh &
+conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info &
 python3 main.py
 ```
+
+### Concurrency Manual setup
+
+If you wish to turn job concurrency on, enter the following commands into your command prompt:
+
+```
+cd SARS-CoV-2-NanoporeAnalysisWebApp
+bash run-redis.sh &
+conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info &
+python3 main.py
+```
+
+## Running InterARTIC
 
 Navigate to your browser and go to ```http://127.0.0.1:5000``` to access InterARTIC.
 

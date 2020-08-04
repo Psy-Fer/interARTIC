@@ -176,7 +176,8 @@
                       btn.style = "float:right";
                       btn.id = "delete"
                       btn.href = job[key].replace('progress', 'delete');
-
+                      linkNode.href = job[key].replace('delete', 'output');
+                      
                       linkNode.appendChild(textNode);
                       curJob.appendChild(linkNode);
                       curJob.appendChild(btn);
