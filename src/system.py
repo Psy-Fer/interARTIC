@@ -48,3 +48,7 @@ class System:
         job = self.getJobByName(job_name)
         self.removeQueuedJob(job_name)
         self._completed.append(job)
+        
+    def removeCompletedJob(self, job_name):
+        job = self.getJobByName(job_name)
+        self._completed.remove(job)

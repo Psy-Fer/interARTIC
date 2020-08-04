@@ -22,8 +22,12 @@
 	
 			<center>
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
-				<h2 class="title is-5">Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
-			<br>
+				<div id="jobPlace">
+					<h2 class="title is-5"> Job {{ num_in_queue }} of {{ queue_length }} in queue</h2>
+				</div>
+				<div id="jobComplete" style="display:none;">
+					<h2 class="title is-5"> Job Complete</h2>
+				</div>
 
 			<div class="notification is-danger is-light" id="errorMsg" style="display:none;">
 				<button class="delete" onclick="hideError()"></button>
@@ -45,7 +49,7 @@
 			<a class="button is-danger is-light" id="abort" href='/abort/{{ job_name }}'>Abort Job</a>
 
 			<button id="direct_to_output" class="button float-left submit-button" style="display:none;">Go to output</button>
-			<br><br>
+			<br>
 
 				<h1 id='status'> <h1><br>
 				<label for="file">Pipeline progress:</label><br>
@@ -204,6 +208,8 @@
 				console.log(frac);
 				document.getElementById('abort').style.display = "none";
 				document.getElementById('direct_to_output').style.display = "block";
+				document.getElementById('jobPlace').style.display = "none";
+				document.getElementById('jobComplete').style.display = "block";
 			}
 		}
 

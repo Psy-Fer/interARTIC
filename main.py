@@ -55,7 +55,7 @@ def checkTasks():
         queueList.append({job.job_name : url_for('progress', job_name=job.job_name, task_id = job.task_id)})
 
     for job in qSys.completed:
-        completedList.append({job.job_name : url_for('output', job_name=job.job_name)})
+        completedList.append({job.job_name : url_for('delete', job_name=job.job_name)})
 
     queueDict = {'jobs': queueList}
     for key, value in queueDict.items():
@@ -590,6 +590,13 @@ def abort(job_name):
     qSys.removeQueuedJob(job_name)
     return redirect(url_for("home"))
     # return "TRYING TO ABORT"
+    
+@app.route("/delete/<job_name>", methods = ["GET", "POST"])
+def delete(job_name):
+    job = qSys.getJobByName(job_name)
+
+    qSys.removeCompletedJob(job_name)
+    return redirect(url_for("home"))
 
 #not sure if this should be a get method
 @app.route("/output/<job_name>", methods = ["GET", "POST"])
