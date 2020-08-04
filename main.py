@@ -411,7 +411,6 @@ def abort(job_name):
     return redirect(url_for("home"))
     # return "TRYING TO ABORT"
 
-#not sure if this should be a get method
 @app.route("/output/<job_name>", methods = ["GET", "POST"])
 def output(job_name):
     job = qSys.getJobByName(job_name)
@@ -427,22 +426,28 @@ def output(job_name):
     output_files = []
     barplots = []
     boxplots = []
+    plots_found = False
+    vcf_found = False
     vcfs = []
     variant_graphs = []
-    static = os.path.dirname(os.path.realpath(__file__))+'/static/'  # instead of os.getcwd()
+    static = os.path.dirname(os.path.realpath(__file__))+'/static/'
+
     if output_folder:
         if os.path.exists(output_folder):
             for (dirpath, dirnames, filenames) in os.walk(output_folder):
                 for name in filenames:
                     if fnmatch.fnmatch(name, '*barplot.png'):
                         barplots.append('../static/'+name)
+                        plots_found = True
                         if save_graphs:
                             os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
                     if fnmatch.fnmatch(name, '*boxplot.png'):
                         boxplots.append('../static/'+name)
+                        plots_found = True
                         if save_graphs:
                             os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
                     if fnmatch.fnmatch(name, '*.pass.vcf.gz'):
+                        vcf_found = True
                         vcfs.append(os.path.join(dirpath,name))
                 output_files.extend(filenames)
 
@@ -486,42 +491,43 @@ def output(job_name):
                 if save == 'enable_vcf':
                     job.enableVCF()
                     create_able = 'Enabled'
-                    for vcf in vcfs:
-                        with gzip.open(vcf, "rt") as f:
-                            graph = []
-                            max_DP = 0
-                            graph.append(vcf)
-                            for line in f:
-                                point = []
-                                if re.match("^[A-Z]", line):
-                                    m = re.split("\\t", line)
-                                    if m:
-                                        point.append(int(m[1]))  #position of variant
-                                        point.append(m[3])  #original/reference value
-                                        point.append(m[4])  #original/reference value
-                                        depth = re.sub(r';.*', "", m[7])
-                                        depth = int(re.sub("DP=","",depth))
-                                        if depth > max_DP:
-                                            max_DP = depth;
-                                        point.append(depth)  #read depth value
-                                        graph.append(point)
-                            graph.append(max_DP)
-                        variant_graphs.append(graph)
+                    if not variant_graphs:
+                        for vcf in vcfs:
+                            with gzip.open(vcf, "rt") as f:
+                                graph = []
+                                max_DP = 0
+                                graph.append(vcf)
+                                for line in f:
+                                    point = []
+                                    if re.match("^[A-Z]", line):
+                                        m = re.split("\\t", line)
+                                        if m:
+                                            point.append(int(m[1]))  #position of variant
+                                            point.append(m[3])  #original/reference value
+                                            point.append(m[4])  #original/reference value
+                                            depth = re.sub(r';.*', "", m[7])
+                                            depth = int(re.sub("DP=","",depth))
+                                            if depth > max_DP:
+                                                max_DP = depth;
+                                            point.append(depth)  #read depth value
+                                            graph.append(point)
+                                graph.append(max_DP)
+                            variant_graphs.append(graph)
                 if save == 'disable_vcf':
                     job.disableVCF()
                     create_able = 'Disabled'
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
+                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
             else:
                 if save_graphs:
                     if request.form['submit_button'] == 'Preview':
                         if plot == 'barplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
                         if plot == 'boxplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
                         if plot == 'both':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
 
-    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
+    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
 
 
 if __name__ == "__main__":
