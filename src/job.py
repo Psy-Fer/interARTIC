@@ -27,7 +27,7 @@ class Job:
         self._override_data = override_data
         self._num_samples = num_samples
         self._save_graphs = True
-        self._vcf_made = False
+        self._create_vcfs = True
         self._gather_cmd = self.__generateGatherCmd()
         self._demult_cmd = self.__generateDemultCmd()
         self._min_cmd = self.__generateMinionCmd()
@@ -107,8 +107,8 @@ class Job:
         return self._save_graphs
 
     @property
-    def vcf_made(self):
-        return self._vcf_made
+    def create_vcfs(self):
+        return self._create_vcfs
 
     @property
     def gather_cmd(self):
@@ -235,5 +235,8 @@ class Job:
     def enableSave(self):
         self._save_graphs = True
 
-    def madeVCF(self):
-        self._vcf_made = True
+    def disableVCF(self):
+        self._create_vcfs = False
+
+    def enableVCF(self):
+        self._create_vcfs = True

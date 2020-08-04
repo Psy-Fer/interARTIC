@@ -415,11 +415,15 @@ def abort(job_name):
 @app.route("/output/<job_name>", methods = ["GET", "POST"])
 def output(job_name):
     job = qSys.getJobByName(job_name)
-    output_folder = job._output_folder
+    output_folder = job.output_folder
     save_graphs = job.save_graphs
     save_able = 'Disabled'
     if(save_graphs):
         save_able = 'Enabled'
+    create_vcfs = job.create_vcfs
+    create_able = 'Disabled'
+    if(create_vcfs):
+        create_able = 'Enabled'
     output_files = []
     barplots = []
     boxplots = []
@@ -442,34 +446,32 @@ def output(job_name):
                         vcfs.append(os.path.join(dirpath,name))
                 output_files.extend(filenames)
 
-        '''if not job.vcf_made:'''
-        for vcf in vcfs:
-            with gzip.open(vcf, "rt") as f:
-                graph = []
-                max_DP = 0
-                graph.append(vcf)
-                for line in f:
-                    point = []
-                    if re.match("^[A-Z]", line):
-                        m = re.split("\\t", line)
-                        if m:
-                            point.append(int(m[1]))  #position of variant
-                            point.append(m[3])  #original/reference value
-                            point.append(m[4])  #original/reference value
-                            depth = re.sub(r';.*', "", m[7])
-                            depth = int(re.sub("DP=","",depth))
-                            if depth > max_DP:
-                                max_DP = depth;
-                            point.append(depth)  #read depth value
-                            graph.append(point)
-                graph.append(max_DP)
-            variant_graphs.append(graph)
+        if create_vcfs:
+            for vcf in vcfs:
+                with gzip.open(vcf, "rt") as f:
+                    graph = []
+                    max_DP = 0
+                    graph.append(vcf)
+                    for line in f:
+                        point = []
+                        if re.match("^[A-Z]", line):
+                            m = re.split("\\t", line)
+                            if m:
+                                point.append(int(m[1]))  #position of variant
+                                point.append(m[3])  #original/reference value
+                                point.append(m[4])  #original/reference value
+                                depth = re.sub(r';.*', "", m[7])
+                                depth = int(re.sub("DP=","",depth))
+                                if depth > max_DP:
+                                    max_DP = depth;
+                                point.append(depth)  #read depth value
+                                graph.append(point)
+                    graph.append(max_DP)
+                variant_graphs.append(graph)
 
         if request.method == "POST":
             plot = request.form.get('plot')
             save = request.form.get('save')
-            '''if request.form['submit_button'] == 'Produce graphs':
-                job.madeVCF()'''
             if request.form['submit_button'] == 'Confirm':
                 if save == 'enable':
                     job.enableSave()
@@ -481,21 +483,45 @@ def output(job_name):
                         os.system('rm '+ plot[3:])
                     job.disableSave()
                     save_able = 'Disabled'
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs)
+                if save == 'enable_vcf':
+                    job.enableVCF()
+                    create_able = 'Enabled'
+                    for vcf in vcfs:
+                        with gzip.open(vcf, "rt") as f:
+                            graph = []
+                            max_DP = 0
+                            graph.append(vcf)
+                            for line in f:
+                                point = []
+                                if re.match("^[A-Z]", line):
+                                    m = re.split("\\t", line)
+                                    if m:
+                                        point.append(int(m[1]))  #position of variant
+                                        point.append(m[3])  #original/reference value
+                                        point.append(m[4])  #original/reference value
+                                        depth = re.sub(r';.*', "", m[7])
+                                        depth = int(re.sub("DP=","",depth))
+                                        if depth > max_DP:
+                                            max_DP = depth;
+                                        point.append(depth)  #read depth value
+                                        graph.append(point)
+                            graph.append(max_DP)
+                        variant_graphs.append(graph)
+                if save == 'disable_vcf':
+                    job.disableVCF()
+                    create_able = 'Disabled'
+                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
             else:
                 if save_graphs:
                     if request.form['submit_button'] == 'Preview':
                         if plot == 'barplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able, variant_graphs=variant_graphs)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
                         if plot == 'boxplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
                         if plot == 'both':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
 
-                    #if request.form['submit_button'] == 'Download':
-                    #    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
-
-    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs)
+    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able)
 
 
 if __name__ == "__main__":

@@ -20,10 +20,22 @@
             </div>
             <div class="column">
               <h1 class="title is-4"> Data Visualisation </h1>
+              {% if create_vcfs == "Enabled" %}
               <h1 class="title is-6"> Variants found </h1>
               <div id="vcf">
               <input class="button is-small" type="submit" name="submit_button" id="produce_graphs" value="Produce graphs" onClick="produceGraphs({{variant_graphs}})">
               </div><br>
+              {% endif %}
+              <b> Enable vcf graphs to be generated? </b><br>
+              <text> Current status: </text><i>{{create_vcfs}}</i><br>
+              <small> Please disable if you would not like this feature. <br>
+              <form method=POST>
+                <input type="radio" id="enable_vcf" name="save" value="enable_vcf">
+                <label for="enable_vcf"> Enable </label><br>
+                <input type="radio" id="disable_vcf" name="save" value="disable_vcf">
+                <label for="disable_vcf"> Disable </label><br>
+                <input class="button is-small" type="submit" name="submit_button" value="Confirm"> </small>
+              </form><br><br>
               {% if save_graphs == "Enabled" %}
               <h1 class="title is-6"> Plots produced from pipeline </h1>
               <form method=POST>
@@ -61,7 +73,7 @@
                   <input type="radio" id="disable" name="save" value="disable">
                   <label for="disable"> Disable </label><br>
                   <input class="button is-small" type="submit" name="submit_button" value="Confirm"> </small>
-                <form>
+                </form>
             </div>
           </div>
             <input class="button is-small" type="submit" name="submit_button" id="direct_to_progress" value="Go to progress"><br>
@@ -122,9 +134,11 @@
           var dl = document.createElement('a');
           dl.href = dataURL;
           dl.setAttribute('download', "graph of "+name+".png");
-          /*dl.innerHTML = "Download";*/
-          dl.appendChild(vcf_graph);
-          vcfs.appendChild(dl);
+          var small = document.createElement("small");
+          dl.innerHTML = "Download";
+          vcfs.appendChild(vcf_graph);
+          small.appendChild(dl);
+          vcfs.appendChild(small);
           }
       }
 
