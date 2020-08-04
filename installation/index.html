@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>Installation - InterARTIC Documentation</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="generator" content="mkdocs-1.1.2, mkdocs-gitbook-1.0.7">
+
+<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon">
+<meta name="HandheldFriendly" content="true"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta rel="next" href="" />
+<link href="../css/style.min.css" rel="stylesheet"> 
+</head>
+
+<body>
+<div class="book">
+<div class="book-summary">
+<div id="book-search-input" role="search">
+<input type="text" placeholder="Type to search" />
+</div> <!-- end of book-search-input -->
+
+<nav role="navigation">
+<ul class="summary">
+<li>
+<a href=".." target="_blank" class="custom-link">InterARTIC Documentation</a>
+</li>
+<li class="divider"></li>
+<li class="chapter" data-path="">
+<a href="..">Home</a>
+<li class="chapter active" data-path="installation/">
+<a href="./">Installation</a>
+<li class="chapter" data-path="usage/">
+<a href="../usage/">Usage</a>
+<li class="divider"></li>
+
+
+
+<li><a href="http://www.mkdocs.org">
+Published with MkDocs
+</a></li>
+
+<li><a href="https://github.com/GitbookIO/theme-default">
+Theme by GitBook
+</a></li>
+</ul>
+
+</nav>
+
+</div> <!-- end of book-summary -->
+
+<div class="book-body">
+<div class="body-inner">
+<div class="book-header" role="navigation">
+
+<!-- Title -->
+<h1>
+<i class="fa fa-circle-o-notch fa-spin"></i>
+<a href="." ></a>
+</h1>
+
+</div> <!-- end of book-header -->
+
+<div class="page-wrapper" tabindex="-1" role="main">
+<div class="page-inner">
+<div id="book-search-results">
+<div class="search-noresults">
+
+<section class="normal markdown-section">
+
+
+
+<h1 id="installation">Installation</h1>
+<h2 id="dependencies">Dependencies</h2>
+<ul>
+<li>Python 3.7 or above</li>
+<li>Celery v4.4.6 (cliffs)</li>
+<li>Redis Server v6.0.5</li>
+<li>Miniconda</li>
+</ul>
+<h2 id="opening-terminal">Opening terminal</h2>
+<p>Your operating systems command line will be used to install the dependencies. </p>
+<ul>
+<li>For Mac OS: Typing “terminal” into your spotlight search, then hit Return.</li>
+<li>For Windows: Typing “cmd” into your search bar in the Start menu, then hit Enter.</li>
+<li>For Linux: Entering Ctrl+Alt+T</li>
+</ul>
+<h2 id="installing-python-and-pip">Installing Python and pip</h2>
+<p>In order to use InterARTIC, you’ll need Python and its package manager pip installed on your system.</p>
+<p>Check if they're already installed by entering the following into your command prompt:</p>
+<pre><code>python --version
+pip --version
+</code></pre>
+
+<p>If Python is not installed, go to: <code>https://www.python.org/downloads/</code> and follow the prompts there.</p>
+<p>If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary.</p>
+<pre><code>pip --version
+pip install --upgrade pip
+</code></pre>
+
+<p>If pip is not installed, go to: <code>https://pip.pypa.io/en/stable/installing/</code> and follow the prompts there.</p>
+<h2 id="installing-miniconda">Installing miniconda</h2>
+<p>The miniconda installation guide can be found here: <code>https://conda.io/projects/conda/en/latest/user-guide/install/index.htm</code></p>
+<p>We suggest you undergo the 'Regular Installation' process.</p>
+<h2 id="installing-the-artic-pipeline">Installing the ARTIC pipeline</h2>
+<p>Enter the following into your command prompt:</p>
+<pre><code>git clone https://github.com/artic-network/artic-ncov2019.git
+cd artic-ncov2019
+conda env remove -n artic-ncov2019
+conda env create -f environment.yml
+</code></pre>
+
+<h2 id="installing-the-redis-server-and-celery">Installing the Redis Server and Celery</h2>
+<p>To install the Redis Server <code>https://redis.io/topics/quickstart</code>, enter the following into your command prompt:</p>
+<pre><code>bash run-redis.sh
+</code></pre>
+
+<h2 id="installing-python-packages-for-redis-celery-and-flask">Installing Python packages for Redis, Celery and Flask</h2>
+<p>To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt:</p>
+<pre><code>pip install celery==4.4.6 redis==3.5.3 flask 
+</code></pre>
+
+<h2 id="installing-interartic">Installing InterARTIC</h2>
+<p>Clone the repository from github by entering the following commands into your terminal.</p>
+<pre><code>git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
+</code></pre>
+
+<h2 id="setting-up-interartic">Setting Up InterARTIC</h2>
+<h4 id="job-concurrency">Job Concurrency</h4>
+<p>By default, job concurrency is turned off and the automatic and manual setups will allow one job to be run at a time. </p>
+<p>If you wish to <strong>turn concurrency on</strong> and run multiple jobs at a time, the please run the <code>Concurrency Manual setup</code>, which will allow the all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.</p>
+<h3 id="automatic-setup">Automatic setup</h3>
+<p>To start InterARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:</p>
+<pre><code>cd SARS-CoV-2-NanoporeAnalysisWebApp
+bash run.sh &lt;terminal type&gt;
+# Terminal types: macos, xterm, konsole
+</code></pre>
+
+<h3 id="manual-setup">Manual setup</h3>
+<p>If your terminal is not listed, enter the following commands into your command prompt:</p>
+<pre><code>cd SARS-CoV-2-NanoporeAnalysisWebApp
+bash run-redis.sh &amp;
+conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info &amp;
+python3 main.py
+</code></pre>
+
+<h3 id="concurrency-manual-setup">Concurrency Manual setup</h3>
+<p>If you wish to turn job concurrency on, enter the following commands into your command prompt:</p>
+<pre><code>cd SARS-CoV-2-NanoporeAnalysisWebApp
+bash run-redis.sh &amp;
+conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info &amp;
+python3 main.py
+</code></pre>
+
+<h2 id="running-interartic">Running InterARTIC</h2>
+<p>Navigate to your browser and go to <code>http://127.0.0.1:5000</code> to access InterARTIC.</p>
+
+
+</section>
+</div> <!-- end of search-noresults -->
+<div class="search-results">
+<div class="has-results">
+
+<h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+<ul class="search-results-list"></ul>
+
+</div> <!-- end of has-results -->
+<div class="no-results">
+
+<h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+
+</div> <!-- end of no-results -->
+</div> <!-- end of search-results -->
+</div> <!-- end of book-search-results -->
+
+</div> <!-- end of page-inner -->
+</div> <!-- end of page-wrapper -->
+
+</div> <!-- end of body-inner -->
+
+</div> <!-- end of book-body -->
+<script src="../js/main.js"></script>
+<script src="../search/main.js"></script>
+<script src="../js/gitbook.min.js"></script>
+<script src="../js/theme.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>Usage - InterARTIC Documentation</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="generator" content="mkdocs-1.1.2, mkdocs-gitbook-1.0.7">
+
+<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon">
+<meta name="HandheldFriendly" content="true"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta rel="next" href="" />
+<link href="../css/style.min.css" rel="stylesheet"> 
+</head>
+
+<body>
+<div class="book">
+<div class="book-summary">
+<div id="book-search-input" role="search">
+<input type="text" placeholder="Type to search" />
+</div> <!-- end of book-search-input -->
+
+<nav role="navigation">
+<ul class="summary">
+<li>
+<a href=".." target="_blank" class="custom-link">InterARTIC Documentation</a>
+</li>
+<li class="divider"></li>
+<li class="chapter" data-path="">
+<a href="..">Home</a>
+<li class="chapter" data-path="installation/">
+<a href="../installation/">Installation</a>
+<li class="chapter active" data-path="usage/">
+<a href="./">Usage</a>
+<li class="divider"></li>
+
+
+
+<li><a href="http://www.mkdocs.org">
+Published with MkDocs
+</a></li>
+
+<li><a href="https://github.com/GitbookIO/theme-default">
+Theme by GitBook
+</a></li>
+</ul>
+
+</nav>
+
+</div> <!-- end of book-summary -->
+
+<div class="book-body">
+<div class="body-inner">
+<div class="book-header" role="navigation">
+
+<!-- Title -->
+<h1>
+<i class="fa fa-circle-o-notch fa-spin"></i>
+<a href="." ></a>
+</h1>
+
+</div> <!-- end of book-header -->
+
+<div class="page-wrapper" tabindex="-1" role="main">
+<div class="page-inner">
+<div id="book-search-results">
+<div class="search-noresults">
+
+<section class="normal markdown-section">
+
+
+
+<h1 id="usage">Usage</h1>
+<h2 id="adding-a-job">Adding a job</h2>
+<p>To begin to add a job, click the “Add Job” button located underneath the Jobs Queue on the home page. </p>
+<h2 id="parameters">Parameters</h2>
+<p>Input the necessary parameters (see Parameter Descriptions below). Any parameters required for all runs are denoted with an asterix (*).</p>
+<p>For the file path inputs, please enter absolute paths. </p>
+<h3 id="input-folders">Input folders</h3>
+<ul>
+<li>Folders should be inputted by their file paths.</li>
+<li>This can be retrieved by running pwd in the appropriate directory/ folder on any terminal.</li>
+<li>These should start with “/” or “C:\”. If you have not worked with navigating folders and files in the terminal before, take a look at this resource: https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/.</li>
+</ul>
+<p>For example:</p>
+<pre><code>$ pwd
+/Users/YOURNAME
+$ cd documents                                                  # change directory to documents
+/Users/YOURNAME/documents
+$ cd inputFolder                                                # change directory to input folder
+$ pwd
+/Users/YOURNAME/documents/inputFolder
+</code></pre>
+
+<h4 id="input-directory-file-structure">Input directory file structure</h4>
+<ul>
+<li>You must rename each folder in the input folder to: fast5_pass, fast5_fail, fastq_pass, fastq_fail, sequencing_summary.txt</li>
+<li>If a single sample is being run through the pipeline:<ul>
+<li>If available, the file path for a read file should be inputted. </li>
+<li>If unavailable, the artic gather/demultiplex command will generate one.</li>
+</ul>
+</li>
+<li>If multiple samples are being run through the pipeline:<ul>
+<li>A CSV file containing sample names and barcodes should be placed in the input folder and named ‘sample-barcode.csv’. </li>
+</ul>
+</li>
+</ul>
+<p>ADD IN IMG</p>
+<p>A sample file structure is as below:</p>
+<pre><code>input_directory/
+    fast5_pass/
+        A_30.fast5
+        A_31.fast5
+    fast5_fail/
+        A_0.fast5
+        A_1.fast5
+    fastq_pass/
+        B_0.fastq
+        B_1.fastq
+    fastq_fail/
+        B_10.fast5
+        B_11.fast5
+    primer-schemes/
+        IturiEBOV/
+              V1/
+                IturiEBOV.log
+                IturiEBOV.pdf
+                IturiEBOV.pickle
+                IturiEBOV.reference.fasta
+                IturiEBOV.reference.fasta.amb
+                IturiEBOV.reference.fasta.ann
+                IturiEBOV.reference.fasta.bwt
+                IturiEBOV.reference.fasta.fai
+                IturiEBOV.reference.fasta.pac
+                IturiEBOV.reference.fasta.sa
+                IturiEBOV.scheme.bed
+                IturiEBOV.svg
+                IturiEBOV.tsv
+    sample-barcode.csv
+    sequencing_summary.txt
+    readfile
+</code></pre>
+
+<h3 id="parameters_1">Parameters</h3>
+<p>You can customize the parameters by typing into the respective text box. </p>
+<ul>
+<li><strong>Job name:</strong> A unique name for your job, so you may identify your output files with it.</li>
+<li><strong>Pipeline:</strong> Select the pipeline within ARTIC that you wish to run your data files through.</li>
+<li><strong>Input folder:</strong> Enter the file path to your main data folder. <ul>
+<li>This folder contains folders such as fast5_pass, fastq_pass, etc.</li>
+</ul>
+</li>
+<li><strong>Read file:</strong> If you are inputting data files for a single sample run where you have a file ending in “.fastq” already made, input the file path for this read file. <ul>
+<li>You may get this error in your output, but this can be ignored: Include screenshot of harmless error that might occur</li>
+</ul>
+</li>
+<li><strong>Output folder:</strong> If your chosen output folder is already created, enter the file path for this folder. <ul>
+<li>Otherwise, you may enter a file path to a folder that doesn’t exist yet. If you do this, ensure that the parent directory exists. <ul>
+<li>For example, if you are inputting this file path as your output folder: path/to/file/hello/world, the folder “hello” must already exist for the “world” folder to be created.</li>
+</ul>
+</li>
+<li>If this is not inputted, an output folder will be generated within the input folder.</li>
+</ul>
+</li>
+<li><strong>Primer scheme folder:</strong> Enter the file path to your primer schemes. <ul>
+<li>This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.</li>
+</ul>
+</li>
+<li><strong>Primer scheme name:</strong> Enter the primer scheme name used for your nanopore sequencing run.<ul>
+<li>Following a similar example to the previous parameter description, here you will enter a path such as nCoV-2019/V1.</li>
+</ul>
+</li>
+<li><strong>Primer/Barcode type:</strong> Enter the type of primer/barcode used. <ul>
+<li>Either select from the options available or enter the name of the primer/barcode in the text box. </li>
+<li>This is only used for folder-naming purposes.</li>
+</ul>
+</li>
+<li><strong>Minimum/Maximum length:</strong> If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. <ul>
+<li>If not, set this to the minimum/maximum length of your primers.</li>
+</ul>
+</li>
+<li><strong>Thread usage/Normalise:</strong> Change the prefilled values if you wish.<ul>
+<li>Please note that changing the threads/normalise values, they are changed globally for all commands.</li>
+</ul>
+</li>
+<li><strong>Single or Multiple samples:</strong> Select the appropriate option.</li>
+</ul>
+<p>When you are confident that your parameter selections are correct, click on the “Submit Job(s)” button. You will be redirected to the progress page after clicking this button.</p>
+<h2 id="progress-page">Progress Page</h2>
+<p>The progress displays the progress of the run in question. Each run will have its own progress page, which can be accessed either via the home page by clicking the job name in the queue.</p>
+<p>For each job, the progress page will display:</p>
+<ul>
+<li>The job name</li>
+<li>The place in queue</li>
+<li>The overall job progress in the form of a progress bar and the number of steps remaining in the pipeline</li>
+<li>The current output obtained from the job</li>
+</ul>
+<p>There is a <strong>View Parameters</strong> button that will display the parameters that have been entered for the job when clicked.</p>
+<p>There is an <strong>Abort Job</strong> button which can be used to terminate the job. A confirmation window will appear when you click on the abort button. If you continue, you will then be asked to confirm whether you wish to delete the files created by the job. After this, you will then be taken back to the home page where you can add a new job or view the currenty completed jobs.</p>
+<h3 id="what-happens-if-an-error-occurs-during-the-run">What happens if an error occurs during the run?</h3>
+<p>If an <strong>error</strong> occurs during a run, a <strong>red</strong> notification will appear. You can either continue with the job as is, or click the ‘Re-run’ button. </p>
+<p>Clicking the ‘Re-run’ button will allow you to abort the currently running job. </p>
+<p>A confirmation window will appear when you click on the ‘Re-run’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job. </p>
+<p>You will then be redirected to the parameters page where the information from the job in question will be automatically filled in. </p>
+<p>You can make any changes necessary, and the new job will be added to the end of the queue following submission. </p>
+<h3 id="what-happens-when-a-job-is-completed">What happens when a job is completed?</h3>
+<p>When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page.</p>
+<h2 id="output-page">Output Page</h2>
+
+
+</section>
+</div> <!-- end of search-noresults -->
+<div class="search-results">
+<div class="has-results">
+
+<h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+<ul class="search-results-list"></ul>
+
+</div> <!-- end of has-results -->
+<div class="no-results">
+
+<h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+
+</div> <!-- end of no-results -->
+</div> <!-- end of search-results -->
+</div> <!-- end of book-search-results -->
+
+</div> <!-- end of page-inner -->
+</div> <!-- end of page-wrapper -->
+
+</div> <!-- end of body-inner -->
+
+</div> <!-- end of book-body -->
+<script src="../js/main.js"></script>
+<script src="../search/main.js"></script>
+<script src="../js/gitbook.min.js"></script>
+<script src="../js/theme.min.js"></script>
+</body>
+</html>
