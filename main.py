@@ -15,6 +15,7 @@ from subprocess import Popen, PIPE, CalledProcessError
 import sys
 import re
 import threading
+import gzip
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
@@ -64,7 +65,7 @@ def checkTasks():
     completedDict = {'jobs': completedList}
     for key, value in completedDict.items():
         print(key, value)
-    
+
     return json.htmlsafe_dumps({'changed': changed, 'queue': queueDict, 'completed': completedDict})
 
 
@@ -205,7 +206,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     #Check of jobname is used
     if qSys.getJobByName(job_name) is not None:
         errors['job_name'] = "Job Currently Running."
-    
+
     if input_folder[-1] == "/":
         input_folder = input_folder[:-1]
     #give error if input folder path is invalid or empty
@@ -219,14 +220,14 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         return errors, output_folder
     elif not output_folder and os.path.isdir(input_folder):
         output_folder = input_folder + "/output"
-    
+
 
     if output_folder[-1] == "/":
         output_folder = output_folder[:-1]
 
     if primer_scheme_dir[-1] == "/":
         primer_scheme_dir = primer_scheme_dir[:-1]
-    
+
 
     #give error if primer schemes folder path is invalid or empty
     if not os.path.isdir(primer_scheme_dir):
@@ -241,10 +242,10 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     else:
         #to be filled later
         read_file = ""
-    
+
     #both pipelines running
     if pipeline == "both":
-        
+
         if override_data is True and os.path.exists(output_folder):
             remove = "rm -r " + output_folder + "/*"
             os.system(remove)
@@ -284,7 +285,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         if not os.path.exists(output_folder):
             make_dir = 'mkdir "' + output_folder + '"'
             os.system(make_dir)
-        
+
         if override_data is True:
             remove = "rm -r " + output_folder + "/*"
             os.system(remove)
@@ -332,6 +333,10 @@ def parameters():
         num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
 
+        #if no output folder entered, creates one inside of input folder
+        if not output_folder:
+            output_folder = input_folder + "/output"
+
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
             override_data = True
@@ -340,14 +345,14 @@ def parameters():
 
         errors = {}
         errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
-        
+
         if not output_folder:
             output_folder = output_folder_checked
         print("output folder:", output_folder)
 
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
-            
+
         print("Errors: ", errors)
         if len(errors) != 0:
             #Update displayed queue on home page
@@ -395,7 +400,7 @@ def parameters():
             return redirect(url_for('progress', job_name=job_name+"_medaka"))
         else:
             return redirect(url_for('progress', job_name=job_name))
-    
+
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
@@ -411,7 +416,7 @@ def parameters():
 @app.route("/error/<job_name>", methods = ["POST","GET"])
 def error(job_name):
     job = qSys.getJobByName(job_name)
-    
+
     if job != None:
         input_folder = job.input_folder
         output_folder = job.output_folder
@@ -423,8 +428,8 @@ def error(job_name):
         primer_scheme_dir = job.primer_scheme_dir
         primer_type = job.primer_type
         num_samples = job.num_samples
-        barcode_type = job.barcode_type   
-        # abort existing job 
+        barcode_type = job.barcode_type
+        # abort existing job
         task = job.task_id
         celery.control.revoke(task, terminate=True, signal='SIGKILL')
         qSys.removeQueuedJob(job_name)
@@ -458,10 +463,10 @@ def error(job_name):
 
         errors = {}
         errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
-        
+
         if not output_folder:
             output_folder = output_folder_checked
-        
+
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
 
@@ -532,7 +537,7 @@ def progress(job_name):
     path = job.output_folder
     path +="/all_cmds_log.txt"
 
-    ################## TODO: NEED TO CHANGE 
+    ################## TODO: NEED TO CHANGE
     print(path)
     with open(path, "r") as f:
         outputLog = f.read().replace("\n","<br/>")
@@ -569,7 +574,7 @@ def progress(job_name):
     num_samples = job.num_samples
     barcode_type = job.barcode_type
 
-    return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue, 
+    return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue,
                             queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder,
                             read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme,
                             primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,error=error)
@@ -579,7 +584,7 @@ def abort(job_name):
     job = qSys.getJobByName(job_name)
     task = job.task_id
     celery.control.revoke(task,terminate=True, signal='SIGKILL')
-    
+
     # Remove files
     currdir = os.path.dirname(os.path.realpath(__file__))
     path = currdir +'/'+job_name
@@ -598,34 +603,68 @@ def delete(job_name):
     qSys.removeCompletedJob(job_name)
     return redirect(url_for("home"))
 
-#not sure if this should be a get method
 @app.route("/output/<job_name>", methods = ["GET", "POST"])
-def output(job_name): #need to update to take in job name as parameter
-    #job_name = request.args.get('job_name')
-    #output_folder = request.args.get('output_folder')
+def output(job_name):
     job = qSys.getJobByName(job_name)
-    output_folder = job._output_folder
+    output_folder = job.output_folder
     save_graphs = job.save_graphs
     save_able = 'Disabled'
     if(save_graphs):
         save_able = 'Enabled'
+    create_vcfs = job.create_vcfs
+    create_able = 'Disabled'
+    if(create_vcfs):
+        create_able = 'Enabled'
     output_files = []
     barplots = []
     boxplots = []
-    static = os.path.dirname(os.path.realpath(__file__))+'/static/'  # instead of os.getcwd()
+    plots_found = False
+    vcf_found = False
+    vcfs = []
+    variant_graphs = []
+    static = os.path.dirname(os.path.realpath(__file__))+'/static/'
+
     if output_folder:
         if os.path.exists(output_folder):
             for (dirpath, dirnames, filenames) in os.walk(output_folder):
                 for name in filenames:
                     if fnmatch.fnmatch(name, '*barplot.png'):
                         barplots.append('../static/'+name)
+                        plots_found = True
                         if save_graphs:
                             os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
                     if fnmatch.fnmatch(name, '*boxplot.png'):
                         boxplots.append('../static/'+name)
+                        plots_found = True
                         if save_graphs:
                             os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
+                    if fnmatch.fnmatch(name, '*.pass.vcf.gz'):
+                        vcf_found = True
+                        vcfs.append(os.path.join(dirpath,name))
                 output_files.extend(filenames)
+
+        if create_vcfs:
+            for vcf in vcfs:
+                with gzip.open(vcf, "rt") as f:
+                    graph = []
+                    max_DP = 0
+                    graph.append(vcf)
+                    for line in f:
+                        point = []
+                        if re.match("^[A-Z]", line):
+                            m = re.split("\\t", line)
+                            if m:
+                                point.append(int(m[1]))  #position of variant
+                                point.append(m[3])  #original/reference value
+                                point.append(m[4])  #original/reference value
+                                depth = re.sub(r';.*', "", m[7])
+                                depth = int(re.sub("DP=","",depth))
+                                if depth > max_DP:
+                                    max_DP = depth;
+                                point.append(depth)  #read depth value
+                                graph.append(point)
+                    graph.append(max_DP)
+                variant_graphs.append(graph)
 
         if request.method == "POST":
             plot = request.form.get('plot')
@@ -641,21 +680,46 @@ def output(job_name): #need to update to take in job name as parameter
                         os.system('rm '+ plot[3:])
                     job.disableSave()
                     save_able = 'Disabled'
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
+                if save == 'enable_vcf':
+                    job.enableVCF()
+                    create_able = 'Enabled'
+                    if not variant_graphs:
+                        for vcf in vcfs:
+                            with gzip.open(vcf, "rt") as f:
+                                graph = []
+                                max_DP = 0
+                                graph.append(vcf)
+                                for line in f:
+                                    point = []
+                                    if re.match("^[A-Z]", line):
+                                        m = re.split("\\t", line)
+                                        if m:
+                                            point.append(int(m[1]))  #position of variant
+                                            point.append(m[3])  #original/reference value
+                                            point.append(m[4])  #original/reference value
+                                            depth = re.sub(r';.*', "", m[7])
+                                            depth = int(re.sub("DP=","",depth))
+                                            if depth > max_DP:
+                                                max_DP = depth;
+                                            point.append(depth)  #read depth value
+                                            graph.append(point)
+                                graph.append(max_DP)
+                            variant_graphs.append(graph)
+                if save == 'disable_vcf':
+                    job.disableVCF()
+                    create_able = 'Disabled'
+                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
             else:
                 if save_graphs:
                     if request.form['submit_button'] == 'Preview':
                         if plot == 'barplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
                         if plot == 'boxplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
                         if plot == 'both':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able)
+                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
 
-                    #if request.form['submit_button'] == 'Download':
-                    #    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able)
-
-    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able)
+    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
 
 
 if __name__ == "__main__":
