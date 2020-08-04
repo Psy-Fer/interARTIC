@@ -77,7 +77,11 @@ git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
 
 ## Running InterARTIC
 
-To start InterARTIC, navigate to the directory where the repository was cloned and enter the following command.
+The automatic setup will only allow one job to be run at a time. If you would like to change this and allow multiple jobs to run concurrently, follow the manual setup.
+
+### Automatic setup
+
+To start InterARTIC, navigate to the directory where the repository was cloned and enter the following command. 
 
 ```
 cd SARS-CoV-2-NanoporeAnalysisWebApp
@@ -85,10 +89,12 @@ bash run.sh <terminal type>
 # Terminal types: macos, xterm, konsole
 ```
 
-If your terminal is not listed, enter the following commands:
+### Manual setup
+
+If your terminal is not listed, or if you would like to run more than one job at a time, enter the following commands:
 
 ```
-bash redis-server
+bash redis-server &
 conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
 python3 main.py
 ```
