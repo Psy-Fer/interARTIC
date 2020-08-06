@@ -4,7 +4,7 @@
 
 ## Adding a job
 
-To begin to add a job, click the “Add Job” button located underneath the Jobs Queue on the home page. 
+To begin to add a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. 
 
 ## Parameters
 
@@ -118,9 +118,9 @@ For each job, the progress page will display:
 * The overall job progress in the form of a progress bar and the number of steps remaining in the pipeline
 * The current output obtained from the job
 
-There is a **View Parameters** button that will display the parameters that have been entered for the job when clicked.
+There is a 'View Parameters' button that will display the parameters that have been entered for the job when clicked.
 
-There is an **Abort Job** button which can be used to terminate the job. A confirmation window will appear when you click on the abort button. If you continue, you will then be asked to confirm whether you wish to delete the files created by the job. After this, you will then be taken back to the home page where you can add a new job or view the currenty completed jobs.
+There is an 'Abort Job' button which can be used to terminate the job. A confirmation window will appear when you click on the abort button. If you continue, you will then be asked to confirm whether you wish to delete the files created by the job. After this, you will then be taken back to the home page where you can add a new job or view the currenty completed jobs.
 
 ### What happens if an error occurs during the run?
 
@@ -140,7 +140,7 @@ When a job is completed, a ‘Go to Output’ button will appear at the top of t
 
 ## Output Page
 
-The Output Page has two main sections, one for the files produced during the run, and the other for data visualisation to enable a fast quality analysis of the sample. At the bottom of the page, there is a “Go to Progress” button which will redirect you to the progress page of the job if you click on it.
+The Output Page has two main sections, one for the files produced during the run, and the other for data visualisation to enable a fast quality analysis of the sample. At the bottom of the page, there is a 'Go to Progress' button which will redirect you to the progress page of the job if you click on it.
 
 ### Files Produced
 
@@ -154,9 +154,9 @@ The “Data Visualisation” section also comprises two main parts.
 
 This section produces a simple graph/s from the information from the <sample_name>.pass.vcf.gz file/s produced by the pipeline. If multiple samples are selected, multiple files will be produced (assuming all runs are successful).
 
-The “Produce Graphs” button creates the graph/s. The vertical lines on the graph represent a variant, with the specific numerical position of the variant on the bottom. The mutation that occurred is labelled REF -> ALT, meaning that the nucleotide/s in the reference genome are on the left of the arrow, and the variant is on the right. The height of the vertical line represents the read depth of the specific variant. To download the graph, click on the “Download” hyperlink in the lower-left corner of the desired graph.
+The 'Produce Graphs' button creates the graph/s. The vertical lines on the graph represent a variant, with the specific numerical position of the variant on the bottom. The mutation that occurred is labelled REF -> ALT, meaning that the nucleotide/s in the reference genome are on the left of the arrow, and the variant is on the right. The height of the vertical line represents the read depth of the specific variant. To download the graph, click on the 'Download' hyperlink in the lower-left corner of the desired graph.
 
-These graphs, as mentioned, require interARTIC to read the <sample_name>.pass.vcf.gz file/s from the output folder. If there are no such files found, then no graphs will be produced. If you would not like the web app to access this, please click the “Disable” option under “Enable VCF graphs to be generated?” and click the “Confirm” button. When you are no longer given the option to produce the graphs, and the status of the “Enable VCF graphs to be generated?” section is “Disabled” this is complete. If you would like to re-enable the graphs to be produced, just select “Enable” and once again confirm. The functionality should be restored.
+These graphs, as mentioned, require interARTIC to read the <sample_name>.pass.vcf.gz file/s from the output folder. If there are no such files found, then no graphs will be produced. If you would not like the web app to access this, please click the “Disable” option under “Enable VCF graphs to be generated?” and click the 'Confirm' button. When you are no longer given the option to produce the graphs, and the status of the “Enable VCF graphs to be generated?” section is “Disabled” this is complete. If you would like to re-enable the graphs to be produced, just select “Enable” and once again confirm. The functionality should be restored.
 
 If no .pass.vcf.gz files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files in suitable format have been found, the graph cannot be produced. This may be due to problems during the pipeline, and checking of error messages is important. 
 
@@ -164,6 +164,6 @@ If no .pass.vcf.gz files are found in the output folder, the message “Vcf grap
 
 This section enables you to preview the mean amplicon read depth plots produced from the pipeline. The bar plot shows the mean amplicon read depth over the amplicons, while the box plot shows the mean amplicon read depth over the read groups.
 
-These plots are accessed from the output folder, and require a copy of them to be saved into the web app’s folder to enable previewing. If you would not like this to happen, please disable the feature by selecting the “Disable” option under the “Would you like the plots to be previewed?” section, and clicking the “Confirm” button. The status should be updated to say “Disabled” and the plots will be automatically removed from the folder. To re-enable previewing, just select “Enable” and press the “Confirm” button again and the option to preview graphs should be restored. 
+These plots are accessed from the output folder, and require a copy of them to be saved into the web app’s folder to enable previewing. If you would not like this to happen, please disable the feature by selecting the “Disable” option under the “Would you like the plots to be previewed?” section, and clicking the 'Confirm' button. The status should be updated to say “Disabled” and the plots will be automatically removed from the folder. To re-enable previewing, just select “Enable” and press the 'Confirm' button again and the option to preview graphs should be restored. 
 
 If no barplot.png or boxplot.png files are found in the output folder, the message “Plots cannot be previewed: No plots were found in the output folder.” will be displayed. As no files in suitable format have been found, they cannot be previewed. This may be due to problems during the pipeline, and checking of error messages is important.
