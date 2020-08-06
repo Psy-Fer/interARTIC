@@ -595,7 +595,7 @@ def abort(job_name):
     qSys.removeQueuedJob(job_name)
     return redirect(url_for("home"))
     # return "TRYING TO ABORT"
-    
+
 @app.route("/delete/<job_name>", methods = ["GET", "POST"])
 def delete(job_name):
     images = os.path.dirname(os.path.realpath(__file__)) + '/static/' + job_name
@@ -659,7 +659,10 @@ def output(job_name):
                                 point.append(m[3])  #original/reference value
                                 point.append(m[4])  #original/reference value
                                 depth = re.sub(r';.*', "", m[7])
-                                depth = int(re.sub("DP=","",depth))
+                                if job.pipeline == "medaka":
+                                    depth = int(re.sub("DP=","",depth))
+                                elif job.pipeline == "nanopolish":
+                                    depth = int(re.sub("TotalReads=","",depth))
                                 if depth > max_DP:
                                     max_DP = depth
                                 point.append(depth)  #read depth value
