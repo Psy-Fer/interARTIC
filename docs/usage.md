@@ -1,5 +1,7 @@
 # Usage
 
+[TOC]
+
 ## Adding a job
 
 To begin to add a job, click the “Add Job” button located underneath the Jobs Queue on the home page. 
@@ -21,9 +23,9 @@ For example:
 ```
 $ pwd
 /Users/YOURNAME
-$ cd documents                                                  # change directory to documents
+$ cd documents                           # change directory to documents
 /Users/YOURNAME/documents
-$ cd inputFolder                                                # change directory to input folder
+$ cd inputFolder                         # change directory to input folder
 $ pwd
 /Users/YOURNAME/documents/inputFolder
 ```
@@ -124,7 +126,7 @@ There is an **Abort Job** button which can be used to terminate the job. A confi
 
 If an **error** occurs during a run, a **red** notification will appear. You can either continue with the job as is, or click the ‘Re-run’ button. 
 
-Clicking the ‘Re-run’ button will allow you to abort the currently running job. 
+Clicking the ‘Re-run’ button will allow you to abort the currently running job and re-run the job.
 
 A confirmation window will appear when you click on the ‘Re-run’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job. 
 
