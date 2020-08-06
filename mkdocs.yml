@@ -1,6 +1,10 @@
 site_name: InterARTIC Documentation
-theme: gitbook
+theme: material
 nav:
     - Home: index.md
     - Installation: installation.md
     - Usage: usage.md
+    - Troubleshooting: troubleshooting.md
+plugins:
+    - search
+    - pdf-export

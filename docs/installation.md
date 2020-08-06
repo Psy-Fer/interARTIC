@@ -1,5 +1,7 @@
 # Installation
 
+[TOC]
+
 ## Dependencies
 
 * Python 3.7 or above
@@ -27,6 +29,9 @@ pip --version
 ```
 
 If Python is not installed, go to: ```https://www.python.org/downloads/``` and follow the prompts there.
+
+If you are a Linux user, follow the commands below to install Python:
+*
 
 If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary.
 
@@ -67,7 +72,7 @@ bash run-redis.sh
 To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt:
 
 ```
-pip install celery==4.4.6 redis==3.5.3 flask 
+pip3 install celery==4.4.6 redis==3.5.3 flask 
 ```
 
 ## Installing InterARTIC
@@ -121,4 +126,3 @@ python3 main.py
 ## Running InterARTIC
 
 Navigate to your browser and go to ```http://127.0.0.1:5000``` to access InterARTIC.
-
