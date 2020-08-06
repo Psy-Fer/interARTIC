@@ -25,5 +25,5 @@ then
     konsole -e "bash $script_full_path/run-redis.sh"
     konsole -e "cd $script_full_path; conda activate artic-ncov2019;celery worker -A main.celery --loglevel=info" 
     konsole -e "python3 $script_full_path/main.py"
-
+fi 
 
