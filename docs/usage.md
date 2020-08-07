@@ -31,7 +31,7 @@ $ pwd
 /Users/YOURNAME/documents
 $ cd inputFolder                         # change current directory to your input folder
 $ ls                                     # check contents of folder are correct
-fast5_fail      fast5_pass      fastq_fail      fastq_pass      
+fast5_fail      fast5_pass      fastq_fail      fastq_pass      sample-barcode.csv     sequencing_summary.txt 
 $ pwd                                    # obtain file path you will input into interARTIC
 /Users/YOURNAME/documents/inputFolder
 ```
@@ -112,24 +112,26 @@ When you are confident that your parameter selections are correct, click on the 
 
 ## Progress Page
 
-The progress displays the progress of the run in question. Each run will have its own progress page, which can be accessed either via the home page by clicking the job name in the queue.
+The progress page displays the stream of standard output being produced by your job run. Here you can see which commands are currently running and any errors that occur. Each job run has its own progress page which can be accessed via the home page or parameters page by clicking on the job name in the jobs queue.
 
 For each job, the progress page will display:
 
 * The job name
-* The place in queue
-* The overall job progress in the form of a progress bar and the number of steps remaining in the pipeline
-* The current output obtained from the job
+* The job's place in queue
+* An 'Abort Job' button
+* The overall progress of the job in the form of a progress bar and the number of steps remaining in the pipeline
+* A 'View Job Parameters here' button
+* The current standard output obtained from the job
 
-There is a 'View Parameters' button that will display the parameters that have been entered for the job when clicked.
+The 'View Job Parameters here' button, when clicked, will display the job's parameters that have been entered by the user.
 
-There is an 'Abort Job' button which can be used to terminate the job. A confirmation window will appear when you click on the abort button. If you continue, you will then be asked to confirm whether you wish to delete the files created by the job. After this, you will then be taken back to the home page where you can add a new job or view the currenty completed jobs.
+There is an 'Abort Job' button which can be used to terminate the job. A confirmation window will appear when you click on the abort button. If you continue, you will then be asked to confirm whether you wish to delete the files created by the job. After this, you will then be directed back to the home page.
 
 ### What happens if an error occurs during the run?
 
-If an **error** occurs during a run, a **red** notification will appear. You can either continue with the job as is, or click the ‘Re-run’ button. 
+If an **error** occurs during a run, a **red** notification will appear. You can either let the job continue to run, or click the ‘Re-run’ button. Harmless errors sometimes occur in the ARTIC pipeline, so it may be worth waiting for the run to finish and then assessing your output.
 
-Clicking the ‘Re-run’ button will allow you to abort the currently running job and re-run the job.
+Clicking the ‘Re-run’ button will allow you to abort the currently running job and re-run the job with editted parameters.
 
 A confirmation window will appear when you click on the ‘Re-run’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job. 
 
@@ -139,7 +141,7 @@ You can make any changes necessary, and the new job will be added to the end of 
 
 ### What happens when a job is completed?
 
-When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page.
+When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page. The job will also be moved to the 'Completed Jobs' list on the home page where you can click on the job name and be redirected to the output page for that job.
 
 ## Output Page
 
