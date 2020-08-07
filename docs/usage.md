@@ -46,8 +46,12 @@ Note: your input folder may not be located in documents folder. Simply navigate,
     * If unavailable, the artic gather/demultiplex command will generate one.
 * If multiple samples are being run through the pipeline:
     * A CSV file containing sample names and barcodes should be placed in the input folder and named ‘sample-barcode.csv’. 
+    * A sample CSV file is below:
 
-ADD IN IMG
+<br></br>
+<br></br>
+<br></br>
+<br></br>
 
 A sample file structure is as below:
 
@@ -153,17 +157,20 @@ This section contains a list of the files produced from the job, along with the 
 
 ### Data Visualisation
 
-The “Data Visualisation” section also comprises two main parts.
+The “Data Visualisation” section comprises two main parts.
+
+* Variants found
+* Plots produced from pipeline
 
 #### Variants Found
 
-This section produces a simple graph/s from the data inside the <sample_name>.pass.vcf.gz file/s produced by the pipeline. If multiple samples are selected, multiple files will be produced (assuming all runs are successful).
+This section produces a simple graph/s from the data inside the ```<sample_name>.pass.vcf.gz``` file/s produced by the pipeline. If multiple samples are selected, multiple files will be produced (assuming all runs are successful).
 
 The 'Produce Graphs' button creates the graph/s. The vertical lines on the graph represent a variant, with the specific numerical position of the variant on the bottom axis. The mutation that occurred is labelled REF -> ALT, meaning that the nucleotide/s in the reference genome are on the left of the arrow, and the variant is on the right of the arrow. The height of the vertical line indicates the read depth of the specific variant. To download the graph, click on the 'Download' hyperlink in the lower-left corner of the graph of interest.
 
-These graphs, as mentioned, require interARTIC to read the <sample_name>.pass.vcf.gz file/s from the output folder. If there are no such files found, then no graphs will be produced. If you would not like the web app to access this, please click the “Disable” option under “Enable VCF graphs to be generated?” and click the 'Confirm' button. When you are no longer given the option to produce the graphs, and the status of the “Enable VCF graphs to be generated?” section is “Disabled” this is complete. If you would like to re-enable the graphs to be produced, just select “Enable” and once again confirm. The functionality should be restored.
+These graphs, as mentioned, require interARTIC to read the ```<sample_name>.pass.vcf.gz``` file/s from the output folder. If there are no such files found, then no graphs will be produced. If you would not like the web app to access this, please click the “Disable” option under “Enable VCF graphs to be generated?” and click the 'Confirm' button. When you are no longer given the option to produce the graphs, and the status of the “Enable VCF graphs to be generated?” section is “Disabled” this is complete. If you would like to re-enable the graphs to be produced, just select “Enable” and once again confirm. The functionality should be restored.
 
-If no <sample_name>.pass.vcf.gz files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important. 
+If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important. 
 
 #### Plots Produced From Pipeline
 
