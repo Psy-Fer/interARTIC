@@ -33,7 +33,12 @@ pip --version
 If Python is not installed, go to: ```https://www.python.org/downloads/``` and follow the prompts there.
 
 If you are a Linux user, follow the commands below to install Python:
-*
+
+```
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt install python3.7 python3.7-dev python3.7-venv
+```
 
 If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary.
 
