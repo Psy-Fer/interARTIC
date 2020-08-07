@@ -11,11 +11,13 @@
 
 ## Opening terminal
 
-Your operating systems command line will be used to install the dependencies. 
+Your operating system's command line will be used to install the dependencies and start interARTIC. 
 
-* For Mac OS: Typing “terminal” into your spotlight search, then hit Return.
-* For Windows: Typing “cmd” into your search bar in the Start menu, then hit Enter.
-* For Linux: Entering Ctrl+Alt+T
+* For Mac OS: Type “terminal” into your spotlight search, then hit Return.
+* For Windows: Type “cmd” into your search bar in the Start menu, then hit Enter.
+* For Linux: Enter the keyboard shortcut: Ctrl+Alt+T.
+
+If these instructions don't work on your operating system, enter "how to open cmd line on <your operating system and software version>" into your favourite search engine.
 
 ## Installing Python and pip
 
