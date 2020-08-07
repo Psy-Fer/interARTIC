@@ -96,7 +96,7 @@ git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
 
 By default, job concurrency is turned off and the automatic and manual setups will allow one job to be run at a time. 
 
-If you wish to **turn concurrency on** and run multiple jobs at a time, then please run the ```Concurrency Manual setup```, which will allow all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.
+If you wish to **turn concurrency on** and run multiple jobs at a time, then please run the commands under the Concurrency Manual setup heading, which will allow all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.
 
 ### Automatic setup
 
