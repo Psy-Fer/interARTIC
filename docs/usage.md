@@ -4,35 +4,43 @@
 
 ## Adding a job
 
-To begin to add a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. 
+To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. 
 
 ## Parameters
 
-Input the necessary parameters (see Parameter Descriptions below). Any parameters required for all runs are denoted with an asterix (*).
+Input the necessary parameters (see Parameter Descriptions below). Parameters required for any type of job run are denoted with an asterix (*).
 
-For the file path inputs, please enter absolute paths. 
+For the file path inputs, please enter absolute paths. See below for help.
 
-### Input folders
+### File path input
 
-* Folders should be inputted by their file paths.
-* This can be retrieved by running pwd in the appropriate directory/ folder on any terminal.
-* These should start with “/” or “C:\”. If you have not worked with navigating folders and files in the terminal before, take a look at this resource: https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/.
+* Folders and files should be inputted by their file paths.
+* File paths can be retrieved by running 'pwd' in the appropriate folder on any terminal.
+* Folders may also be referred to as directories.
+* File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this resource: https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/.
 
 For example:
 
 ```
-$ pwd
+$ pwd                                    # get file path of current directory
 /Users/YOURNAME
-$ cd documents                           # change directory to documents
-/Users/YOURNAME/documents
-$ cd inputFolder                         # change directory to input folder
+$ ls                                     # list contents of current directory
+folder1     folder2     file1       documents
+$ cd documents                           # change current directory to documents
 $ pwd
+/Users/YOURNAME/documents
+$ cd inputFolder                         # change current directory to your input folder
+$ ls                                     # check contents of folder are correct
+fast5_fail      fast5_pass      fastq_fail      fastq_pass      
+$ pwd                                    # obtain file path you will input into interARTIC
 /Users/YOURNAME/documents/inputFolder
 ```
+Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path. 
+
 
 #### Input directory file structure
 
-* You must rename each folder in the input folder to: fast5_pass, fast5_fail, fastq_pass, fastq_fail, sequencing_summary.txt
+* You must rename each folder/ file in the input folder to: fast5_pass, fast5_fail, fastq_pass, fastq_fail, sequencing_summary.txt, sample-barcode.csv
 * If a single sample is being run through the pipeline:
     * If available, the file path for a read file should be inputted. 
     * If unavailable, the artic gather/demultiplex command will generate one.
@@ -46,8 +54,8 @@ A sample file structure is as below:
 ```
 input_directory/
     fast5_pass/
-        A_30.fast5
-        A_31.fast5
+        A_10.fast5
+        A_11.fast5
     fast5_fail/
         A_0.fast5
         A_1.fast5
@@ -55,30 +63,25 @@ input_directory/
         B_0.fastq
         B_1.fastq
     fastq_fail/
-        B_10.fast5
-        B_11.fast5
-    primer-schemes/
-        IturiEBOV/
-              V1/
-                IturiEBOV.log
-                IturiEBOV.pdf
-                IturiEBOV.pickle
-                IturiEBOV.reference.fasta
-                IturiEBOV.reference.fasta.amb
-                IturiEBOV.reference.fasta.ann
-                IturiEBOV.reference.fasta.bwt
-                IturiEBOV.reference.fasta.fai
-                IturiEBOV.reference.fasta.pac
-                IturiEBOV.reference.fasta.sa
-                IturiEBOV.scheme.bed
-                IturiEBOV.svg
-                IturiEBOV.tsv
+        B_10.fastq
+        B_11.fastq
     sample-barcode.csv
     sequencing_summary.txt
-    readfile
+    readfile.fastq                        #optional file
+primer-schemes/
+    nCoV-2019/
+        V1/
+            nCoV-2019.log
+            nCoV-2019.pdf
+            nCoV-2019.pickle
+            nCoV-2019.reference.fasta
+            nCoV-2019.reference.fasta.fai
+            nCoV-2019.scheme.bed
+            nCoV-2019.svg
+            nCoV-2019.tsv
 ```
 
-### Parameters
+### Parameter Descriptions
 
 You can customize the parameters by typing into the respective text box. 
 
