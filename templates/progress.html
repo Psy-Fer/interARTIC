@@ -33,6 +33,10 @@
 				<button class="delete" onclick="hideError()"></button>
 				An error has occurred. Please check the output log. If you would like to <b>abort</b> the current run and return to the input parameters page, please click the <b>Rerun Job</b> button below.
 			</div>
+			<div class="notification is-danger is-light" id="multipleErrorMsg" style="display:none;">
+				<button class="delete" onclick="hideError()"></button>
+				<p id="errorNum" style="display:inline;">{{ numErrors }}</p> errors have occurred. Please check the output log. If you would like to <b>abort</b> the current run and return to the input parameters page, please click the <b>Rerun Job</b> button below.
+			</div>
 			<button id="errorParams" class="button is-danger is-light" style="display:none">Rerun Job</button>
 			<script type="text/javascript">
 				document.getElementById("errorParams").onclick = function () {
@@ -214,27 +218,35 @@
 		}
 
 		$(document).ready(function() {
+			var errorChecking = setInterval(function() {
+				var errors = document.getElementById('errorNum').innerText.trim();
+				console.log(errors);
+				if (errors != 0) {
+					if (errors == 1) {
+						document.getElementById('errorMsg').style.display = "block";
+					} else {
+						document.getElementById('errorMsg').style.display = "none";
+						document.getElementById('multipleErrorMsg').style.display = "block";
+					}
+					document.getElementById('errorParams').style.display = "block";
+					document.getElementById('abort').style.display = "none";	
+				} 
+			}, 900);
+			
 			var interval = setInterval(function() {
 				console.log("reloading....")
 				$( "#outputLog" ).load(window.location.href + " #outputLog" );
 				$( "#frac" ).load(window.location.href + " #frac" );
+				$( "#errorNum" ).load(window.location.href + " #errorNum" );
 				updateButton();
+				if (document.getElementById('jobComplete').style.display == "block") {
+					clearInterval(interval);
+					clearInterval(errorChecking);
+				}
 				console.log("checking!!!")
 			}, 900);
 
-			var errorChecking = setInterval(function() {
-				var output = document.getElementById('outputLog').innerText;
-				const expression = /ERROR/;
-				console.log(expression.test(output));
-				if (expression.test(output) == true) {
-					document.getElementById('errorMsg').style.display = "block";
-					document.getElementById('errorParams').style.display = "block";
-					document.getElementById('abort').style.display = "none";
-					clearInterval(errorChecking);
-				} else {
-					document.getElementById('errorMsg').style.display = "none";
-				}
-			}, 900);
+			
 			 
 		});
 	</script>

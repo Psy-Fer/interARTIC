@@ -19,6 +19,7 @@ import gzip
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
+
 # Celery configuration
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
@@ -32,6 +33,7 @@ logger = get_task_logger(__name__)
 
 #Define maximum queue size
 max_queue_size = 10
+
 #Create a System object with a queue of length maximum_queue_size
 qSys = System(max_queue_size)
 
@@ -531,7 +533,6 @@ def error(job_name):
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
-    #print(jobQueue.getJob)
     job = qSys.getJobByName(job_name)
 
     path = job.output_folder
@@ -542,6 +543,7 @@ def progress(job_name):
     with open(path, "r") as f:
         outputLog = f.read().replace("\n","<br/>")
 
+    # find the status of the current job
     if re.findall(r':D', outputLog):
         frac = "3"
     elif len(re.findall(r'STARTING', outputLog)) == 2:
@@ -551,16 +553,11 @@ def progress(job_name):
     else:
         frac = "0"
 
-    pattern = "^ERROR"
-    error = 0
-    with open(path, "r") as f:
-        for line in f:
-            result = re.match(pattern, line)
-            if (result):
-                error = 1
-
-    # num_in_queue = jobQueue.getJobNumber(job_name)
-    # queue_length = jobQueue.getNumberInQueue()
+    # find any errors that occur in the output log
+    pattern = "ERROR"
+    numErrors = len(re.findall(pattern, outputLog, re.IGNORECASE))
+    print(numErrors)
+   
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
     input_folder = job.input_folder
@@ -577,7 +574,7 @@ def progress(job_name):
     return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue,
                             queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder,
                             read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme,
-                            primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,error=error)
+                            primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,numErrors=numErrors)
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):
