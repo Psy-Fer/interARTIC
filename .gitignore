@@ -8,3 +8,4 @@ dump.rdb
 *.bai
 *.index*
 **/redis-stable
+site/
