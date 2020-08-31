@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-<title>Main - InterARTIC Documentation</title>
+<title>Troubleshooting - InterARTIC Documentation</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <meta name="generator" content="mkdocs-1.1.2, mkdocs-gitbook-1.0.7">
@@ -36,6 +36,8 @@
 <a href="../installation/">Installation</a>
 <li class="chapter" data-path="usage/">
 <a href="../usage/">Usage</a>
+<li class="chapter active" data-path="troubleshooting/">
+<a href="./">Troubleshooting</a>
 <li class="divider"></li>
 
 
@@ -74,7 +76,41 @@ Theme by GitBook
 
 
 
+<h1 id="troubleshooting">Troubleshooting</h1>
+<div class="toc">
+<ul>
+<li><a href="#troubleshooting">Troubleshooting</a><ul>
+<li><a href="#submitted-job-not-running">Submitted job not running</a><ul>
+<li><a href="#job-not-running-after-submission">Job not running after submission</a></li>
+<li><a href="#usage-errors">Usage errors</a></li>
+</ul>
+</li>
+<li><a href="#missing-job-on-home-page">Missing job on Home Page</a></li>
+<li><a href="#any-other-errors">Any other errors</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="submitted-job-not-running">Submitted job not running</h2>
+<h3 id="job-not-running-after-submission">Job not running after submission</h3>
+<p>This may be because there are too many Celery tasks running in the background. To rectify this, enter: </p>
+<pre><code>ps aux | grep celery
+kill -9 &lt;process ID&gt;    # where process ID is the number in the second column
+                        # repeat this until all celery processes have been removed
+</code></pre>
 
+<h3 id="usage-errors">Usage errors</h3>
+<p>If a usage error is printing in the progress page, this may mean that a particular command has not been implemented, or the read file you have submitted has not been formatted correctly.</p>
+<p>An example of a usage error is:</p>
+<pre><code>usage: artic [-h] [-v] 
+</code></pre>
+
+<p>To rectify this, first check that the read file you have submitted has been formatted correctly i.e. with no header. More information can be found on the usage page of this documentation.</p>
+<p>If this does not fix the issue, please let the developers know via GitHub so that the command can be implemented.</p>
+<h2 id="missing-job-on-home-page">Missing job on Home Page</h2>
+<p>If a job is missing from the home page, wait a few seconds and refresh the page.</p>
+<h2 id="any-other-errors">Any other errors</h2>
+<p>If there are any other errors, please let the developers know via GitHub so that we can look into it for you.</p>
 
 
 </section>

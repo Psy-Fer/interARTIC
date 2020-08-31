@@ -36,6 +36,8 @@
 <a href="./">Installation</a>
 <li class="chapter" data-path="usage/">
 <a href="../usage/">Usage</a>
+<li class="chapter" data-path="troubleshooting/">
+<a href="../troubleshooting/">Troubleshooting</a>
 <li class="divider"></li>
 
 
@@ -75,6 +77,29 @@ Theme by GitBook
 
 
 <h1 id="installation">Installation</h1>
+<div class="toc">
+<ul>
+<li><a href="#installation">Installation</a><ul>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#opening-terminal">Opening terminal</a></li>
+<li><a href="#installing-python-and-pip">Installing Python and pip</a></li>
+<li><a href="#installing-miniconda">Installing miniconda</a></li>
+<li><a href="#installing-the-artic-pipeline-environment">Installing the ARTIC pipeline environment</a></li>
+<li><a href="#installing-the-redis-server-and-celery">Installing the Redis Server and Celery</a></li>
+<li><a href="#installing-python-packages-for-redis-celery-and-flask">Installing Python packages for Redis, Celery and Flask</a></li>
+<li><a href="#installing-interartic">Installing interARTIC</a></li>
+<li><a href="#setting-up-interartic">Setting Up interARTIC</a><ul>
+<li><a href="#job-concurrency">Job Concurrency</a></li>
+<li><a href="#automatic-setup">Automatic setup</a></li>
+<li><a href="#manual-setup">Manual setup</a></li>
+<li><a href="#concurrency-manual-setup">Concurrency Manual setup</a></li>
+</ul>
+</li>
+<li><a href="#running-interartic">Running interARTIC</a></li>
+</ul>
+</li>
+</ul>
+</div>
 <h2 id="dependencies">Dependencies</h2>
 <ul>
 <li>Python 3.7 or above</li>
@@ -83,21 +108,29 @@ Theme by GitBook
 <li>Miniconda</li>
 </ul>
 <h2 id="opening-terminal">Opening terminal</h2>
-<p>Your operating systems command line will be used to install the dependencies. </p>
+<p>Your operating system's command line will be used to install the dependencies and start interARTIC. </p>
 <ul>
-<li>For Mac OS: Typing “terminal” into your spotlight search, then hit Return.</li>
-<li>For Windows: Typing “cmd” into your search bar in the Start menu, then hit Enter.</li>
-<li>For Linux: Entering Ctrl+Alt+T</li>
+<li>For Mac OS: Type “terminal” into your spotlight search, then hit Return.</li>
+<li>For Windows: Type “cmd” into your search bar in the Start menu, then hit Enter.</li>
+<li>For Linux: Enter the keyboard shortcut: Ctrl+Alt+T.</li>
 </ul>
+<p>If these instructions don't work on your operating system, google how to open command line on your operating system and software version.</p>
 <h2 id="installing-python-and-pip">Installing Python and pip</h2>
-<p>In order to use InterARTIC, you’ll need Python and its package manager pip installed on your system.</p>
+<p>In order to use interARTIC, you’ll need Python and its package manager pip installed on your system.</p>
 <p>Check if they're already installed by entering the following into your command prompt:</p>
 <pre><code>python --version
 pip --version
 </code></pre>
 
-<p>If Python is not installed, go to: <code>https://www.python.org/downloads/</code> and follow the prompts there.</p>
-<p>If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary.</p>
+<p>If Python is not installed, go to: <code>https://www.python.org/downloads/</code> and follow the instructions there.</p>
+<p>If you are a Linux user, you may instead follow the commands below to install Python:</p>
+<pre><code>sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt install python3.7 python3.7-dev
+python3.7-venv
+</code></pre>
+
+<p>If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary using the 2nd command below.</p>
 <pre><code>pip --version
 pip install --upgrade pip
 </code></pre>
@@ -106,7 +139,7 @@ pip install --upgrade pip
 <h2 id="installing-miniconda">Installing miniconda</h2>
 <p>The miniconda installation guide can be found here: <code>https://conda.io/projects/conda/en/latest/user-guide/install/index.htm</code></p>
 <p>We suggest you undergo the 'Regular Installation' process.</p>
-<h2 id="installing-the-artic-pipeline">Installing the ARTIC pipeline</h2>
+<h2 id="installing-the-artic-pipeline-environment">Installing the ARTIC pipeline environment</h2>
 <p>Enter the following into your command prompt:</p>
 <pre><code>git clone https://github.com/artic-network/artic-ncov2019.git
 cd artic-ncov2019
@@ -115,26 +148,26 @@ conda env create -f environment.yml
 </code></pre>
 
 <h2 id="installing-the-redis-server-and-celery">Installing the Redis Server and Celery</h2>
-<p>To install the Redis Server <code>https://redis.io/topics/quickstart</code>, enter the following into your command prompt:</p>
+<p>Follow this link to install the Redis Server <code>https://redis.io/topics/quickstart</code>, then enter the following into your command prompt:</p>
 <pre><code>bash run-redis.sh
 </code></pre>
 
 <h2 id="installing-python-packages-for-redis-celery-and-flask">Installing Python packages for Redis, Celery and Flask</h2>
 <p>To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt:</p>
-<pre><code>pip install celery==4.4.6 redis==3.5.3 flask 
+<pre><code>pip3 install celery==4.4.6 redis==3.5.3 flask 
 </code></pre>
 
-<h2 id="installing-interartic">Installing InterARTIC</h2>
+<h2 id="installing-interartic">Installing interARTIC</h2>
 <p>Clone the repository from github by entering the following commands into your terminal.</p>
 <pre><code>git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
 </code></pre>
 
-<h2 id="setting-up-interartic">Setting Up InterARTIC</h2>
+<h2 id="setting-up-interartic">Setting Up interARTIC</h2>
 <h4 id="job-concurrency">Job Concurrency</h4>
 <p>By default, job concurrency is turned off and the automatic and manual setups will allow one job to be run at a time. </p>
-<p>If you wish to <strong>turn concurrency on</strong> and run multiple jobs at a time, the please run the <code>Concurrency Manual setup</code>, which will allow the all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.</p>
+<p>If you wish to <strong>turn concurrency on</strong> and run multiple jobs at a time, then please run the commands under the Concurrency Manual setup heading, which will allow all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.</p>
 <h3 id="automatic-setup">Automatic setup</h3>
-<p>To start InterARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:</p>
+<p>To start interARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:</p>
 <pre><code>cd SARS-CoV-2-NanoporeAnalysisWebApp
 bash run.sh &lt;terminal type&gt;
 # Terminal types: macos, xterm, konsole
@@ -156,8 +189,8 @@ conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info &amp
 python3 main.py
 </code></pre>
 
-<h2 id="running-interartic">Running InterARTIC</h2>
-<p>Navigate to your browser and go to <code>http://127.0.0.1:5000</code> to access InterARTIC.</p>
+<h2 id="running-interartic">Running interARTIC</h2>
+<p>Navigate to your browser and go to <code>http://127.0.0.1:5000</code> to access interARTIC.</p>
 
 
 </section>
