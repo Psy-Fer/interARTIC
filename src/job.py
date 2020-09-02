@@ -138,44 +138,54 @@ class Job:
 
 
     def __generateGatherCmd(self):
+        gather_cmd = ""
+        # if job is running medaka 
         if self._pipeline == "medaka":
             gather_cmd = "echo '*****STARTING GATHER COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder +" --no-fast5s" + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
+        # if job is running nanopolish
         elif self._pipeline == "nanopolish":
             gather_cmd = "echo '*****STARTING GATHER COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder + " --fast5-directory " + self._input_folder + "/fast5_pass" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
-        elif self._pipeline == "both":
-            gather_cmd = "echo 'no gather command for both pipelines yet'"
+        #change directory into output folder
+        gather_cmd = "cd " + self._output_folder + "; " + gather_cmd
         return gather_cmd
 
     def __generateDemultCmd(self):
         demult_cmd = ""
+        #demultiplex cmd only run on multiple samples
         if self._num_samples == "multiple":
             demult_cmd = "echo '*****STARTING DEMULTUIPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+        #change directory into output folder
+        demult_cmd = "cd " + self._output_folder + "; " + demult_cmd
         return demult_cmd
 
     def __generateMinionCmd(self):
+        minion_cmd = ""
+        # if only one sample in input
         if self._num_samples == "single":
-            #if read file is provided by user
+            # if read file is provided by user
             if self._read_file != "":
+                # if medaka is chosen
                 if self._pipeline == "medaka":
                     minion_cmd = "echo '*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file " + self._read_file + " " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                # if nanopolish is chosen
                 elif self._pipeline == "nanopolish":
                     minion_cmd = "echo '*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file " + self._read_file + " --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
-                elif self._pipeline == "both":
-                    minion_cmd = ""
             #if read file isn't provided by user
             else:
+                # if medaka is chosen
                 if self._pipeline == "medaka":
                     minion_cmd = "echo '*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass.fastq " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                # if nanopolish is chosen
                 elif self._pipeline == "nanopolish":
                     minion_cmd = "echo '*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass.fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
-                elif self._pipeline == "both":
-                    minion_cmd = ""
+        # if multiple samples in input
         elif self._num_samples == "multiple":
-            #going to run multiple minion cmds
             minion_cmd = "echo '*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+            # if medaka is chosen
             if self._pipeline == "medaka":
                 #open the csv file
                 csv_filepath = self._input_folder + '/sample-barcode.csv'
+                # check 
                 if self._input_folder.startswith('C:\\'):
                     run_name = self._input_folder.split('\\')[-2]
                 else:
@@ -214,10 +224,10 @@ class Job:
                         minion_cmd = minion_cmd + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                         #output goes into current directory so this moves all output files to correct folder
                         minion_cmd = minion_cmd + "; mv ./" + self._job_name + "_" + barcode + "* " + dir_path
-            elif self._pipeline == "both":
-                minion_cmd = "echo 'no minion command for both pipelines yet'"
-
-        minion_cmd = minion_cmd + "; mv ./" + self._job_name + "* " + self._output_folder + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+        #minion_cmd = minion_cmd + "; mv ./" + self._job_name + "* " + self._output_folder + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+        minion_cmd = minion_cmd + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+        #change directory into output folder at the start
+        minion_cmd = "cd " + self._output_folder + "; " + minion_cmd
         return minion_cmd
 
     def disableSave(self):
