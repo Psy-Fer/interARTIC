@@ -28,11 +28,11 @@ class Job:
         self._num_samples = num_samples
         self._save_graphs = True
         self._create_vcfs = True
+        self._barcode_type = barcode_type
         self._gather_cmd = self.__generateGatherCmd()
         self._demult_cmd = self.__generateDemultCmd()
         self._min_cmd = self.__generateMinionCmd()
         self._task_id = None
-        self._barcode_type = barcode_type
 
     @property
     def job_name(self):
@@ -151,11 +151,27 @@ class Job:
 
     def __generateDemultCmd(self):
         demult_cmd = ""
-        #demultiplex cmd only run on multiple samples
+        #demultiplex cmd only runs on multiple samples
         if self._num_samples == "multiple":
-            demult_cmd = "echo '*****STARTING DEMULTUIPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
-        #change directory into output folder
-        demult_cmd = "cd " + self._output_folder + "; " + demult_cmd
+            if self._barcode_type == "rapid":
+                demult_cmd = "echo '*****STARTING PORECHOP COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; echo 'porechop --verbosity 2 --untrimmed -i " + self._job_name + "_fastq_pass.fastq -b ./ --rapid_barcodes --discard_middle --barcode_threshold 80 --threads " + self._num_threads + " --check_reads 10000 --barcode_diff 5 > " + self._job_name + "_fastq_pass.fastq.demultiplexreport.txt' >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; porechop --verbosity 2 --untrimmed -i " + self._job_name + "_fastq_pass.fastq -b ./ --rapid_barcodes --discard_middle --barcode_threshold 80 --threads " + self._num_threads + " --check_reads 10000 --barcode_diff 5 > " + self._job_name + "_fastq_pass.fastq.demultiplexreport.txt;"
+                #open the csv file
+                csv_filepath = self._input_folder + '/sample-barcode.csv'
+                # check 
+                if self._input_folder.startswith('C:\\'):
+                    run_name = self._input_folder.split('\\')[-2]
+                else:
+                    run_name = self._input_folder.split('/')[-2]
+                #open csv file
+                with open(csv_filepath,'rt')as f:
+                    data = csv.reader(f)
+                    for row in data:
+                        barcode = row[1]
+                        demult_cmd = demult_cmd + " mv " + barcode + ".fastq " + self._job_name + "_fastq_pass-" + barcode + ".fastq;"
+            else:
+                demult_cmd = "echo '*****STARTING DEMULTIPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+            #change directory into output folder
+            demult_cmd = "cd " + self._output_folder + "; " + demult_cmd
         return demult_cmd
 
     def __generateMinionCmd(self):
