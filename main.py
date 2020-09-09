@@ -557,7 +557,7 @@ def progress(job_name):
     pattern = "ERROR"
     numErrors = len(re.findall(pattern, outputLog, re.IGNORECASE))
     print(numErrors)
-   
+
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
     input_folder = job.input_folder
@@ -699,7 +699,10 @@ def output(job_name):
                                             point.append(m[3])  #original/reference value
                                             point.append(m[4])  #original/reference value
                                             depth = re.sub(r';.*', "", m[7])
-                                            depth = int(re.sub("DP=","",depth))
+                                            if job.pipeline == "medaka":
+                                                depth = int(re.sub("DP=","",depth))
+                                            elif job.pipeline == "nanopolish":
+                                                depth = int(re.sub("TotalReads=","",depth))
                                             if depth > max_DP:
                                                 max_DP = depth
                                             point.append(depth)  #read depth value
