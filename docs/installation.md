@@ -87,7 +87,7 @@ pip3 install celery==4.4.6 redis==3.5.3 flask
 Clone the repository from github by entering the following commands into your terminal.
 
 ```
-git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
+git clone https://github.com/tthnguyen11/interARTIC.git
 ```
 
 ## Setting Up interARTIC
@@ -103,7 +103,7 @@ If you wish to **turn concurrency on** and run multiple jobs at a time, then ple
 To start interARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:
 
 ```
-cd SARS-CoV-2-NanoporeAnalysisWebApp
+cd interARTIC
 bash run.sh <terminal type>
 # Terminal types: macos, xterm, konsole
 ```
@@ -113,7 +113,7 @@ bash run.sh <terminal type>
 If your terminal is not listed, enter the following commands into your command prompt:
 
 ```
-cd SARS-CoV-2-NanoporeAnalysisWebApp
+cd interARTIC
 bash run-redis.sh &
 conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info &
 python3 main.py
@@ -124,7 +124,7 @@ python3 main.py
 If you wish to turn job concurrency on, enter the following commands into your command prompt:
 
 ```
-cd SARS-CoV-2-NanoporeAnalysisWebApp
+cd interARTIC
 bash run-redis.sh &
 conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info &
 python3 main.py
