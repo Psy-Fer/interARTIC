@@ -362,10 +362,19 @@ def parameters():
         num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
 
-        #concat /data to input folder
+        # concat /data to input folder
         home = expanduser("~")
         input_folder = home + "/data/" + input_folder
 
+        # change into directory with data in it
+        getInputDir = "cd " + input_folder + "; cd *; cd *; cd *; pwd > ~/input.txt"
+        os.system(getInputDir)
+        f = open("input.txt", "r") 
+        for line in f:
+            input_folder = line
+
+        os.system('rm input.txt')
+        
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
             output_folder = input_folder + "/output"
