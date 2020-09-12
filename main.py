@@ -542,9 +542,6 @@ def progress(job_name):
     print(path)
     with open(path, "r") as f:
         outputLog = f.read().replace("\n","<br/>")
-        
-    # prepend a new line to allow for error counting
-    outputLog = "<br/>" + outputLog
 
     # find the status of the current job
     if re.findall(r':D', outputLog):
