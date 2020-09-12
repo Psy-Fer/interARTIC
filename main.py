@@ -542,6 +542,9 @@ def progress(job_name):
     print(path)
     with open(path, "r") as f:
         outputLog = f.read().replace("\n","<br/>")
+        
+    # prepend a new line to allow for error counting
+    outputLog = "<br/>" + outputLog
 
     # find the status of the current job
     if re.findall(r':D', outputLog):
@@ -554,7 +557,8 @@ def progress(job_name):
         frac = "0"
 
     # find any errors that occur in the output log
-    pattern = "ERROR"
+    # might have to change depending on what other letters appear
+    pattern = "<br\/>[A-Za-z0-9\s]*ERROR"
     numErrors = len(re.findall(pattern, outputLog, re.IGNORECASE))
     print(numErrors)
 
