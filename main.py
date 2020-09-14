@@ -554,7 +554,7 @@ def progress(job_name):
         frac = "0"
 
     # find any errors that occur in the output log
-    pattern = "ERROR"
+    pattern = "<br\/>[A-Za-z0-9\s]*ERROR"
     numErrors = len(re.findall(pattern, outputLog, re.IGNORECASE))
     print(numErrors)
    
