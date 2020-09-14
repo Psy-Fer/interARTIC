@@ -365,15 +365,16 @@ def parameters():
         # concat /data to input folder
         home = expanduser("~")
         input_folder = home + "/data/" + input_folder
+        filename = os.path.dirname(os.path.realpath(__file__))
 
         # change into directory with data in it
-        getInputDir = "cd " + input_folder + "; cd *; cd *; cd *; pwd > ~/input.txt"
+        getInputDir = "cd " + input_folder + "; cd *; cd *; cd *; pwd > " + filename + "/input.txt"
         os.system(getInputDir)
         f = open("input.txt", "r") 
         for line in f:
             input_folder = line
 
-        os.system('rm input.txt')
+        os.system('cd ' + filename + '; rm input.txt')
         
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
@@ -696,7 +697,6 @@ def output(job_name):
                                 point.append(int(m[1]))  #position of variant
                                 point.append(m[3])  #original/reference value
                                 point.append(m[4])  #original/reference value
-                                depth = re.sub(r';.*', "", m[7])
                                 if job.pipeline == "medaka":
                                     depth = int(re.sub("DP=","",depth))
                                 elif job.pipeline == "nanopolish":
