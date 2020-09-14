@@ -11,20 +11,44 @@
         for (var i=0; i<buttons.length;i++) {
           buttons[i].addEventListener('click', function(){ 
             console.log("clicked!!!!")
-            var check = confirm("Are you sure you want to abort the job?");
-            if (check == true) {
-              var del = confirm("Do you want to delete the files created?")
-              if (del == true) {
-                return true;
-              }
-              else {
-                event.preventDefault();
-                return false;
-              }
+            // alert(this.name);
+            var job_name = this.name;
+            job_name = job_name.substring(0,job_name.indexOf('?'));
+            console.log(job_name);
+            var modal = document.getElementById("myModal");
+            var close = document.getElementById("close");
+            var cancel = document.getElementById("cancel");
+            var confirmDel = document.getElementById("confirm");
+            var dmodal = document.getElementById("confirmDelete");
+            var close2 = document.getElementById("close2");
+            var cancel2 = document.getElementById("cancel2");
+            var conDel = document.getElementById("confirmD");
+            
+            modal.style.display = "block";
+            var job = document.getElementById("jobname");
+            job.innerHTML = '"' + job_name + '"';
+            job.name = job_name;
+            
+            close.onclick = function() {
+              modal.style.display = "none";
             }
-            else {
-              event.preventDefault();
-              return false;
+            cancel.onclick = function() {
+              modal.style.display = "none";
+            }
+            confirmDel.onclick = function() {
+              modal.style.display = "none";
+              dmodal.style.display = "block";
+              cancel2.href = "/abort/"+job.name;
+              conDel.href = "/abort/delete/"+job.name;
+              console.log(cancel2.href);
+              console.log(conDel.href);
+            }
+            close2.onclick = function() {
+              dmodal.style.display = "none";
+            }
+            cancel2.onclick = function() {
+              dmodal.style.display = "none";
+              // alert(this.name);
             }
           });
         }
@@ -142,7 +166,14 @@
                 <label class="subtitle is-5" for="output_folder">Output folder: </label><br>
                 <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
                 <input class="input" type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
-
+                {% if errors %}
+                {% if errors['output_folder'] %}
+                <script>
+                  document.getElementById("output_folder").className.add("is-danger");
+                </script>
+                {% endif %}
+                {% endif %}
+                <br>
                 <!-- override output data?-->
                 <input type="checkbox" id="override_data" name="override_data">
                 <label for="override_data">Override existing data?</label><br><br>
@@ -287,6 +318,41 @@
             </div>
           </div>
         </div>
+        <!-- modal -->
+      <div class="modal" id="myModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Abort Job</p>
+            <button id="close" class="delete" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+          Are you sure you want to ABORT <p id="jobname" style="display:inline"></p>?
+          </section>
+          <footer class="modal-card-foot">
+            <button id="confirm" class="button is-success">Yes</button>
+            <button id="cancel" class="button">Cancel</button>
+          </footer>
+        </div>
+      </div>
+
+      <div class="modal" id="confirmDelete">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Abort Job</p>
+            <button id="close2" class="delete" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+          Do you want to delete the files created from the run?
+          </section>
+          <footer class="modal-card-foot">
+            <a id="confirmD" class="button is-success">Yes</a>
+            <a id="cancel2" class="button is-danger">No</a>
+          </footer>
+        </div>
+      </div>
+      <!-- // -->
       </div>
 
       <script>
@@ -342,7 +408,7 @@
                      btn.classList.add("is-light");
                      btn.style = "float:right";
                      btn.classList.add("abort")
-                     btn.href = job[key].replace("progress", "abort")
+                     btn.name = job[key].replace("/progress/", "")
 
                      linkNode.appendChild(textNode);
                      curJob.appendChild(linkNode);

@@ -40,17 +40,28 @@
 			<button id="errorParams" class="button is-danger is-light" style="display:none">Rerun Job</button>
 			<script type="text/javascript">
 				document.getElementById("errorParams").onclick = function () {
-					var check = confirm("Are you sure you want to abort the job?");
-					if (check == true) {
-						location.href = "/error/{{ job_name }}";
-					}
-					else {
-						return false;
-					}
+					var job_name = this.name;
+		            var modal = document.getElementById("rerunModal");
+		            var close = document.getElementById("close3");
+		            var cancel = document.getElementById("cancel3");
+		            var rerun = document.getElementById("rerun");
+
+		            modal.style.display = "block";
+		            
+		            close.onclick = function() {
+		              modal.style.display = "none";
+		            }
+		            cancel.onclick = function() {
+		              modal.style.display = "none";
+		            }
+
+		            rerun.onclick = function() {
+		            	location.href = "/error/{{ job_name }}"
+		            }
 				};
 			</script>
 			<br>
-			<a class="button is-danger is-light" id="abort" href='/abort/{{ job_name }}'>Abort Job</a>
+			<a class="button is-danger is-light" id="abort" name='{{ job_name }}'>Abort Job</a>
 
 			<button id="direct_to_output" class="button float-left submit-button" style="display:none;">Go to output</button>
 			<br>
@@ -116,6 +127,59 @@
 			</script>
 
 		</div>
+		<!-- modal -->
+      <div class="modal" id="myModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Abort Job</p>
+            <button id="close" class="delete" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+          Are you sure you want to ABORT <p id="jobname" style="display:inline"></p>?
+          </section>
+          <footer class="modal-card-foot">
+            <button id="confirm" class="button is-success">Yes</button>
+            <button id="cancel" class="button">Cancel</button>
+          </footer>
+        </div>
+      </div>
+
+      <div class="modal" id="confirmDelete">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Abort Job</p>
+            <button id="close2" class="delete" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+          Do you want to delete the files created from the run?
+          </section>
+          <footer class="modal-card-foot">
+            <a id="confirmD" class="button is-success">Yes</a>
+            <a id="cancel2" class="button is-danger">No</a>
+          </footer>
+        </div>
+      </div>
+
+      <div class="modal" id="rerunModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Rerun Job</p>
+            <button id="close3" class="delete" aria-label="close"></button>
+          </header>
+          <section class="modal-card-body">
+          Are you sure you want to Rerun <p id="jobname" style="display:inline"></p>? 
+          This will stop the current run and take you back the to parameters page to resubmit the job.
+          </section>
+          <footer class="modal-card-foot">
+            <button id="rerun" class="button is-success">Yes</button>
+            <button id="cancel3" class="button">Cancel</button>
+          </footer>
+        </div>
+      </div>
+      <!-- // -->
 	</div>
 	
 	<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
@@ -124,21 +188,43 @@
 		// Confirm abort
 		var aElems = document.getElementById('abort');
 		aElems.onclick = function() {
-			var check = confirm("Are you sure you want to abort the job?");
-			if (check == true) {
-				var del = confirm("Do you want to delete the files created?")
-				if (del == true) {
-					return true;
-				}
-				else {
-					return false;
-				}
-				// return true;
-			}
-			else {
-				return false;
-			}
-		};
+			var job_name = this.name;
+            var modal = document.getElementById("myModal");
+            var close = document.getElementById("close");
+            var cancel = document.getElementById("cancel");
+            var confirmDel = document.getElementById("confirm");
+            var dmodal = document.getElementById("confirmDelete");
+            var close2 = document.getElementById("close2");
+            var cancel2 = document.getElementById("cancel2");
+            var conDel = document.getElementById("confirmD");
+            
+            modal.style.display = "block";
+            var job = document.getElementById("jobname");
+            job.innerHTML = '"' + job_name + '"';
+            job.name = job_name;
+            
+            close.onclick = function() {
+              modal.style.display = "none";
+            }
+            cancel.onclick = function() {
+              modal.style.display = "none";
+            }
+            confirmDel.onclick = function() {
+              modal.style.display = "none";
+              dmodal.style.display = "block";
+              cancel2.href = "/abort/"+job.name;
+              conDel.href = "/abort/delete/"+job.name;
+              console.log(cancel2.href);
+              console.log(conDel.href);
+            }
+            close2.onclick = function() {
+              dmodal.style.display = "none";
+            }
+            cancel2.onclick = function() {
+              dmodal.style.display = "none";
+              // alert(this.name);
+            }		
+        };
 
 		const status_div = document.getElementById('status');
 		//const para = document.createElement("p");
@@ -250,37 +336,6 @@
 			 
 		});
 	</script>
-	
-
-	<!--<script> 
-		$( function() {
-			$( "#dialog-confirm" ).dialog({
-				autoOpen: false,
-				resizable: false,
-				height: 200,
-				width: 200,
-				modal: true,
-				buttons: {
-					"Restart": function() {
-						$( this ).dialog( "close" );
-					},
-					Cancel: function() {
-						$( this ).dialog( "close" );
-					}
-				},
-				dialogClass: 'no-close success-dialog'
-			});
-		} );
-		$(document).ready(function() {
-			setInterval( function() {
-				var errors = ["{{ error|safe }}"];
-				console.log(errors[0]);
-				if (errors[0] != null) {
-					$( "#dialog-confirm" ).dialog( "open" );
-				} 
-			}, 1000);
-		});
-	</script> -->
     {% endblock %}
   </body>
 </html>

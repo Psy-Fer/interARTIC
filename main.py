@@ -77,6 +77,10 @@ def check_override(output_folder, override_data):
     dir_files = os.listdir(output_folder)
     if len(dir_files) > 0 and override_data is False:
         return True
+    elif len(dir_files) == 1 and dir_files[0] == "all_cmds_log.txt":
+        print(dir_files)
+        if os.path.getsize(output_folder+"/all_cmds_log.txt") > 0:
+            return True
     return False
 
 
@@ -249,7 +253,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     if pipeline == "both":
 
         if override_data is True and os.path.exists(output_folder):
-            remove = "rm -r " + output_folder + "/*"
+            remove = "rm -r " + output_folder + "/all_cmds_log.txt"
             os.system(remove)
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder + "/medaka"):
@@ -265,14 +269,10 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             os.system(make_dir_n)
 
         if check_override(output_folder + "/medaka", override_data) and os.path.exists(input_folder):
-            # removeFiles(output_folder + "/medaka", override_data, job_name)
-            os.system('rm ' + output_folder + '/medaka/all_cmds_log.txt')
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
 
-        if check_override(output_folder + "/medaka", override_data) and os.path.exists(input_folder):
-            # removeFiles(output_folder + "/nanopolish", override_data, job_name)
-            os.system('rm ' + output_folder + '/nanopolish/all_cmds_log.txt')
+        if check_override(output_folder + "/nanopolish", override_data) and os.path.exists(input_folder):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
 
@@ -292,8 +292,6 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             remove = "rm -r " + output_folder + "/*"
             os.system(remove)
         elif check_override(output_folder, override_data) and os.path.exists(input_folder):
-            # removeFiles(output_folder, override_data, job_name)
-            os.system('rm ' + output_folder + '/all_cmds_log.txt')
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
         # Make empty log file for initial progress rendering
@@ -582,16 +580,25 @@ def abort(job_name):
     task = job.task_id
     celery.control.revoke(task,terminate=True, signal='SIGKILL')
 
+    qSys.removeQueuedJob(job_name)
+    return redirect(url_for("home"))
+
+@app.route("/abort/delete/<job_name>", methods = ["GET", "POST"])
+def abort_delete(job_name):
+    job = qSys.getJobByName(job_name)
+    task = job.task_id
+    celery.control.revoke(task,terminate=True, signal='SIGKILL')
+
     # Remove files
-    currdir = os.path.dirname(os.path.realpath(__file__))
-    path = currdir +'/'+job_name
-    print("removing after abort:",path)
-    os.system('rm -r ' + path +'*')
-    os.system('rm -r ' + currdir + '/tmp*' )
+    # currdir = os.path.dirname(os.path.realpath(__file__))
+    # path = currdir +'/'+job_name
+    # print("removing after abort:",path)
+    # os.system('rm -r ' + path +'*')
+    # os.system('rm -r ' + currdir + '/tmp*' )
+    os.system('rm -r ' + job.output_folder)
 
     qSys.removeQueuedJob(job_name)
     return redirect(url_for("home"))
-    # return "TRYING TO ABORT"
 
 @app.route("/delete/<job_name>", methods = ["GET", "POST"])
 def delete(job_name):
