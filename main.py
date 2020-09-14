@@ -368,13 +368,17 @@ def parameters():
         filename = os.path.dirname(os.path.realpath(__file__))
 
         # change into directory with data in it
-        getInputDir = "cd " + input_folder + "; cd *; cd *; cd *; pwd > " + filename + "/input.txt"
-        os.system(getInputDir)
-        f = open("input.txt", "r") 
-        for line in f:
-            input_folder = line
+        # getInputDir = "cd " + input_folder + "; cd *; cd *; cd *; pwd > " + filename + "/input.txt"
+        # os.system(getInputDir)
+        # f = open("input.txt", "r") 
+        # for line in f:
+        #     input_folder = line
 
-        os.system('cd ' + filename + '; rm input.txt')
+        # os.system('cd ' + filename + '; rm input.txt')
+        print("INPUT BEFORE::", input_folder)
+        getInputDir = "cd " + input_folder + "; cd *; cd *; cd *; pwd"
+        input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
+        print("input:::", input_folder)
         
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
