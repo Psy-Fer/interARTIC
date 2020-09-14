@@ -319,10 +319,10 @@ def getInputFolders():
     os.system(checkFoldersCmd)
     
     filename = os.path.dirname(os.path.realpath(__file__))
-    copyCmd = 'cp ~/data/folders.txt ~/'
+    copyCmd = 'cp ~/data/folders.txt ' + filename
     os.system(copyCmd)
-    
-    f = open("folders.txt", "r") 
+    filepath = filename + '/folders.txt'
+    f = open(filepath, "r") 
     folders = []
     
     # process folders
@@ -332,7 +332,7 @@ def getInputFolders():
         line = line.replace("\n", "")
         folders.append(line)
     
-    os.system('rm folders.txt')
+    os.system('cd ' + filename + '; rm folders.txt')
     os.system('cd; cd data; rm folders.txt')
     return folders
 
