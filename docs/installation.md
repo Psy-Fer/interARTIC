@@ -95,7 +95,7 @@ conda install -c bioconda artic-porechop
 Clone the repository from github by entering the following commands into your terminal.
 
 ```
-git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
+git clone https://github.com/tthnguyen11/interARTIC.git
 ```
 
 ## Setting Up interARTIC
