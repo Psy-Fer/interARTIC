@@ -167,9 +167,9 @@
                 <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
                 <input class="input" type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
                 {% if errors %}
-                {% if errors['output_folder'] %}
+                {% if errors['override'] == True %}
                 <script>
-                  document.getElementById("output_folder").className.add("is-danger");
+                  document.getElementById("output_folder").classList.add("is-danger");
                 </script>
                 {% endif %}
                 {% endif %}
