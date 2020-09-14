@@ -82,6 +82,14 @@ To install the Python packages for Redis, Celery and Flask, enter the following 
 pip3 install celery==4.4.6 redis==3.5.3 flask 
 ```
 
+## Installing Porechop
+
+To install the ARTIC version of Porechop, enter the following into your command prompt:
+
+```
+conda install -c bioconda artic-porechop 
+```
+
 ## Installing interARTIC
 
 Clone the repository from github by entering the following commands into your terminal.

@@ -45,13 +45,15 @@ Note: your input folder may not be located in documents folder. Simply navigate,
     * If available, the file path for a read file should be inputted. 
     * If unavailable, the artic gather/demultiplex command will generate one.
 * If multiple samples are being run through the pipeline:
-    * A CSV file containing sample names and barcodes should be placed in the input folder and named ‘sample-barcode.csv’. 
+    * A CSV file containing the data's sample names and barcodes should be placed in the input folder and named ‘sample-barcode.csv’. 
     * A sample CSV file is below:
 
-<br></br>
-<br></br>
-<br></br>
-<br></br>
+```
+sample3,NB03
+sample4,NB04
+sample5,NB05
+sample6,NB06
+```
 
 A sample file structure is as below:
 
