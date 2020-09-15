@@ -376,7 +376,7 @@ def parameters():
 
         # os.system('cd ' + filename + '; rm input.txt')
         print("INPUT BEFORE::", input_folder)
-        getInputDir = "cd " + input_folder + "; cd *; cd *; cd *; pwd"
+        getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
         input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
         print("input:::", input_folder)
         

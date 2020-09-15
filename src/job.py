@@ -181,6 +181,7 @@ class Job:
                 else:
                     run_name = self._input_folder.split('/')[-2]
                 #open csv file
+                print("this is THE filepath:" + csv_filepath + "\n")
                 with open(csv_filepath,'rt')as f:
                     data = csv.reader(f)
                     for row in data:
