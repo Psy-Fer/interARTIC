@@ -113,8 +113,8 @@
                 <!-- select input folder -->
 
                 <br>
-                <label class="subtitle is-5">Select an input folder</label><br><br>
-                  <input list="search" name="input_folder" id="input_folder" placeholder="Search for input folder">
+                <label class="subtitle is-5">Select an input folder: *</label><br><br>
+                  <input class="input" list="search" name="input_folder" id="input_folder" placeholder="Search for input folder" value="{{input_name}}" required>
                     <datalist id="search">
                       {% for folder in folders %}                          
                         <option value="{{ folder }}">{{ folder }}</option>

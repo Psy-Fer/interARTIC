@@ -202,8 +202,7 @@ def home():
 def about():
 	return render_template("about.html")
 
-def checkInputs(output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name):
-
+def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name):
     errors = {}
 
     #Check of jobname is used
@@ -212,25 +211,22 @@ def checkInputs(output_folder, primer_scheme_dir, read_file, pipeline, override_
 
     # if input_folder[-1] == "/":
     #     input_folder = input_folder[:-1]
-    # #give error if input folder path is invalid or empty
-    # if not os.path.isdir(input_folder):
-    #     errors['input_folder'] = "Invalid path."
-    # elif len(os.listdir(input_folder)) == 0:
-    #     errors['input_folder'] = "Directory is empty."
+    
+    #give error if input folder path is empty
+    if len(os.listdir(input_folder)) == 0:
+        errors['input_folder'] = "Directory is empty."
 
-    # #if no output folder entered, creates one inside of input folder
-    # if not output_folder and not os.path.isdir(input_folder):
-    #     return errors, output_folder
-    # elif not output_folder and os.path.isdir(input_folder):
-    #     output_folder = input_folder + "/output"
-
+    #if no output folder entered, creates one inside of input folder
+    if not output_folder and not os.path.isdir(input_folder):
+        return errors, output_folder
+    elif not output_folder and os.path.isdir(input_folder):
+        output_folder = input_folder + "/output"
 
     if output_folder[-1] == "/":
         output_folder = output_folder[:-1]
 
     if primer_scheme_dir[-1] == "/":
         primer_scheme_dir = primer_scheme_dir[:-1]
-
 
     #give error if primer schemes folder path is invalid or empty
     if not os.path.isdir(primer_scheme_dir):
@@ -315,25 +311,9 @@ def checkInputs(output_folder, primer_scheme_dir, read_file, pipeline, override_
 
 def getInputFolders():
     # find all the current input folders
-    checkFoldersCmd = 'cd; cd data; pwd; ls > folders.txt'
-    os.system(checkFoldersCmd)
-    
-    filename = os.path.dirname(os.path.realpath(__file__))
-    copyCmd = 'cp ~/data/folders.txt ' + filename
-    os.system(copyCmd)
-    filepath = filename + '/folders.txt'
-    f = open(filepath, "r") 
-    folders = []
-    
-    # process folders
-    for line in f:
-        if re.search("txt", line):
-            continue
-        line = line.replace("\n", "")
-        folders.append(line)
-    
-    os.system('cd ' + filename + '; rm folders.txt')
-    os.system('cd; cd data; rm folders.txt')
+    checkFoldersCmd = 'cd; cd data; ls'  
+    folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
+
     return folders
 
 @app.route("/parameters", methods = ["POST","GET"])
@@ -362,19 +342,14 @@ def parameters():
         num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
 
+        # store input_name
+        input_name = input_folder
+        
         # concat /data to input folder
         home = expanduser("~")
         input_folder = home + "/data/" + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
 
-        # change into directory with data in it
-        # getInputDir = "cd " + input_folder + "; cd *; cd *; cd *; pwd > " + filename + "/input.txt"
-        # os.system(getInputDir)
-        # f = open("input.txt", "r") 
-        # for line in f:
-        #     input_folder = line
-
-        # os.system('cd ' + filename + '; rm input.txt')
         print("INPUT BEFORE::", input_folder)
         getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
         input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
@@ -391,7 +366,7 @@ def parameters():
             override_data = False
 
         errors = {}
-        errors, output_folder_checked = checkInputs(output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
 
         if not output_folder:
             output_folder = output_folder_checked
@@ -405,7 +380,7 @@ def parameters():
             #Update displayed queue on home page
             queueList = []
             if qSys.queue.empty():
-                return render_template("parameters.html", job_name=job_name, queue = None, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders)
+                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders)
 
             for item in qSys.queue.getItems():
                 queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
@@ -413,7 +388,7 @@ def parameters():
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -486,7 +461,6 @@ def error(job_name):
     if request.method == "POST":
         #get parameters
         job_name = request.form.get('job_name')
-        input_folder = request.form.get('input_folder')
         read_file = request.form.get('read_file')
         primer_scheme_dir = request.form.get('primer_scheme_dir')
         primer_scheme = request.form.get('primer_scheme')
@@ -503,6 +477,19 @@ def error(job_name):
         dry_run = request.form.get('dry_run')
         num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
+        
+        # store input_name
+        input_name = input_folder
+        
+        # concat /data to input folder
+        home = expanduser("~")
+        input_folder = home + "/data/" + input_folder
+        filename = os.path.dirname(os.path.realpath(__file__))
+
+        print("INPUT BEFORE::", input_folder)
+        getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
+        input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
+        print("input:::", input_folder)
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
@@ -511,7 +498,7 @@ def error(job_name):
             override_data = False
 
         errors = {}
-        errors, output_folder_checked = checkInputs(output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
 
         if not output_folder:
             output_folder = output_folder_checked
@@ -524,14 +511,14 @@ def error(job_name):
             #Update displayed queue on home page
             queueList = []
             if qSys.queue.empty():
-                return render_template("parameters.html", queue=None, job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir, errors=errors, folders=folders)
+                return render_template("parameters.html", queue=None, job_name=job_name, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir, errors=errors, folders=folders)
             for item in qSys.queue.getItems():
                 queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", queue=displayQueue, job_name=job_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors, folders=folders)
+            return render_template("parameters.html", queue=displayQueue, job_name=job_name, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors, folders=folders)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -569,14 +556,14 @@ def error(job_name):
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
-        return render_template("parameters.html", job_name=job_name, queue = None, pipeline=pipeline, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders)
+        return render_template("parameters.html", job_name=job_name, queue = None, pipeline=pipeline, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders)
 
     for item in qSys.queue.getItems():
         queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", job_name=job_name, queue = displayQueue, pipeline=pipeline, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders)
+    return render_template("parameters.html", job_name=job_name, queue = displayQueue, pipeline=pipeline, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders)
 
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
