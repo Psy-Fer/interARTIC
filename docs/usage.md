@@ -12,31 +12,25 @@ Input the necessary parameters (see Parameter Descriptions below). Parameters re
 
 For the file path inputs, please enter absolute paths. See below for help.
 
-### File path input
+### Input Folders
 
-* Folders and files should be inputted by their file paths.
-* File paths can be retrieved by running 'pwd' in the appropriate folder on any terminal.
-* Folders may also be referred to as directories.
-* File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this resource: https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/.
-
-For example:
+By default, the data input folder shoul be set up as:
 
 ```
-$ pwd                                    # get file path of current directory
-/Users/YOURNAME
-$ ls                                     # list contents of current directory
-folder1     folder2     file1       documents
-$ cd documents                           # change current directory to documents
-$ pwd
-/Users/YOURNAME/documents
-$ cd inputFolder                         # change current directory to your input folder
-$ ls                                     # check contents of folder are correct
-fast5_fail      fast5_pass      fastq_fail      fastq_pass      sample-barcode.csv     sequencing_summary.txt 
-$ pwd                                    # obtain file path you will input into interARTIC
-/Users/YOURNAME/documents/inputFolder
+~user/
+    data/
+        input_folder1/                               
+            name/
+                uuid/
+                    # input files here
+        input_folder2/
+            name/
+                uuid/
+                    # input files here
+                    
 ```
-Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path. 
 
+When prompted to select an input folder, click the drop down menu or type in the name of the input folder as in the data folder in the file tree above. For example, if you want to run the pipeline on ```input_folder1```, type ```input_folder1``` into the search bar or select it in the drop down menu.
 
 #### Input directory file structure
 
@@ -58,7 +52,7 @@ sample6,NB06
 A sample file structure is as below:
 
 ```
-input_directory/
+input_folder/
     fast5_pass/
         A_10.fast5
         A_11.fast5
@@ -87,13 +81,37 @@ primer-schemes/
             nCoV-2019.tsv
 ```
 
+### File path input
+
+* Folders and files should be inputted by their file paths.
+* File paths can be retrieved by running 'pwd' in the appropriate folder on any terminal.
+* Folders may also be referred to as directories.
+* File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this resource: https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/.
+
+For example:
+
+```
+$ pwd                                    # get file path of current directory
+/Users/YOURNAME
+$ ls                                     # list contents of current directory
+folder1     folder2     file1       documents
+$ cd documents                           # change current directory to documents
+$ pwd
+/Users/YOURNAME/documents
+$ cd outputFolder                         # change current directory to your output folder
+
+$ pwd                                    # obtain file path you will input into interARTIC
+/Users/YOURNAME/documents/outputFolder
+```
+Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path. 
+
 ### Parameter Descriptions
 
 You can customize the parameters by typing into the respective text box. 
 
 * **Job name:** A unique name for your job, so you may identify your output files with it.
 * **Pipeline:** Select the pipeline within ARTIC that you wish to run your data files through.
-* **Input folder:** Enter the file path to your main data folder. 
+* **Input folder:** Your main data folder. 
     * This folder contains folders such as fast5_pass, fastq_pass, etc.
 * **Read file:** If you are inputting data files for a single sample run where you have a file ending in “.fastq” already made, input the file path for this read file. 
     * You may get this error in your output, but this can be ignored: Include screenshot of harmless error that might occur
