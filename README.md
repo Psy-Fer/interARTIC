@@ -88,12 +88,20 @@ To install the Python packages for Redis, Celery and Flask, enter the following 
 pip3 install celery==4.4.6 redis==3.5.3 flask 
 ```
 
+## Installing Porechop
+
+To install the ARTIC version of Porechop, enter the following into your command prompt:
+
+```
+conda install -c bioconda artic-porechop 
+```
+
 ## Installing interARTIC
 
 Clone the repository from github by entering the following commands into your terminal.
 
 ```
-git clone https://github.com/tthnguyen11/SARS-CoV-2-NanoporeAnalysisWebApp.git
+git clone https://github.com/tthnguyen11/interARTIC.git
 ```
 
 ## Setting Up interARTIC
@@ -109,7 +117,7 @@ If you wish to **turn concurrency on** and run multiple jobs at a time, then ple
 To start interARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:
 
 ```
-cd SARS-CoV-2-NanoporeAnalysisWebApp
+cd interARTIC
 bash run.sh <terminal type>
 # Terminal types: macos, xterm, konsole
 ```
@@ -119,7 +127,7 @@ bash run.sh <terminal type>
 If your terminal is not listed, enter the following commands into your command prompt:
 
 ```
-cd SARS-CoV-2-NanoporeAnalysisWebApp
+cd interARTIC
 bash run-redis.sh &
 conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info &
 python3 main.py
@@ -130,7 +138,7 @@ python3 main.py
 If you wish to turn job concurrency on, enter the following commands into your command prompt:
 
 ```
-cd SARS-CoV-2-NanoporeAnalysisWebApp
+cd interARTIC
 bash run-redis.sh &
 conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info &
 python3 main.py
@@ -139,7 +147,3 @@ python3 main.py
 ## Running interARTIC
 
 Navigate to your browser and go to ```http://127.0.0.1:5000``` to access interARTIC.
-
-# Usage
-
-For usage documentation, please go to ```https://tthnguyen11.github.io/interARTIC/```
