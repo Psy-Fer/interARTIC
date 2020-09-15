@@ -4,11 +4,13 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/static/css/bulma.css" />
     <link rel="icon" type="image/png" href="/static/icon.png" sizes="400x400">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
       window.onload = function() {
         console.log("loaded window")
         var buttons = document.getElementsByClassName("abort");
-        for (var i=0; i<buttons.length;i++) {
+        for (var i = 0; i < buttons.length; i++) {
           buttons[i].addEventListener('click', function(){ 
             console.log("clicked!!!!")
             // alert(this.name);
@@ -132,22 +134,40 @@
                   </div>
                 </div>
 
+                <!-- select input folder -->
+
+                <br>
+                <label class="subtitle is-5">Select an input folder</label><br><br>
+                  <input list="search" name="input_folder" id="input_folder" placeholder="Search for input folder">
+                    <datalist id="search">
+                      {% for folder in folders %}                          
+                        <option value="{{ folder }}">{{ folder }}</option>
+                      {% endfor %}
+                    </datalist>
+
+                <!-- search for input folder 
+                <div class="field has-addons">
+                  <div class="control">
+                    <input class="input" id="file_path" type="text" placeholder="Enter a file path">
+                  </div>
+                  <div class="control">
+                    <a class="button is-info" onclick="findFiles()">
+                      Search
+                    </a>
+                  </div>
+                </div>
+
+                <script>
+                  function findFiles() {
+                    var path = document.getElementById("file_path").value;
+                    // not sure how to run shell cmds in jquery
+                  }
+                </script>-->
+                
+                <br><br>
                 <!-- file path input -->
                 <center><p class="subtitle is-5"><b>Input file paths</b> </p></center><br>
                 <small>These must be absolute file paths, starting with either "/" or "C:\"</small><br><br>
-                <!-- input folder file path - Medaka/ Nanopolish-->
-                <label class="subtitle is-5" for="input_folder">Input folder: *</label><br>
-                <input class="input" type="text" id="input_folder" name="input_folder" size="80" value="{{input_folder}}"  required><br>
-                
-                {% if errors %}
-                {% if errors['input_folder'] %}
-                <script>
-                  document.getElementById("input_folder").className = "input is-danger";
-                </script>
-                <p class="help is-danger"> {{ errors['input_folder'] }} </p>
-                {% endif %}
-                {% endif %}
-                <br>
                 <!-- read file path - Medaka/ Nanopolish-->
                 <label class="subtitle is-5" for="scheme_folder">Read file:</label><br>
                 <small>(only input if you already have this file, otherwise artic gather/ demultiplex will generate it)</small><br>

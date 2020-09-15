@@ -204,6 +204,7 @@ class Job:
                     run_name = self._input_folder.split('data/')[1]
                     run_name = run_name.split('/')[0]
                 #open csv file
+                print("this is THE filepath:" + csv_filepath + "\n")
                 with open(csv_filepath,'rt')as f:
                     data = csv.reader(f)
                     for row in data:
