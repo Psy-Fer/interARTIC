@@ -38,6 +38,10 @@ max_queue_size = 10
 #Create a System object with a queue of length maximum_queue_size
 qSys = System(max_queue_size)
 
+#Global variable for base filepath
+#initialised as /user/data
+input_filepath = expanduser("~") + '/data'
+
 @app.route('/getCheckTasksUrl', methods = ['POST'])
 def getCheckTasksUrl():
     return jsonify({}), 202, {'Location': url_for('checkTasks')}
@@ -158,49 +162,22 @@ def task_status(task_id):
 def route():
     return redirect(url_for('home'))
 
-@app.route("/home")
+@app.route("/home",methods = ["POST", "GET"])
 def home():
-    #Update displayed queue and completed jobs on home page
-    # queueList = []
-    # completedList = []
-
-    # checkTasks()
-
-    # def completedToJSON():
-    #     for item in qSys.completed:
-    #         completedList.append({item.job_name : url_for('output', job_name=item.job_name)})
-
-    #     completedDict = {'jobs': completedList}
-    #     for key, value in completedDict.items():
-    #         print(key, value)
-
-    #     return json.htmlsafe_dumps(completedDict)
-
-    # def queueToJSON():
-    #     for item in qSys.queue.getItems():
-    #         queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
-
-    #     queueDict = {'jobs': queueList}
-    #     for key, value in queueDict.items():
-    #         print(key, value)
-
-    #     return json.htmlsafe_dumps(queueDict)
-    # if qSys.queue.empty():
-    #     displayQueue = None
-    # else:
-    #     displayQueue = queueToJSON()
-
-
-    # if not qSys.completed:
-    #     displayCompleted = None
-    # else:
-    #     for j in qSys.completed:
-    #         print("COMPLETED JOB: ", j)
-    #     displayCompleted = completedToJSON()
-
-    #return render_template("home.html", queue = displayQueue, completed = displayCompleted)
-    return render_template("home.html")
-
+    errors = {}
+    if request.method == "POST":
+        search_input = request.form.get('file_path')
+        print("search input")
+        print(search_input)
+        # error checking here
+        if not os.path.isdir(search_input):
+            errors['invalid_input_file_path'] = "File path entered is not valid"
+            return render_template("home.html", input_folder=search_input, errors=errors)
+        else:
+            global input_filepath 
+            input_filepath = search_input
+        
+    return render_template("home.html", input_folder=input_filepath)
 
 @app.route("/about")
 def about():
@@ -309,7 +286,11 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
 def getInputFolders():
     # find all the current input folders
-    checkFoldersCmd = 'cd; cd data; ls'  
+    global input_filepath
+    checkFoldersCmd = 'cd; cd ' + input_filepath + '; ls'  
+    print("check folders command")
+    print(checkFoldersCmd)
+     
     folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
 
     return folders
@@ -320,6 +301,15 @@ def parameters():
     folders = getInputFolders()
     
     if request.method == "POST":
+        # get curr queue
+        queueList = []
+        if not qSys.queue.empty():
+            for item in qSys.queue.getItems():
+                queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+
+        queueDict = {'jobs': queueList}
+        displayQueue = json.htmlsafe_dumps(queueDict)
+        
         #get parameters
         job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
@@ -380,11 +370,11 @@ def parameters():
             if qSys.queue.empty():
                 return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders)
 
-            for item in qSys.queue.getItems():
-                queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
+                # for item in qSys.queue.getItems():
+                #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
 
-            queueDict = {'jobs': queueList}
-            displayQueue = json.htmlsafe_dumps(queueDict)
+                # queueDict = {'jobs': queueList}
+                # displayQueue = json.htmlsafe_dumps(queueDict)
 
             return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders)
 
@@ -424,6 +414,8 @@ def parameters():
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
+        if (folders == None):
+            return render_template("parameters.html", queue=None, folders=None)
         return render_template("parameters.html", queue=None, folders=folders)
 
     for item in qSys.queue.getItems():

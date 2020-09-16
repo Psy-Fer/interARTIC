@@ -74,8 +74,7 @@
 					{% endfor %}
 				{% endif %}
 			{% endwith %}
-      <div class="container is-widescreen">
-      </div>
+      
       <div class="container is-widescreen">
         <div class="columns">
           <div class="column is-one-quarter">
@@ -90,7 +89,6 @@
           </table>
           </div>
           <div class="column">
-
               <!-- Start parameter input -->
               <center><h1 class="title is-4">Input your parameters here:</h1> <br></center>
               <form method=POST>
@@ -140,29 +138,16 @@
                 <label class="subtitle is-5">Select an input folder: *</label><br><br>
                   <input class="input" list="search" name="input_folder" id="input_folder" placeholder="Search for input folder" value="{{input_name}}" required>
                     <datalist id="search">
-                      {% for folder in folders %}                          
-                        <option value="{{ folder }}">{{ folder }}</option>
-                      {% endfor %}
+                      {% if folders %}                      
+                        {% for folder in folders %}                          
+                          <option value="{{ folder }}">{{ folder }}</option>
+                        {% endfor %}
+                      {% endif %}
                     </datalist>
 
-                <!-- search for input folder 
-                <div class="field has-addons">
-                  <div class="control">
-                    <input class="input" id="file_path" type="text" placeholder="Enter a file path">
-                  </div>
-                  <div class="control">
-                    <a class="button is-info" onclick="findFiles()">
-                      Search
-                    </a>
                   </div>
                 </div>
 
-                <script>
-                  function findFiles() {
-                    var path = document.getElementById("file_path").value;
-                    // not sure how to run shell cmds in jquery
-                  }
-                </script>-->
                 
                 <br><br>
                 <!-- file path input -->
