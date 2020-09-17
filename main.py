@@ -686,7 +686,8 @@ def output(job_name):
                             if m:
                                 point.append(int(m[1]))  #position of variant
                                 point.append(m[3])  #original/reference value
-                                point.append(m[4])  #original/reference value
+                                point.append(m[4])  #original/reference value                                
+                                depth = re.sub(r';.*', "", m[7])
                                 if job.pipeline == "medaka":
                                     depth = int(re.sub("DP=","",depth))
                                 elif job.pipeline == "nanopolish":
