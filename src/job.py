@@ -205,7 +205,7 @@ class Job:
                         sample_name = row[0]
                         barcode = row[1]
                         #create directory for barcode with naming system
-                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + run_name + "_" + barcode + "_" + self._pipeline
+                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + barcode + "_" + self._pipeline
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
@@ -215,12 +215,6 @@ class Job:
             elif self._pipeline == "nanopolish":
                 #open the csv file
                 csv_filepath = self._input_folder + '/sample-barcode.csv'
-                if self._input_folder.startswith('C:\\'):
-                    run_name = self._input_folder.split('\\')[-2]
-                else:
-                    #run_name = self._input_folder.split('/')[-2]
-                    run_name = self._input_folder.split('data/')[1]
-                    run_name = run_name.split('/')[0]
                 #open csv file
                 with open(csv_filepath,'rt')as f:
                     data = csv.reader(f)
@@ -228,7 +222,7 @@ class Job:
                         sample_name = row[0]
                         barcode = row[1]
                         #create directory for barcode with naming system
-                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + run_name + "_" + barcode + "_" + self._pipeline
+                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + barcode + "_" + self._pipeline
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"

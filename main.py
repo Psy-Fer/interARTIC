@@ -263,7 +263,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
             os.system(make_dir)
 
         if override_data is True:
-            remove = "rm -r " + output_folder + "/*"
+            remove = "rm -r " + output_folder + "/all_cmds_log.txt"
             os.system(remove)
         elif check_override(output_folder, override_data) and os.path.exists(input_folder):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
