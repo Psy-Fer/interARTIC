@@ -334,8 +334,8 @@ def parameters():
         input_name = input_folder
         
         # concat /data to input folder
-        home = expanduser("~")
-        input_folder = home + "/data/" + input_folder
+        global input_filepath
+        input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
 
         print("INPUT BEFORE::", input_folder)
@@ -472,8 +472,8 @@ def error(job_name):
         input_name = input_folder
         
         # concat /data to input folder
-        home = expanduser("~")
-        input_folder = home + "/data/" + input_folder
+        global input_filepath
+        input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
 
         print("INPUT BEFORE::", input_folder)
