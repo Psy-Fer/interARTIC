@@ -8,9 +8,10 @@ import celery
 import csv, subprocess, time
 
 class Job:
-    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type):
+    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, run_name):
         self._job_name = job_name
         self._input_folder = input_folder
+        self._run_name = run_name
         self._read_file = read_file
         self._primer_scheme_dir = primer_scheme_dir
         self._primer_scheme = primer_scheme
@@ -196,13 +197,6 @@ class Job:
             if self._pipeline == "medaka":
                 #open the csv file
                 csv_filepath = self._input_folder + '/sample-barcode.csv'
-                # check 
-                if self._input_folder.startswith('C:\\'):
-                    run_name = self._input_folder.split('\\')[-2]
-                else:
-                    #run_name = self._input_folder.split('/')[-2]
-                    run_name = self._input_folder.split('data/')[1]
-                    run_name = run_name.split('/')[0]
                 #open csv file
                 print("this is THE filepath:" + csv_filepath + "\n")
                 with open(csv_filepath,'rt')as f:
