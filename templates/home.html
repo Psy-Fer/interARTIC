@@ -97,24 +97,90 @@
         </div>
       
       <!-- search for input folder -->
-      <form method=POST>
-        <div class="field">
-          <div class="control">
-            <label class="subtitle is-5" for="file_path">Please enter the base filepath where your input data is located:</label><br><br>
-            <input class="input" name="file_path" id="file_path" type="text" value="{{input_folder}}" placeholder="Enter a file path"> 
-              {% if errors %}
-                {% if errors['invalid_input_file_path'] %}
-                  <script>
-                    document.getElementById("file_path").className = "input is-danger";
-                  </script>
-                  <p class="help is-danger"> {{ errors['invalid_input_file_path'] }} </p>
+      <input type="button" class="button is-small" name="answer" value="Edit Default Input Folder, CSV Folder, Primer Scheme Folder(s)/Name(s)" onclick="showDiv()" />
+      <div id="editDiv" style="display: none"> 
+        <form method=POST>
+          <div class="field">
+            <div class="control">
+              <label class="subtitle is-5" for="file_path">Please enter the base filepath where your input data is located:</label><br>
+              <input class="input" name="file_path" id="file_path" type="text" value="{{input_folder}}" placeholder="Enter a file path"> 
+                {% if errors %}
+                  {% if errors['invalid_input_file_path'] %}
+                    <script>
+                      document.getElementById("file_path").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['invalid_input_file_path'] }} </p>
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-            <br><br>
-            <input class="button is-small" type="submit" name="search_input" id="search_input" value="Confirm"><br> 
+              <br><br>
+              <label class="subtitle is-5" for="csv_folder">Please enter the base filepath where your sameple-barcode CSV files are located:</label>
+              <input class="input" type="text" name="csv_folder" id="csv_folder" value="{{csv_folder}}" placeholder="Ener a file path">
+              {% if errors %}
+                  {% if errors['invalid_csv_file_path'] %}
+                    <script>
+                      document.getElementById("csv_folder").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['invalid_csv_file_path'] }} </p>
+                  {% endif %}
+                {% endif %}
+              <br><br>
+              <label class="subtitle is-5" for="kirby_folder">Please enter the base filepath where your Kirby primer schemes are located:</label>
+              <input class="input" type="text" name="kirby_folder" id="kirby_folder" value="{{kirby_folder}}" placeholder="Ener a file path">
+              {% if errors %}
+                  {% if errors['invalid_kirby_path'] %}
+                    <script>
+                      document.getElementById("kirby_folder").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['invalid_kirby_path'] }} </p>
+                  {% endif %}
+                {% endif %}
+              <br><br>
+              <label class="subtitle is-5" for="kirby_name">Please enter the Kirby primer schemes name:</label>
+              <input class="input" type="text" name="kirby_name" id="kirby_name" value="{{kirby_name}}" placeholder="Ener a scheme name">
+              {% if errors %}
+                  {% if errors['invalid_kirby_name'] %}
+                    <script>
+                      document.getElementById("kirby_name").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['invalid_kirby_name'] }} </p>
+                  {% endif %}
+                {% endif %}
+               <br><br>
+              <label class="subtitle is-5" for="artic_folder">Please enter the base filepath where your Artic primer schemes are located:</label>
+              <input class="input" type="text" name="artic_folder" id="artic_folder" value="{{artic_folder}}" placeholder="Ener a file path">
+              {% if errors %}
+                  {% if errors['invalid_artic_path'] %}
+                    <script>
+                      document.getElementById("artic_folder").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['invalid_artic_path'] }} </p>
+                  {% endif %}
+                {% endif %}
+              <br><br>
+              <label class="subtitle is-5" for="artic_name">Please enter the Artic primer schemes name:</label>
+              <input class="input" type="text" name="artic_name" id="artic_name" value="{{artic_name}}" placeholder="Ener a scheme name">
+              {% if errors %}
+                  {% if errors['invalid_artic_name'] %}
+                    <script>
+                      document.getElementById("artic_name").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['invalid_artic_name'] }} </p>
+                  {% endif %}
+                {% endif %}
+              <input class="button is-small" type="submit" name="search_input" id="search_input" value="Confirm"><br> 
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
+      <script>
+          function showDiv() {
+            if (document.getElementById('editDiv').style.display == "block") {
+              document.getElementById('editDiv').style.display = "none";
+            } else {
+              document.getElementById('editDiv').style.display = "block";
+            }
+          }
+        </script>
       </div>
       <br>
       <br>

@@ -1,0 +1,8 @@
+{
+	"data-folder": "/Users/thanhnguyen/data",
+	"sample-barcode-csvs": "/Users/thanhnguyen/sample-barcodes",
+	"kirby-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
+	"kirby-scheme-name": "IturiEBOV/V1",
+	"artic-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
+	"artic-scheme-name": "IturiEBOV/V2"
+}

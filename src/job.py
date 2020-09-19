@@ -8,7 +8,7 @@ import celery
 import csv, subprocess, time
 
 class Job:
-    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, run_name):
+    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, run_name, csv_file):
         self._job_name = job_name
         self._input_folder = input_folder
         self._run_name = run_name
@@ -30,6 +30,7 @@ class Job:
         self._save_graphs = True
         self._create_vcfs = True
         self._barcode_type = barcode_type
+        self._csv_file = csv_file
         self._gather_cmd = self.__generateGatherCmd()
         self._demult_cmd = self.__generateDemultCmd()
         self._min_cmd = self.__generateMinionCmd()
@@ -132,6 +133,11 @@ class Job:
     def barcode_type(self):
         return self._barcode_type
 
+    @property
+    def csv_file(self):
+        return self._csv_file
+    
+
     @task_id.setter
     def task_id(self, val):
         if val:
@@ -156,10 +162,8 @@ class Job:
         if self._num_samples == "multiple":
             if self._barcode_type == "rapid":
                 demult_cmd = "echo '*****GATHER COMMAND COMPLETE!*****\n*****STARTING PORECHOP COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; echo 'porechop --verbosity 2 --untrimmed -i " + self._job_name + "_fastq_pass.fastq -b ./ --rapid_barcodes --discard_middle --barcode_threshold 80 --threads " + self._num_threads + " --check_reads 10000 --barcode_diff 5 > " + self._job_name + "_fastq_pass.fastq.demultiplexreport.txt' >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; porechop --verbosity 2 --untrimmed -i " + self._job_name + "_fastq_pass.fastq -b ./ --rapid_barcodes --discard_middle --barcode_threshold 80 --threads " + self._num_threads + " --check_reads 10000 --barcode_diff 5 > " + self._job_name + "_fastq_pass.fastq.demultiplexreport.txt;"
-                #open the csv file
-                csv_filepath = self._input_folder + '/sample-barcode.csv'
                 #open csv file
-                with open(csv_filepath,'rt')as f:
+                with open(self._csv_file,'rt')as f:
                     data = csv.reader(f)
                     for row in data:
                         barcode = row[1]
@@ -195,11 +199,9 @@ class Job:
             minion_cmd = "echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
             # if medaka is chosen
             if self._pipeline == "medaka":
-                #open the csv file
-                csv_filepath = self._input_folder + '/sample-barcode.csv'
                 #open csv file
-                print("this is THE filepath:" + csv_filepath + "\n")
-                with open(csv_filepath,'rt')as f:
+                # print("this is THE filepath:" + self._csv_file + "\n")
+                with open(self._csv_file,'rt')as f:
                     data = csv.reader(f)
                     for row in data:
                         sample_name = row[0]
@@ -213,10 +215,8 @@ class Job:
                         minion_cmd = minion_cmd + "; mv " + self._job_name + "_" + barcode + "* " + dir_path
 
             elif self._pipeline == "nanopolish":
-                #open the csv file
-                csv_filepath = self._input_folder + '/sample-barcode.csv'
                 #open csv file
-                with open(csv_filepath,'rt')as f:
+                with open(self._csv_file,'rt')as f:
                     data = csv.reader(f)
                     for row in data:
                         sample_name = row[0]

@@ -54,7 +54,6 @@
             }
           });
         }
-        
       }
     </script>
     <title>Home</title>
@@ -146,6 +145,19 @@
                     </datalist>
 
                 <br><br>
+                <!-- select sample-csv -->
+                <label class="subtitle is-5">Select a CSV file: </label><br>
+                <small>(Only needed if there are multiple samples)</small><br>
+                  <input class="input" list="csv_search" name="csv_file" id="csv_file" placeholder="Search for CSV file" value="{{csv_name}}">
+                    <datalist id="csv_search">
+                      {% if csvs %}                      
+                        {% for csv in csvs %}                          
+                          <option value="{{ csv }}">{{ csv }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </datalist>
+
+                <br><br>
                 <!-- file path input -->
                 <center><p class="subtitle is-5"><b>Input file paths</b> </p></center><br>
                 <small>These must be absolute file paths, starting with either "/" or "C:\"</small><br><br>
@@ -180,6 +192,27 @@
                 <label for="override_data">Override existing data?</label><br><br>
 
                 <center><h2 class="subtitle"><b>Primer Scheme</b></h2></center><br>
+                <div class="field">
+                  <div class="control">
+                    <!-- primer type -->
+                    <label class="subtitle is-5" for="primer_type"> Select a primer type: *</label><br>
+                    <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}})">
+                    <label for="artic"> Artic</label><br>
+                    <input type="radio" id="kirby" name="primer_type" value="kirby" onclick="setSchemes(this.id, {{schemes}})">
+                    <label for="kirby"> Kirby</label><br>
+                    Other <input type="text" id="other" name="primer_type" size="20"><br>
+                  </div>
+
+                  <script>
+                      if ( {{ primer_type }}.id == "artic") {
+                        document.getElementById("artic").checked = true;
+                      } else if ( {{ primer_type }}.id == "kirby") {
+                         document.getElementById("kirby").checked = true;
+                      } else {
+                        document.getElementById("other").value = {{ primer_type }};
+                      }
+                    </script>
+                </div>
 
                 <!-- primer scheme directory -->
                 <label class="subtitle is-5" for="primer_scheme">Scheme folder: *</label><br>
@@ -199,27 +232,6 @@
                 <small> e.g. nCoV-2019/V1 </small><br>
                 <input class="input" type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
 
-                <div class="field">
-                  <div class="control">
-                    <!-- primer type -->
-                    <label class="subtitle is-5" for="primer_type"> Select a primer type: *</label><br><br>
-                    <input type="radio" id="artic" name="primer_type" value="artic" onclick="setParams()">
-                    <label for="artic"> Artic</label><br>
-                    <input type="radio" id="kirby" name="primer_type" value="kirby" onclick="setParams()">
-                    <label for="kirby"> Kirby</label><br>
-                    Other <input type="text" id="other" name="primer_type" size="20">
-                  </div>
-
-                  <script>
-                      if ( {{ primer_type }}.id == "artic") {
-                        document.getElementById("artic").checked = true;
-                      } else if ( {{ primer_type }}.id == "kirby") {
-                         document.getElementById("kirby").checked = true;
-                      } else {
-                        document.getElementById("other").value = {{ primer_type }};
-                      } 
-                    </script>
-                </div>
 
                 <div class="field">
                   <div class="control">
@@ -363,6 +375,7 @@
         //barcodes
         var native = document.getElementById("native");
         var rapid = document.getElementById("rapid");
+
         //max/min length
         function setParams() {
           var max_length = document.getElementById("max_length");
@@ -381,6 +394,20 @@
             min_length.value = '';
           }
         }
+
+        function setSchemes(id, schemesJson) {
+          var primer_scheme_dir = document.getElementById("primer_scheme_dir");
+          var primer_scheme= document.getElementById("primer_scheme");
+          if (id == 'artic') {
+            primer_scheme_dir.value = schemesJson['artic_scheme'];
+            primer_scheme.value = schemesJson['artic_scheme_name'];
+          } else if (id == 'kirby') {
+            primer_scheme_dir.value = schemesJson['kirby_scheme'];
+            primer_scheme.value = schemesJson['kirby_scheme_name'];
+          }
+          setParams()
+        }
+
         function hide() {
           var message = document.getElementById("flash");
           message.style.display = "none";
