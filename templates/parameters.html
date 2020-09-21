@@ -376,6 +376,19 @@
         var native = document.getElementById("native");
         var rapid = document.getElementById("rapid");
 
+        function setSchemes(id, schemesJson) {
+          var primer_scheme_dir = document.getElementById("primer_scheme_dir");
+          var primer_scheme= document.getElementById("primer_scheme");
+          if (id == 'artic') {
+            primer_scheme_dir.value = schemesJson['artic_scheme'];
+            primer_scheme.value = schemesJson['artic_scheme_name'];
+          } else if (id == 'kirby') {
+            primer_scheme_dir.value = schemesJson['kirby_scheme'];
+            primer_scheme.value = schemesJson['kirby_scheme_name'];
+          }
+          setParams()
+        }
+        
         //max/min length
         function setParams() {
           var max_length = document.getElementById("max_length");
@@ -394,20 +407,6 @@
             min_length.value = '';
           }
         }
-
-        function setSchemes(id, schemesJson) {
-          var primer_scheme_dir = document.getElementById("primer_scheme_dir");
-          var primer_scheme= document.getElementById("primer_scheme");
-          if (id == 'artic') {
-            primer_scheme_dir.value = schemesJson['artic_scheme'];
-            primer_scheme.value = schemesJson['artic_scheme_name'];
-          } else if (id == 'kirby') {
-            primer_scheme_dir.value = schemesJson['kirby_scheme'];
-            primer_scheme.value = schemesJson['kirby_scheme_name'];
-          }
-          setParams()
-        }
-
         function hide() {
           var message = document.getElementById("flash");
           message.style.display = "none";
