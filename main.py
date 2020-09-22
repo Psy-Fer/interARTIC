@@ -198,7 +198,7 @@ def home():
             errors['invalid_artic_path'] = "File path entered is not valid"
 
         if len(errors) != 0:
-            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv)
+            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, kirby_folder=kirby_scheme, artic_folder=artic_scheme, kirby_name=kirby_scheme_name, artic_name=artic_scheme_name)
         else:
             global input_filepath
             input_filepath = search_input

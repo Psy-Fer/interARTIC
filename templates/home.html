@@ -98,7 +98,12 @@
       
       <!-- search for input folder -->
       <input type="button" class="button is-small" name="answer" value="Edit Default Input Folder, CSV Folder, Primer Scheme Folder(s)/Name(s)" onclick="showDiv()" />
-      <div id="editDiv" style="display: none"> 
+      <div id="editDiv" style="display: none"><br>
+        {% if errors %}
+          <script>
+            document.getElementById("editDiv").style.display = "block";
+          </script> 
+        {% endif%}
         <form method=POST>
           <div class="field">
             <div class="control">
@@ -156,7 +161,7 @@
                     <p class="help is-danger"> {{ errors['invalid_artic_path'] }} </p>
                   {% endif %}
                 {% endif %}
-              <br><br>
+              <br>
               <label class="subtitle is-5" for="artic_name">Please enter the Artic primer schemes name:</label>
               <input class="input" type="text" name="artic_name" id="artic_name" value="{{artic_name}}" placeholder="Ener a scheme name">
               {% if errors %}
@@ -167,6 +172,7 @@
                     <p class="help is-danger"> {{ errors['invalid_artic_name'] }} </p>
                   {% endif %}
                 {% endif %}
+                <br><br>
               <input class="button is-small" type="submit" name="search_input" id="search_input" value="Confirm"><br> 
             </div>
           </div>
