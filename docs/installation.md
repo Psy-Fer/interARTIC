@@ -138,6 +138,54 @@ conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info &
 python3 main.py
 ```
 
+### Configure interARTIC
+
+On any text editor, open ```config.init```. Update each of the configurations as necessary. All inputs should be file paths. More information about this can be found in the next section.
+
+The default config folder is as below:
+
+```
+{
+	"data-folder": "/data",
+	"sample-barcode-csvs": "/Users/stephanietong/sample-barcodes",
+	"kirby-primer-scheme-folder": "/Users/stephanietong/primer-schemes",
+	"kirby-scheme-name": "IturiEBOV/V1",
+	"artic-primer-scheme-folder": "/Users/stephanietong/primer-schemes",
+	"artic-scheme-name": "IturiEBOV/V2"
+}
+```
+
+* **data-folder**: This is the folder where all your data is located. By default, it is set to "/data"
+* **sample-barcode-csvs**: This is the folder where your csv containing barcode names is placed.
+* **kirby-primer-scheme-folder**: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
+* **kirby-scheme-name**: This is the name of the kirby primer scheme being used for your nanopore sequencing run.
+* **artic-primer-scheme-folder**: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
+* **artic-scheme-name**: This is the name of the artic primer scheme being used for your nanopore sequencing run.
+
+####  File path input
+
+* Folders and files should be inputted by their file paths.
+* File paths can be retrieved by running 'pwd' in the appropriate folder on any terminal.
+* Folders may also be referred to as directories.
+* File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this resource: https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/.
+
+For example:
+
+```
+$ pwd                                    # get file path of current directory
+/Users/YOURNAME
+$ ls                                     # list contents of current directory
+folder1     folder2     file1       documents
+$ cd documents                           # change current directory to documents
+$ pwd
+/Users/YOURNAME/documents
+$ cd outputFolder                         # change current directory to your output folder
+
+$ pwd                                    # obtain file path you will input into interARTIC
+/Users/YOURNAME/documents/outputFolder
+```
+Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path. 
+
 ## Running interARTIC
 
 Navigate to your browser and go to ```http://127.0.0.1:5000``` to access interARTIC.
