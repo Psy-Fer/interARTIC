@@ -183,11 +183,11 @@ def home():
         kirby_scheme_name = request.form.get('kirby_name')
         artic_scheme = request.form.get('artic_folder')
         artic_scheme_name = request.form.get('artic_name')
-        
+
         # error checking here
         if not os.path.isdir(search_input):
             errors['invalid_input_file_path'] = "File path entered is not valid"
-        
+
         if not os.path.isdir(search_csv):
             errors['invalid_csv_file_path'] = "File path entered is not valid"
 
@@ -196,11 +196,11 @@ def home():
 
         if not os.path.isdir(artic_scheme):
             errors['invalid_artic_path'] = "File path entered is not valid"
-        
+
         if len(errors) != 0:
             return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv)
         else:
-            global input_filepath 
+            global input_filepath
             input_filepath = search_input
 
             global sample_csv
@@ -211,7 +211,7 @@ def home():
             schemes['kirby_scheme_name'] = kirby_scheme_name
             schemes['artic_scheme'] = artic_scheme
             schemes['artic_scheme_name'] = artic_scheme_name
-        
+
     return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, kirby_folder=schemes['kirby_scheme'], kirby_name=schemes['kirby_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
 
 @app.route("/about")
@@ -227,7 +227,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
     # if input_folder[-1] == "/":
     #     input_folder = input_folder[:-1]
-    
+
     #give error if input folder path is empty
     if len(os.listdir(input_folder)) == 0:
         errors['input_folder'] = "Directory is empty."
@@ -321,10 +321,10 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
 def getInputFolders(filepath):
     # find all the current input folders
-    checkFoldersCmd = 'cd; cd ' + filepath + '; ls'  
+    checkFoldersCmd = "cd && cd " + filepath + " && ls"
     print("check folders command")
     print(checkFoldersCmd)
-     
+
     folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
 
     return folders
@@ -336,7 +336,7 @@ def parameters():
     global schemes
     folders = getInputFolders(input_filepath)
     csvs = getInputFolders(sample_csv)
-    
+
     if request.method == "POST":
         # get curr queue
         queueList = []
@@ -346,7 +346,7 @@ def parameters():
 
         queueDict = {'jobs': queueList}
         displayQueue = json.htmlsafe_dumps(queueDict)
-        
+
         #get parameters
         job_name = request.form.get('job_name')
         input_folder = request.form.get('input_folder')
@@ -373,7 +373,7 @@ def parameters():
 
         #csv filepath
         csv_filepath = sample_csv + '/' + csv_file
-        
+
         # concat /data to input folder
         # global input_filepath
         input_folder = input_filepath + '/' + input_folder
@@ -383,7 +383,7 @@ def parameters():
         getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
         input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
         print("input:::", input_folder)
-        
+
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
             output_folder = input_folder + "/output"
@@ -472,7 +472,7 @@ def error(job_name):
     global sample_csv
     folders = getInputFolders(input_filepath)
     csvs = getInputFolders(sample_csv)
-    
+
     if job != None:
         input_folder = job.input_folder
         output_folder = job.output_folder
@@ -510,13 +510,13 @@ def error(job_name):
         num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
-        
+
         # store input_name
         input_name = input_folder
 
         #csv filepath
         csv_filepath = sample_csv + '/' + csv_file
-        
+
         # concat /data to input folder
         input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
@@ -625,7 +625,7 @@ def progress(job_name):
     # find any errors that occur in the output log
     pattern = "<br\/>[A-Za-z0-9\s]*ERROR"
     numErrors = len(re.findall(pattern, outputLog, re.IGNORECASE))
-   
+
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
     input_folder = job.input_folder
@@ -731,7 +731,7 @@ def output(job_name):
                             if m:
                                 point.append(int(m[1]))  #position of variant
                                 point.append(m[3])  #original/reference value
-                                point.append(m[4])  #original/reference value                                
+                                point.append(m[4])  #original/reference value
                                 depth = re.sub(r';.*', "", m[7])
                                 if job.pipeline == "medaka":
                                     depth = int(re.sub("DP=","",depth))

@@ -1,8 +1,8 @@
 {
-	"data-folder": "/Users/thanhnguyen/data",
-	"sample-barcode-csvs": "/Users/thanhnguyen/sample-barcodes",
-	"kirby-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
+	"data-folder": "C:/Users/alyne/data",
+	"sample-barcode-csvs": "C:/Users/alyne/sample-barcodes",
+	"kirby-primer-scheme-folder": "C:/Users/alyne/primer-schemes",
 	"kirby-scheme-name": "IturiEBOV/V1",
-	"artic-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
+	"artic-primer-scheme-folder": "C:/Users/alyne/primer-schemes",
 	"artic-scheme-name": "IturiEBOV/V2"
 }
