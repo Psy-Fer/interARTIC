@@ -148,17 +148,42 @@
           vcfs.appendChild(vcf_graph);
           small.appendChild(dl);
           vcfs.appendChild(small);
-          var list = document.createElement("ul");
-          var titles = document.createElement("li");
-          list.appendChild(titles);
-          titles.textContent = "CHROM\tPOS\tREF\tALT\tDEPTH"
+          var table = document.createElement("table");
+          var row = table.insertRow(0)
+          var chrom = row.insertCell(0)
+          var pos = row.insertCell(1)
+          var ref = row.insertCell(2)
+          var alt = row.insertCell(3)
+          var depth = row.insertCell(4)
+          chrom.innerHTML = "CHROM"
+          pos.innerHTML = "POS"
+          ref.innerHTML = "REF"
+          alt.innerHTML = "ALT"
+          depth.innerHTML = "DEPTH"
+          chrom.style.padding = '5px'
+          pos.style.padding = '5px'
+          ref.style.padding = '5px'
+          alt.style.padding = '5px'
+          depth.style.padding = '5px'
           for(j = 1, leng = variant_graphs[i].length-1, text = ""; j < leng; j++){
-            var listItem = document.createElement("li");
-            var result = variant_graphs[i][j].toString().replaceAll(",",'\t');
-            listItem.textContent = result;
-            list.appendChild(listItem);
+            row = table.insertRow(j)
+            chrom = row.insertCell(0)
+            pos = row.insertCell(1)
+            ref = row.insertCell(2)
+            alt = row.insertCell(3)
+            depth = row.insertCell(4)
+            chrom.innerHTML = variant_graphs[i][j][0]
+            pos.innerHTML = variant_graphs[i][j][1]
+            ref.innerHTML = variant_graphs[i][j][2]
+            alt.innerHTML = variant_graphs[i][j][3]
+            depth.innerHTML = variant_graphs[i][j][4]
+            chrom.style.padding = '5px'
+            pos.style.padding = '5px'
+            ref.style.padding = '5px'
+            alt.style.padding = '5px'
+            depth.style.padding = '5px'
           }
-          vcfs.appendChild(list);
+          vcfs.appendChild(table);
         }
       }
 
