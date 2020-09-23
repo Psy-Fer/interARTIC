@@ -1,8 +1,8 @@
 {
-	"data-folder": "/Users/iggygetout/data",
-	"sample-barcode-csvs": "/Users/iggygetout/csv_files",
-	"kirby-primer-scheme-folder": "/Users/iggygetout/primer_schemes",
+	"data-folder": "C:/Users/alyne/data",
+	"sample-barcode-csvs": "",
+	"kirby-primer-scheme-folder": "C:/Users/alyne/primer_schemes",
 	"kirby-scheme-name": "",
-	"artic-primer-scheme-folder": "/Users/iggygetout/primer_schemes",
+	"artic-primer-scheme-folder": "/Users/alyne/primer_schemes",
 	"artic-scheme-name": "nCoV-2019/V1"
 }

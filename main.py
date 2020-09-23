@@ -380,9 +380,11 @@ def parameters():
         filename = os.path.dirname(os.path.realpath(__file__))
 
         print("INPUT BEFORE::", input_folder)
-        getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
-        input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
-        print("input:::", input_folder)
+        getInputDir = "cd " + input_folder + "&& cd * && cd * && pwd"
+        #this part doesn't work with Windows?
+        #input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
+        #print("input:::", input_folder)
+        #print("test")
 
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
@@ -409,7 +411,7 @@ def parameters():
             #Update displayed queue on home page
             queueList = []
             if qSys.queue.empty():
-                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_name)
+                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_file=csv_file)
 
                 # for item in qSys.queue.getItems():
                 #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
@@ -417,7 +419,7 @@ def parameters():
                 # queueDict = {'jobs': queueList}
                 # displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_name)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_file=csv_file)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -546,14 +548,14 @@ def error(job_name):
             #Update displayed queue on home page
             queueList = []
             if qSys.queue.empty():
-                return render_template("parameters.html", queue=None, job_name=job_name, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir, errors=errors, folders=folders, csvs=csvs, csv_name=csv_name)
+                return render_template("parameters.html", queue=None, job_name=job_name, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir, errors=errors, folders=folders, csvs=csvs, csv_file=csv_file)
             for item in qSys.queue.getItems():
                 queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", queue=displayQueue, job_name=job_name, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors, folders=folders, csvs=csvs, csv_name=csv_name)
+            return render_template("parameters.html", queue=displayQueue, job_name=job_name, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors, folders=folders, csvs=csvs, csv_file=csv_file)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -729,11 +731,12 @@ def output(job_name):
                         if re.match("^[A-Z]", line):
                             m = re.split("\\t", line)
                             if m:
+                                point.append(m[0]) #chromosome
                                 point.append(int(m[1]))  #position of variant
                                 point.append(m[3])  #original/reference value
-                                point.append(m[4])  #original/reference value
-                                depth = re.sub(r';.*', "", m[7])
-                                if job.pipeline == "medaka":
+                                point.append(m[4])  #alternate value
+                                depth = re.sub(r';.*', "", m[7]) #initialises depth
+                                if job.pipeline == "medaka":   #removes excess information
                                     depth = int(re.sub("DP=","",depth))
                                 elif job.pipeline == "nanopolish":
                                     depth = int(re.sub("TotalReads=","",depth))

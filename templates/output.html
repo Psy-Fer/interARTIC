@@ -100,8 +100,8 @@
         button.style.display = "none";
         for (i = 0, len = variant_graphs.length, text = ""; i < len; i++){
           name = variant_graphs[i][0];
-          min_pos = variant_graphs[i][1][0];
-          max_pos = variant_graphs[i][variant_graphs[i].length-2][0];
+          min_pos = variant_graphs[i][1][1];
+          max_pos = variant_graphs[i][variant_graphs[i].length-2][1];
           span = max_pos - min_pos;
           max_depth = variant_graphs[i][variant_graphs[i].length-1];
           x_increment = 1000/span;
@@ -123,17 +123,17 @@
           ctx.font = '10px sans-serif'
           ctx.textAlign = 'left'
           for(j = 1, leng = variant_graphs[i].length-1, text = ""; j < leng; j++){
-            snp = variant_graphs[i][j][1] + "->" + variant_graphs[i][j][2];
+            snp = variant_graphs[i][j][2] + "->" + variant_graphs[i][j][3];
             ctx.save();
             ctx.translate(0, canvas.height)
             ctx.rotate(-Math.PI/2);
-            ctx.fillText(snp, variant_graphs[i][j][3]+40, (variant_graphs[i][j][0]-min_pos)*x_increment+10);
-            ctx.fillText(variant_graphs[i][j][0], 5, (variant_graphs[i][j][0]-min_pos)*x_increment+10);
+            ctx.fillText(snp, variant_graphs[i][j][4]+40, (variant_graphs[i][j][1]-min_pos)*x_increment+10);
+            ctx.fillText(variant_graphs[i][j][1], 5, (variant_graphs[i][j][1]-min_pos)*x_increment+10);
             ctx.restore();
             ctx.lineWidth = 0.3;
             ctx.beginPath();
-            ctx.moveTo((variant_graphs[i][j][0]-min_pos)*x_increment+10, max_depth + 90);
-            ctx.lineTo((variant_graphs[i][j][0]-min_pos)*x_increment+10, max_depth + 90 -variant_graphs[i][j][3]);
+            ctx.moveTo((variant_graphs[i][j][1]-min_pos)*x_increment+10, max_depth + 90);
+            ctx.lineTo((variant_graphs[i][j][1]-min_pos)*x_increment+10, max_depth + 90 -variant_graphs[i][j][4]);
             ctx.closePath();
             ctx.stroke();
           }
@@ -148,7 +148,18 @@
           vcfs.appendChild(vcf_graph);
           small.appendChild(dl);
           vcfs.appendChild(small);
+          var list = document.createElement("ul");
+          var titles = document.createElement("li");
+          list.appendChild(titles);
+          titles.textContent = "CHROM\tPOS\tREF\tALT\tDEPTH"
+          for(j = 1, leng = variant_graphs[i].length-1, text = ""; j < leng; j++){
+            var listItem = document.createElement("li");
+            var result = variant_graphs[i][j].toString().replaceAll(",",'\t');
+            listItem.textContent = result;
+            list.appendChild(listItem);
           }
+          vcfs.appendChild(list);
+        }
       }
 
     </script>
