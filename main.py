@@ -743,6 +743,7 @@ def output(job_name):
                                 if depth > max_DP:
                                     max_DP = depth
                                 point.append(depth)  #read depth value
+                                point.append(m[5])
                                 graph.append(point)
                     graph.append(max_DP)
                 variant_graphs.append(graph)
