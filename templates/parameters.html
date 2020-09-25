@@ -190,7 +190,16 @@
                 <!-- override output data?-->
                 <input type="checkbox" id="override_data" name="override_data">
                 <label for="override_data">Override existing data?</label><br><br>
-
+                  <script>
+                    function getOtherPrimer() {
+                      if (document.getElementById("other_primer").style.display == "block") {
+                        document.getElementById("other_primer").style.display = "none";
+                        document.getElementById("other_primer_type").value = '';
+                      } else {
+                        document.getElementById("other_primer").style.display = "block";
+                      }
+                    }
+                  </script>
                 <center><h2 class="subtitle"><b>Primer Scheme</b></h2></center><br>
                 <div class="field">
                   <div class="control">
@@ -200,8 +209,15 @@
                     <label for="artic"> Artic</label><br>
                     <input type="radio" id="kirby" name="primer_type" value="kirby" onclick="setSchemes(this.id, {{schemes}})">
                     <label for="kirby"> Kirby</label><br>
-                    Other <input type="text" id="other" name="primer_type" size="20"><br>
+                    <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer()">
+                    <label for="other">Other</label><br><br>
+                    <div id="other_primer" style="display:none">
+                      Please enter your primer here:
+                      <input class="input" type="text" id="other_primer_type" name="other_primer_type">
+                    </div>
                   </div>
+
+                  
 
                   <script>
                       if ( {{ primer_type }}.id == "artic") {
@@ -209,7 +225,7 @@
                       } else if ( {{ primer_type }}.id == "kirby") {
                          document.getElementById("kirby").checked = true;
                       } else {
-                        document.getElementById("other").value = {{ primer_type }};
+                        document.getElementById("other").checked = true;
                       }
                     </script>
                 </div>
@@ -377,6 +393,10 @@
         var rapid = document.getElementById("rapid");
 
         function setSchemes(id, schemesJson) {
+          if (document.getElementById("other_primer").style.display == "block") {
+            document.getElementById("other_primer").style.display = "none";
+            document.getElementById("other_primer_type").value = '';
+          }
           var primer_scheme_dir = document.getElementById("primer_scheme_dir");
           var primer_scheme= document.getElementById("primer_scheme");
           if (id == 'artic') {

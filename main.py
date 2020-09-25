@@ -354,6 +354,7 @@ def parameters():
         primer_scheme_dir = request.form.get('primer_scheme_dir')
         primer_scheme = request.form.get('primer_scheme')
         primer_type = request.form.get('primer_type')
+        other_primer_type = request.form.get('other_primer_type')
         output_folder = request.form.get('output_folder')
         normalise = request.form.get('normalise')
         num_threads = request.form.get('num_threads')
@@ -367,7 +368,11 @@ def parameters():
         num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
-
+        
+        # set correct primer_type
+        if primer_type == 'other':
+            primer_type = other_primer_type
+        
         # store input_name
         input_name = input_folder
 
@@ -408,8 +413,9 @@ def parameters():
         if len(errors) != 0:
             #Update displayed queue on home page
             queueList = []
+            
             if qSys.queue.empty():
-                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_name)
+                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file)
 
                 # for item in qSys.queue.getItems():
                 #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
@@ -417,7 +423,7 @@ def parameters():
                 # queueDict = {'jobs': queueList}
                 # displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_name)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_file)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
