@@ -20,8 +20,8 @@ class System:
     def completed(self):
         return self._completed
 
-    def newJob(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data,num_samples, barcode_type, run_name, csv_file):
-        return Job(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, run_name, csv_file)
+    def newJob(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data,num_samples, barcode_type, run_name, csv_file, primer_select):
+        return Job(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, run_name, csv_file, primer_select)
 
     def getJobByName(self, job_name):
         #Returns a job with the given name, or None if no match
