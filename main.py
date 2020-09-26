@@ -333,7 +333,7 @@ def parameters():
     global input_filepath
     global sample_csv
     global schemes
-    
+
     # get a list of all the folders in the input and csv folders to be displayed to the user
     folders = getInputFolders(input_filepath)
     csvs = getInputFolders(sample_csv)
@@ -369,14 +369,14 @@ def parameters():
         num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
-        
+
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
         # primer_select is so that on reload, the correct radio button will be selected
         primer_select = primer_type
-        
+
         if primer_type == 'other':
             primer_type = other_primer_type
-        
+
         # store input_name
         input_name = input_folder
 
@@ -387,10 +387,12 @@ def parameters():
         # global input_filepath
         input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
-        
+
         # get the correct input folder filepath from user input
-        getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
+        getInputDir = "cd " + input_folder + "&& cd * && cd * && pwd"
         input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
+        if not os.path.exists(input_folder):
+            input_folder = re.sub('^/c/', 'C:/', input_folder)
 
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
@@ -418,7 +420,7 @@ def parameters():
         if len(errors) != 0:
             #Update displayed queue on home page
             queueList = []
-            
+
             if qSys.queue.empty():
                 return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
 
@@ -529,10 +531,10 @@ def error(job_name):
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
         # primer_select is so that on reload, the correct radio button will be selected
         primer_select = primer_type
-        
+
         if primer_type == 'other':
             primer_type = other_primer_type
-        
+
         # store input_name
         input_name = input_folder
 
@@ -628,10 +630,10 @@ def error(job_name):
 # Progress page
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
-    
+
     # get the job
     job = qSys.getJobByName(job_name)
-    
+
     # get the filepath where the output is located
     path = job.output_folder
     path +="/all_cmds_log.txt"
