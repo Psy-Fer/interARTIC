@@ -177,6 +177,7 @@ def route():
 def home():
     errors = {}
     if request.method == "POST":
+        # get global variables
         search_input = request.form.get('file_path')
         search_csv = request.form.get('csv_folder')
         kirby_scheme = request.form.get('kirby_folder')
@@ -199,7 +200,7 @@ def home():
 
         if len(errors) != 0:
             return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, kirby_folder=kirby_scheme, artic_folder=artic_scheme, kirby_name=kirby_scheme_name, artic_name=artic_scheme_name)
-        else:
+        else: # update global variables
             global input_filepath
             input_filepath = search_input
 
@@ -224,9 +225,6 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     #Check of jobname is used
     if qSys.getJobByName(job_name) is not None:
         errors['job_name'] = "Job Name has already been used."
-
-    # if input_folder[-1] == "/":
-    #     input_folder = input_folder[:-1]
 
     #give error if input folder path is empty
     if len(os.listdir(input_folder)) == 0:
@@ -331,9 +329,12 @@ def getInputFolders(filepath):
 
 @app.route("/parameters", methods = ["POST","GET"])
 def parameters():
+    # get global variables for use
     global input_filepath
     global sample_csv
     global schemes
+    
+    # get a list of all the folders in the input and csv folders to be displayed to the user
     folders = getInputFolders(input_filepath)
     csvs = getInputFolders(sample_csv)
 
@@ -354,6 +355,7 @@ def parameters():
         primer_scheme_dir = request.form.get('primer_scheme_dir')
         primer_scheme = request.form.get('primer_scheme')
         primer_type = request.form.get('primer_type')
+        other_primer_type = request.form.get('other_primer_type')
         output_folder = request.form.get('output_folder')
         normalise = request.form.get('normalise')
         num_threads = request.form.get('num_threads')
@@ -367,7 +369,14 @@ def parameters():
         num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
-
+        
+        # set correct primer_type - if primer type is other, get the correct primer type from the tet input
+        # primer_select is so that on reload, the correct radio button will be selected
+        primer_select = primer_type
+        
+        if primer_type == 'other':
+            primer_type = other_primer_type
+        
         # store input_name
         input_name = input_folder
 
@@ -378,11 +387,10 @@ def parameters():
         # global input_filepath
         input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
-
-        print("INPUT BEFORE::", input_folder)
+        
+        # get the correct input folder filepath from user input
         getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
         input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
-        print("input:::", input_folder)
 
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
@@ -394,37 +402,35 @@ def parameters():
         else:
             override_data = False
 
+        # check errors
         errors = {}
         errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
 
+        # if an output folder does not exist, make one
         if not output_folder:
             output_folder = output_folder_checked
-        print("output folder:", output_folder)
 
+        # if queue is full, add an error to the list
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
 
-        print("Errors: ", errors)
+        # display errors if errors exist
         if len(errors) != 0:
             #Update displayed queue on home page
             queueList = []
+            
             if qSys.queue.empty():
-                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_name)
+                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
 
-                # for item in qSys.queue.getItems():
-                #     queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
-
-                # queueDict = {'jobs': queueList}
-                # displayQueue = json.htmlsafe_dumps(queueDict)
-
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_name)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
 
+        # create new jobs
         if pipeline != "both":
             #Create a new instance of the Job class
-            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath)
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
 
             #Add job to queue
             qSys.addJob(new_job)
@@ -434,9 +440,9 @@ def parameters():
         #if both pipelines
         else:
             #Create a new medaka instance of the Job class
-            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath)
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
             #Create a new nanopolish instance of the Job class
-            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath)
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
@@ -447,6 +453,7 @@ def parameters():
             task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd])
             new_job_n.task_id = task_n.id
 
+        # redirect to the progress page
         if pipeline == "both":
             return redirect(url_for('progress', job_name=job_name+"_medaka"))
         else:
@@ -464,22 +471,28 @@ def parameters():
     displayQueue = json.htmlsafe_dumps(queueDict)
     return render_template("parameters.html", queue = displayQueue, folders=folders, csvs=csvs, schemes=schemes)
 
+# error page, accessed if a user wants to re-run a job if an error occurs during a run
 @app.route("/error/<job_name>", methods = ["POST","GET"])
 def error(job_name):
+    # get the job that needs to be re-run
     job = qSys.getJobByName(job_name)
 
+    # get global variables
     global input_filepath
     global sample_csv
     folders = getInputFolders(input_filepath)
     csvs = getInputFolders(sample_csv)
 
+    # if the job exists, get all the parameters used in the initial run so that they can be rendered for the user
     if job != None:
         input_folder = job.input_folder
+        input_name = job.input_name
         output_folder = job.output_folder
         read_file = job.read_file
         pipeline = job.pipeline
         min_length = job.min_length
         max_length = job.max_length
+        primer_select = job.primer_select
         primer_scheme = job.primer_scheme
         primer_scheme_dir = job.primer_scheme_dir
         primer_type = job.primer_type
@@ -493,10 +506,12 @@ def error(job_name):
     if request.method == "POST":
         #get parameters
         job_name = request.form.get('job_name')
+        input_folder = request.form.get('input_folder')
         read_file = request.form.get('read_file')
         primer_scheme_dir = request.form.get('primer_scheme_dir')
         primer_scheme = request.form.get('primer_scheme')
         primer_type = request.form.get('primer_type')
+        other_primer_type = request.form.get('other_primer_type')
         output_folder = request.form.get('output_folder')
         normalise = request.form.get('normalise')
         num_threads = request.form.get('num_threads')
@@ -511,6 +526,13 @@ def error(job_name):
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
 
+        # set correct primer_type - if primer type is other, get the correct primer type from the tet input
+        # primer_select is so that on reload, the correct radio button will be selected
+        primer_select = primer_type
+        
+        if primer_type == 'other':
+            primer_type = other_primer_type
+        
         # store input_name
         input_name = input_folder
 
@@ -521,10 +543,9 @@ def error(job_name):
         input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
 
-        print("INPUT BEFORE::", input_folder)
+        # get the correct input folder filepath from user input
         getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
         input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
-        print("input:::", input_folder)
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
@@ -532,35 +553,39 @@ def error(job_name):
         else:
             override_data = False
 
+        # check errors
         errors = {}
         errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
 
+        # if an output folder does not exist, make one
         if not output_folder:
             output_folder = output_folder_checked
 
+        # if queue is full, add an error to the list
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
 
-        print("Errors: ", errors)
+        # display errors if errors exist
         if len(errors) != 0:
             #Update displayed queue on home page
             queueList = []
             if qSys.queue.empty():
-                return render_template("parameters.html", queue=None, job_name=job_name, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,primer_scheme_dir=primer_scheme_dir, errors=errors, folders=folders, csvs=csvs, csv_name=csv_name)
+                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
             for item in qSys.queue.getItems():
                 queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", queue=displayQueue, job_name=job_name, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir,errors=errors, folders=folders, csvs=csvs, csv_name=csv_name)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
 
+        # create new jobs
         if pipeline != "both":
             #Create a new instance of the Job class
-            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, input_name, csv_filepath)
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, input_name, csv_filepath, primer_select, input_name)
 
             #Add job to queue
             qSys.addJob(new_job)
@@ -571,9 +596,9 @@ def error(job_name):
         #if both pipelines
         else:
             #Create a new medaka instance of the Job class
-            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath)
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
             #Create a new nanopolish instance of the Job class
-            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath)
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
@@ -591,24 +616,27 @@ def error(job_name):
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
-        return render_template("parameters.html", job_name=job_name, queue = None, pipeline=pipeline, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders, csvs=csvs)
+        return render_template("parameters.html", job_name=job_name, queue = None, pipeline=pipeline, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders, csvs=csvs, primer_select=primer_select, other_primer_type=primer_type)
 
     for item in qSys.queue.getItems():
         queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", job_name=job_name, queue = displayQueue, pipeline=pipeline, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders, csvs=csvs)
+    return render_template("parameters.html", job_name=job_name, queue = displayQueue, pipeline=pipeline, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders, csvs=csvs, primer_select=primer_select,other_primer_type=primer_type)
 
+# Progress page
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
 def progress(job_name):
+    
+    # get the job
     job = qSys.getJobByName(job_name)
-
+    
+    # get the filepath where the output is located
     path = job.output_folder
     path +="/all_cmds_log.txt"
 
     ################## TODO: NEED TO CHANGE
-    print(path)
     with open(path, "r") as f:
         outputLog = f.read().replace("\n","<br/>")
 
@@ -626,6 +654,7 @@ def progress(job_name):
     pattern = "<br\/>[A-Za-z0-9\s]*ERROR"
     numErrors = len(re.findall(pattern, outputLog, re.IGNORECASE))
 
+    # get all the parameters in the job so that they can be displayed for the user
     num_in_queue = qSys.queue.getJobNumber(job_name)
     queue_length = qSys.queue.getNumberInQueue()
     input_folder = job.input_folder
