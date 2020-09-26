@@ -748,7 +748,7 @@ def output(job_name):
                         vcf_found = True
                         vcfs.append(os.path.join(dirpath,name))
                 output_files.extend(filenames)
-
+            
         if create_vcfs:
             for vcf in vcfs:
                 with gzip.open(vcf, "rt") as f:
@@ -760,17 +760,19 @@ def output(job_name):
                         if re.match("^[A-Z]", line):
                             m = re.split("\\t", line)
                             if m:
+                                point.append(m[0]) #chromosome
                                 point.append(int(m[1]))  #position of variant
                                 point.append(m[3])  #original/reference value
-                                point.append(m[4])  #original/reference value
-                                depth = re.sub(r';.*', "", m[7])
-                                if job.pipeline == "medaka":
+                                point.append(m[4])  #alternate value
+                                depth = re.sub(r';.*', "", m[7]) #initialises depth
+                                if job.pipeline == "medaka":   #removes excess information
                                     depth = int(re.sub("DP=","",depth))
                                 elif job.pipeline == "nanopolish":
                                     depth = int(re.sub("TotalReads=","",depth))
                                 if depth > max_DP:
                                     max_DP = depth
                                 point.append(depth)  #read depth value
+                                point.append(m[5]) #Quality value
                                 graph.append(point)
                     graph.append(max_DP)
                 variant_graphs.append(graph)
