@@ -8,7 +8,7 @@ import celery
 import csv, subprocess, time
 
 class Job:
-    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, run_name, csv_file):
+    def __init__(self, job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, barcode_type, run_name, csv_file, primer_select, input_name):
         self._job_name = job_name
         self._input_folder = input_folder
         self._run_name = run_name
@@ -35,6 +35,8 @@ class Job:
         self._demult_cmd = self.__generateDemultCmd()
         self._min_cmd = self.__generateMinionCmd()
         self._task_id = None
+        self._primer_select = primer_select
+        self._input_name = input_name
 
     @property
     def job_name(self):
@@ -120,7 +122,6 @@ class Job:
     def demult_cmd(self):
         return self._demult_cmd
 
-
     @property
     def min_cmd(self):
         return self._min_cmd
@@ -137,6 +138,13 @@ class Job:
     def csv_file(self):
         return self._csv_file
     
+    @property
+    def primer_select(self):
+        return self._primer_select
+    
+    @property
+    def input_name(self):
+        return self._input_name
 
     @task_id.setter
     def task_id(self, val):
