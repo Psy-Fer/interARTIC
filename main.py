@@ -16,7 +16,7 @@ import sys
 import re
 import threading
 import gzip
-from os.path import expanduser
+import glob 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
@@ -389,10 +389,13 @@ def parameters():
         filename = os.path.dirname(os.path.realpath(__file__))
 
         # get the correct input folder filepath from user input
-        getInputDir = "cd " + input_folder + "&& cd * && cd * && pwd"
-        input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
-        if not os.path.exists(input_folder):
-            input_folder = re.sub('^/c/', 'C:/', input_folder)
+        # getInputDir = "cd " + input_folder + "&& cd * && cd * && pwd"
+        # input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
+        # if not os.path.exists(input_folder):
+        #     input_folder = re.sub('^/c/', 'C:/', input_folder)
+        path = glob.glob(input_folder + '/*/*')[0]
+        os.chdir(path)
+        input_folder = os.getcwd()
 
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
@@ -546,9 +549,12 @@ def error(job_name):
         filename = os.path.dirname(os.path.realpath(__file__))
 
         # get the correct input folder filepath from user input
-        getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
-        input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
-
+        # getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
+        # input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
+        path = glob.glob(input_folder + '/*/*')[0]
+        os.chdir(path)
+        input_folder = os.getcwd()
+        
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
             override_data = True
