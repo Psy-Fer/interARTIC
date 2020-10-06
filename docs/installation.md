@@ -30,7 +30,9 @@ python --version
 pip --version
 ```
 
-If Python is not installed, go to: ```https://www.python.org/downloads/``` and follow the instructions there.
+If Python is not installed, follow [this link](https://www.python.org/downloads/) and follow the instructions there.
+
+* This application uses Python3 as the default, Python2.7.
 
 If you are a Linux user, you may instead follow the commands below to install Python:
 ```
@@ -47,11 +49,11 @@ pip --version
 pip install --upgrade pip
 ```
 
-If pip is not installed, go to: ```https://pip.pypa.io/en/stable/installing/``` and follow the prompts there.
+If pip is not installed, follow [this link](https://pip.pypa.io/en/stable/installing/) and follow the prompts there.
 
 ## Installing miniconda
 
-The miniconda installation guide can be found here: ```https://conda.io/projects/conda/en/latest/user-guide/install/index.htm```
+The miniconda installation guide can be found [here](https://docs.conda.io/en/latest/miniconda.html)
 
 We suggest you undergo the 'Regular Installation' process.
 
@@ -66,13 +68,20 @@ conda env remove -n artic-ncov2019
 conda env create -f environment.yml
 ```
 
+### Trouble installing Artic?
+
+Follow [this link](https://artic.readthedocs.io/en/latest/installation/) to access the documentation for installing Artic.
+
 ## Installing the Redis Server and Celery
 
-Follow this link to install the Redis Server ```https://redis.io/topics/quickstart```, then enter the following into your command prompt:
+To install the redis server, enter the following into your command prompt in your base folder:
 
 ```
 bash run-redis.sh
 ```
+
+Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to install the Redis Server manually.
+
 
 ## Installing Python packages for Redis, Celery and Flask
 
@@ -80,14 +89,6 @@ To install the Python packages for Redis, Celery and Flask, enter the following 
 
 ```
 pip3 install celery==4.4.6 redis==3.5.3 flask 
-```
-
-## Installing Porechop
-
-To install the ARTIC version of Porechop, enter the following into your command prompt:
-
-```
-conda install -c bioconda artic-porechop 
 ```
 
 ## Installing interARTIC
@@ -122,9 +123,9 @@ If your terminal is not listed, enter the following commands into your command p
 
 ```
 cd interARTIC
-bash run-redis.sh &
-conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info &
+bash run-redis.sh
 python3 main.py
+conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info
 ```
 
 ### Concurrency Manual setup
@@ -133,9 +134,9 @@ If you wish to turn job concurrency on, enter the following commands into your c
 
 ```
 cd interARTIC
-bash run-redis.sh &
-conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info &
+bash run-redis.sh
 python3 main.py
+conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
 ```
 
 ### Configure interARTIC
@@ -167,7 +168,7 @@ The default config folder is as below:
 * Folders and files should be inputted by their file paths.
 * File paths can be retrieved by running 'pwd' in the appropriate folder on any terminal.
 * Folders may also be referred to as directories.
-* File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this resource: https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/.
+* File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this [resource](https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/).
 
 For example:
 
@@ -188,4 +189,4 @@ Note: your input folder may not be located in documents folder. Simply navigate,
 
 ## Running interARTIC
 
-Navigate to your browser and go to ```http://127.0.0.1:5000``` to access interARTIC.
+Navigate to your browser and follow [this link](http://127.0.0.1:5000) to access interARTIC.
