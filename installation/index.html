@@ -79,10 +79,12 @@ Theme by GitBook
 <li><a href="#opening-terminal">Opening terminal</a></li>
 <li><a href="#installing-python-and-pip">Installing Python and pip</a></li>
 <li><a href="#installing-miniconda">Installing miniconda</a></li>
-<li><a href="#installing-the-artic-pipeline-environment">Installing the ARTIC pipeline environment</a></li>
+<li><a href="#installing-the-artic-pipeline-environment">Installing the ARTIC pipeline environment</a><ul>
+<li><a href="#trouble-installing-artic">Trouble installing Artic?</a></li>
+</ul>
+</li>
 <li><a href="#installing-the-redis-server-and-celery">Installing the Redis Server and Celery</a></li>
 <li><a href="#installing-python-packages-for-redis-celery-and-flask">Installing Python packages for Redis, Celery and Flask</a></li>
-<li><a href="#installing-porechop">Installing Porechop</a></li>
 <li><a href="#installing-interartic">Installing interARTIC</a></li>
 <li><a href="#setting-up-interartic">Setting Up interARTIC</a><ul>
 <li><a href="#job-concurrency">Job Concurrency</a></li>
@@ -122,7 +124,10 @@ Theme by GitBook
 pip --version
 </code></pre>
 
-<p>If Python is not installed, go to: <code>https://www.python.org/downloads/</code> and follow the instructions there.</p>
+<p>If Python is not installed, follow <a href="https://www.python.org/downloads/">this link</a> and follow the instructions there.</p>
+<ul>
+<li>This application uses Python3 as the default, Python2.7.</li>
+</ul>
 <p>If you are a Linux user, you may instead follow the commands below to install Python:</p>
 <pre><code>sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt-get update
@@ -135,9 +140,9 @@ python3.7-venv
 pip install --upgrade pip
 </code></pre>
 
-<p>If pip is not installed, go to: <code>https://pip.pypa.io/en/stable/installing/</code> and follow the prompts there.</p>
+<p>If pip is not installed, follow <a href="https://pip.pypa.io/en/stable/installing/">this link</a> and follow the prompts there.</p>
 <h2 id="installing-miniconda">Installing miniconda</h2>
-<p>The miniconda installation guide can be found here: <code>https://conda.io/projects/conda/en/latest/user-guide/install/index.htm</code></p>
+<p>The miniconda installation guide can be found <a href="https://docs.conda.io/en/latest/miniconda.html">here</a></p>
 <p>We suggest you undergo the 'Regular Installation' process.</p>
 <h2 id="installing-the-artic-pipeline-environment">Installing the ARTIC pipeline environment</h2>
 <p>Enter the following into your command prompt:</p>
@@ -147,19 +152,17 @@ conda env remove -n artic-ncov2019
 conda env create -f environment.yml
 </code></pre>
 
+<h3 id="trouble-installing-artic">Trouble installing Artic?</h3>
+<p>Follow <a href="https://artic.readthedocs.io/en/latest/installation/">this link</a> to access the documentation for installing Artic.</p>
 <h2 id="installing-the-redis-server-and-celery">Installing the Redis Server and Celery</h2>
-<p>Follow this link to install the Redis Server <code>https://redis.io/topics/quickstart</code>, then enter the following into your command prompt:</p>
+<p>To install the redis server, enter the following into your command prompt in your base folder:</p>
 <pre><code>bash run-redis.sh
 </code></pre>
 
+<p>Alternatively, you can follow <a href="https://redis.io/topics/quickstart">this link</a> to install the Redis Server manually.</p>
 <h2 id="installing-python-packages-for-redis-celery-and-flask">Installing Python packages for Redis, Celery and Flask</h2>
 <p>To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt:</p>
 <pre><code>pip3 install celery==4.4.6 redis==3.5.3 flask 
-</code></pre>
-
-<h2 id="installing-porechop">Installing Porechop</h2>
-<p>To install the ARTIC version of Porechop, enter the following into your command prompt:</p>
-<pre><code>conda install -c bioconda artic-porechop 
 </code></pre>
 
 <h2 id="installing-interartic">Installing interARTIC</h2>
@@ -181,17 +184,17 @@ bash run.sh &lt;terminal type&gt;
 <h3 id="manual-setup">Manual setup</h3>
 <p>If your terminal is not listed, enter the following commands into your command prompt:</p>
 <pre><code>cd interARTIC
-bash run-redis.sh &amp;
-conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info &amp;
+bash run-redis.sh
 python3 main.py
+conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info
 </code></pre>
 
 <h3 id="concurrency-manual-setup">Concurrency Manual setup</h3>
 <p>If you wish to turn job concurrency on, enter the following commands into your command prompt:</p>
 <pre><code>cd interARTIC
-bash run-redis.sh &amp;
-conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info &amp;
+bash run-redis.sh
 python3 main.py
+conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
 </code></pre>
 
 <h3 id="configure-interartic">Configure interARTIC</h3>
@@ -220,7 +223,7 @@ python3 main.py
 <li>Folders and files should be inputted by their file paths.</li>
 <li>File paths can be retrieved by running 'pwd' in the appropriate folder on any terminal.</li>
 <li>Folders may also be referred to as directories.</li>
-<li>File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this resource: https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/.</li>
+<li>File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this <a href="https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/">resource</a>.</li>
 </ul>
 <p>For example:</p>
 <pre><code>$ pwd                                    # get file path of current directory
@@ -238,7 +241,7 @@ $ pwd                                    # obtain file path you will input into 
 
 <p>Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path. </p>
 <h2 id="running-interartic">Running interARTIC</h2>
-<p>Navigate to your browser and go to <code>http://127.0.0.1:5000</code> to access interARTIC.</p>
+<p>Navigate to your browser and follow <a href="http://127.0.0.1:5000">this link</a> to access interARTIC.</p>
 
 
 </section>
