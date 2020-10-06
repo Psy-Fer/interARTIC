@@ -16,7 +16,7 @@ import sys
 import re
 import threading
 import gzip
-from os.path import expanduser
+import glob 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
@@ -389,10 +389,9 @@ def parameters():
         filename = os.path.dirname(os.path.realpath(__file__))
 
         # get the correct input folder filepath from user input
-        getInputDir = "cd " + input_folder + "&& cd * && cd * && pwd"
-        input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
-        if not os.path.exists(input_folder):
-            input_folder = re.sub('^/c/', 'C:/', input_folder)
+        path = glob.glob(input_folder + '/*/*')[0]
+        os.chdir(path)
+        input_folder = os.getcwd()
 
         #if no output folder entered, creates one inside of input folder
         if not output_folder:
@@ -546,8 +545,9 @@ def error(job_name):
         filename = os.path.dirname(os.path.realpath(__file__))
 
         # get the correct input folder filepath from user input
-        getInputDir = "cd " + input_folder + "; cd *; cd *; pwd"
-        input_folder = subprocess.check_output(getInputDir, shell=True, stderr=subprocess.STDOUT).decode("ascii").strip()
+        path = glob.glob(input_folder + '/*/*')[0]
+        os.chdir(path)
+        input_folder = os.getcwd()
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
@@ -689,13 +689,6 @@ def abort_delete(job_name):
     job = qSys.getJobByName(job_name)
     task = job.task_id
     celery.control.revoke(task,terminate=True, signal='SIGKILL')
-
-    # Remove files
-    # currdir = os.path.dirname(os.path.realpath(__file__))
-    # path = currdir +'/'+job_name
-    # print("removing after abort:",path)
-    # os.system('rm -r ' + path +'*')
-    # os.system('rm -r ' + currdir + '/tmp*' )
     os.system('rm -r ' + job.output_folder)
 
     qSys.removeQueuedJob(job_name)
@@ -713,10 +706,12 @@ def delete(job_name):
 def output(job_name):
     job = qSys.getJobByName(job_name)
     output_folder = job.output_folder
+    #checks current state of save for graphs and saves it in a variable
     save_graphs = job.save_graphs
     save_able = 'Disabled'
     if(save_graphs):
         save_able = 'Enabled'
+    #checks current state of create for vcf graphs and saves it in a variable
     create_vcfs = job.create_vcfs
     create_able = 'Disabled'
     if(create_vcfs):
@@ -732,25 +727,32 @@ def output(job_name):
 
     if output_folder:
         if os.path.exists(output_folder):
+            #Finds all files in the output folder
             for (dirpath, dirnames, filenames) in os.walk(output_folder):
                 for name in filenames:
+                    #finds barplot pngs
                     if fnmatch.fnmatch(name, '*barplot.png'):
                         barplots.append('../static/'+name)
                         plots_found = True
+                        #if save graphs is enabled, the png is copied into the static folder to enable preview
                         if save_graphs:
                             os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
+                    #finds barplot pngs
                     if fnmatch.fnmatch(name, '*boxplot.png'):
                         boxplots.append('../static/'+name)
                         plots_found = True
+                        #if save graphs is enabled, the png is copied into the static folder to enable preview
                         if save_graphs:
                             os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
+                    #finds vcf files
                     if fnmatch.fnmatch(name, '*.pass.vcf.gz'):
                         vcf_found = True
                         vcfs.append(os.path.join(dirpath,name))
                 output_files.extend(filenames)
-            
+
         if create_vcfs:
             for vcf in vcfs:
+                #collects required data from vcf files
                 with gzip.open(vcf, "rt") as f:
                     graph = []
                     max_DP = 0
@@ -772,7 +774,7 @@ def output(job_name):
                                 if depth > max_DP:
                                     max_DP = depth
                                 point.append(depth)  #read depth value
-                                point.append(m[5]) #Quality value
+                                point.append(m[5]) #quality value
                                 graph.append(point)
                     graph.append(max_DP)
                 variant_graphs.append(graph)
@@ -781,6 +783,7 @@ def output(job_name):
             plot = request.form.get('plot')
             save = request.form.get('save')
             if request.form['submit_button'] == 'Confirm':
+                #updates sava enable/disable status
                 if save == 'enable':
                     job.enableSave()
                     save_able = 'Enabled'
@@ -792,10 +795,12 @@ def output(job_name):
                     job.disableSave()
                     save_able = 'Disabled'
                 if save == 'enable_vcf':
+                    #if enabling vcf after disable, the data needs to be collected again
                     job.enableVCF()
                     create_able = 'Enabled'
                     if not variant_graphs:
                         for vcf in vcfs:
+                            #collects required data from vcf files
                             with gzip.open(vcf, "rt") as f:
                                 graph = []
                                 max_DP = 0
@@ -805,14 +810,19 @@ def output(job_name):
                                     if re.match("^[A-Z]", line):
                                         m = re.split("\\t", line)
                                         if m:
+                                            point.append(m[0]) #chromosome
                                             point.append(int(m[1]))  #position of variant
                                             point.append(m[3])  #original/reference value
-                                            point.append(m[4])  #original/reference value
-                                            depth = re.sub(r';.*', "", m[7])
-                                            depth = int(re.sub("DP=","",depth))
+                                            point.append(m[4])  #alternate value
+                                            depth = re.sub(r';.*', "", m[7]) #initialises depth
+                                            if job.pipeline == "medaka":   #removes excess information
+                                                depth = int(re.sub("DP=","",depth))
+                                            elif job.pipeline == "nanopolish":
+                                                depth = int(re.sub("TotalReads=","",depth))
                                             if depth > max_DP:
                                                 max_DP = depth
                                             point.append(depth)  #read depth value
+                                            point.append(m[5]) #quality value
                                             graph.append(point)
                                 graph.append(max_DP)
                             variant_graphs.append(graph)

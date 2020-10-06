@@ -1,8 +1,8 @@
 {
-	"data-folder": "C:/Users/alyne/data",
-	"sample-barcode-csvs": "",
-	"kirby-primer-scheme-folder": "C:/Users/alyne/primer_schemes",
+	"data-folder": "/Users/thanhnguyen/data",
+	"sample-barcode-csvs": "/Users/thanhnguyen/sample-barcodes",
+	"kirby-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
 	"kirby-scheme-name": "",
-	"artic-primer-scheme-folder": "/Users/alyne/primer_schemes",
+	"artic-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
 	"artic-scheme-name": "nCoV-2019/V1"
 }
