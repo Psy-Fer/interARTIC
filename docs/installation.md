@@ -32,7 +32,7 @@ pip --version
 
 If Python is not installed, follow [this link](https://www.python.org/downloads/) and follow the instructions there.
 
-* This application uses Python3 as the default, Python2.7.
+* This application uses Python3 as the default, not Python2.7.
 
 If you are a Linux user, you may instead follow the commands below to install Python:
 ```
@@ -72,7 +72,7 @@ conda env create -f environment.yml
 
 Follow [this link](https://artic.readthedocs.io/en/latest/installation/) to access the documentation for installing Artic.
 
-## Installing the Redis Server and Celery
+## Installing the Redis Server
 
 To install the redis server, enter the following into your command prompt in your base folder:
 
@@ -81,7 +81,6 @@ bash run-redis.sh
 ```
 
 Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to install the Redis Server manually.
-
 
 ## Installing Python packages for Redis, Celery and Flask
 
@@ -162,6 +161,13 @@ The default config folder is as below:
 * **kirby-scheme-name**: This is the name of the kirby primer scheme being used for your nanopore sequencing run.
 * **artic-primer-scheme-folder**: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
 * **artic-scheme-name**: This is the name of the artic primer scheme being used for your nanopore sequencing run.
+
+After you update your config file, close main.py and rerun it as below:
+
+```
+CTRL + C
+python3 main.py
+```
 
 ####  File path input
 
