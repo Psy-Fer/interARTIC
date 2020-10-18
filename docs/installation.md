@@ -147,10 +147,10 @@ The default config folder is as below:
 ```
 {
 	"data-folder": "/data",
-	"sample-barcode-csvs": "/Users/stephanietong/sample-barcodes",
-	"kirby-primer-scheme-folder": "/Users/stephanietong/primer-schemes",
+	"sample-barcode-csvs": "/Users/YOURNAME/sample-barcodes",
+	"kirby-primer-scheme-folder": "/Users/YOURNAME/primer-schemes",
 	"kirby-scheme-name": "IturiEBOV/V1",
-	"artic-primer-scheme-folder": "/Users/stephanietong/primer-schemes",
+	"artic-primer-scheme-folder": "/Users/YOURNAME/primer-schemes",
 	"artic-scheme-name": "IturiEBOV/V2"
 }
 ```
