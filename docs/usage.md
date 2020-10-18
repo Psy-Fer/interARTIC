@@ -168,6 +168,8 @@ These graphs, as mentioned, require interARTIC to read the ```<sample_name>.pass
 
 If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important. 
 
+Beneath each of the graphs, a summarised version of the ```<sample_name>.pass.vcf.gz``` file is displayed in the form of a table. Each row corresponds to a different variant found and they are ordered in increasing numerical order based on their position on the chromosome.
+
 #### Plots Produced From Pipeline
 
 This section enables you to preview the mean amplicon read depth plots produced from the pipeline. The bar plot shows the mean amplicon read depth over the amplicons, while the box plot shows the mean amplicon read depth over the read groups.
