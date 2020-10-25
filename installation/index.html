@@ -83,7 +83,7 @@ Theme by GitBook
 <li><a href="#trouble-installing-artic">Trouble installing Artic?</a></li>
 </ul>
 </li>
-<li><a href="#installing-the-redis-server-and-celery">Installing the Redis Server and Celery</a></li>
+<li><a href="#installing-the-redis-server">Installing the Redis Server</a></li>
 <li><a href="#installing-python-packages-for-redis-celery-and-flask">Installing Python packages for Redis, Celery and Flask</a></li>
 <li><a href="#installing-interartic">Installing interARTIC</a></li>
 <li><a href="#setting-up-interartic">Setting Up interARTIC</a><ul>
@@ -126,7 +126,7 @@ pip --version
 
 <p>If Python is not installed, follow <a href="https://www.python.org/downloads/">this link</a> and follow the instructions there.</p>
 <ul>
-<li>This application uses Python3 as the default, Python2.7.</li>
+<li>This application uses Python3 as the default, not Python2.7.</li>
 </ul>
 <p>If you are a Linux user, you may instead follow the commands below to install Python:</p>
 <pre><code>sudo add-apt-repository ppa:deadsnakes/ppa
@@ -154,7 +154,7 @@ conda env create -f environment.yml
 
 <h3 id="trouble-installing-artic">Trouble installing Artic?</h3>
 <p>Follow <a href="https://artic.readthedocs.io/en/latest/installation/">this link</a> to access the documentation for installing Artic.</p>
-<h2 id="installing-the-redis-server-and-celery">Installing the Redis Server and Celery</h2>
+<h2 id="installing-the-redis-server">Installing the Redis Server</h2>
 <p>To install the redis server, enter the following into your command prompt in your base folder:</p>
 <pre><code>bash run-redis.sh
 </code></pre>
@@ -202,10 +202,10 @@ conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
 <p>The default config folder is as below:</p>
 <pre><code>{
     &quot;data-folder&quot;: &quot;/data&quot;,
-    &quot;sample-barcode-csvs&quot;: &quot;/Users/stephanietong/sample-barcodes&quot;,
-    &quot;kirby-primer-scheme-folder&quot;: &quot;/Users/stephanietong/primer-schemes&quot;,
+    &quot;sample-barcode-csvs&quot;: &quot;/Users/YOURNAME/sample-barcodes&quot;,
+    &quot;kirby-primer-scheme-folder&quot;: &quot;/Users/YOURNAME/primer-schemes&quot;,
     &quot;kirby-scheme-name&quot;: &quot;IturiEBOV/V1&quot;,
-    &quot;artic-primer-scheme-folder&quot;: &quot;/Users/stephanietong/primer-schemes&quot;,
+    &quot;artic-primer-scheme-folder&quot;: &quot;/Users/YOURNAME/primer-schemes&quot;,
     &quot;artic-scheme-name&quot;: &quot;IturiEBOV/V2&quot;
 }
 </code></pre>
@@ -218,6 +218,11 @@ conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
 <li><strong>artic-primer-scheme-folder</strong>: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.</li>
 <li><strong>artic-scheme-name</strong>: This is the name of the artic primer scheme being used for your nanopore sequencing run.</li>
 </ul>
+<p>After you update your config file, close main.py and rerun it as below:</p>
+<pre><code>CTRL + C
+python3 main.py
+</code></pre>
+
 <h4 id="file-path-input">File path input</h4>
 <ul>
 <li>Folders and files should be inputted by their file paths.</li>
