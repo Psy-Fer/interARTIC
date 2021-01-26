@@ -245,8 +245,20 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     #give error if primer schemes folder path is invalid or empty
     if not os.path.isdir(primer_scheme_dir):
         errors['primer_scheme_dir'] = "Invalid path."
-    elif len(os.listdir(primer_scheme_dir)) == 0:
+
+    primer_scheme_dir_files = os.listdir(primer_scheme_dir)
+    
+    if len(primer_scheme_dir_files == 0):
         errors['primer_scheme_dir'] = "Directory is empty."
+    
+    fai_file = 0
+    for files in primer_scheme_dir_files:
+        if files.endswith(".fai"):
+            fai_file = 1
+            break
+    
+    if fai_file == 0:
+        errors['fai_file'] = "Missing index file. Please run samtools faith on the fasta file in " + primer_scheme_dir
 
     #if read file is specified by user
     if read_file:
