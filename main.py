@@ -219,14 +219,14 @@ def home():
 def about():
 	return render_template("about.html")
 
-def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name):
+def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath):
     errors = {}
 
-    #Check of jobname is used
+    #Check if jobname is used
     if qSys.getJobByName(job_name) is not None:
         errors['job_name'] = "Job Name has already been used."
 
-    #give error if input folder path is empty
+    # give error if input folder path is empty
     if len(os.listdir(input_folder)) == 0:
         errors['input_folder'] = "Directory is empty."
 
@@ -256,6 +256,14 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         #to be filled later
         read_file = ""
 
+    #check if CSV file exists
+    if not os.path.exists(csv_filepath):
+        errors['csv_filepath'] = "Sample barcodes CSV file does not exist."
+
+    #check if sequencin summary file exists
+    if not os.path.exists(input_folder + '/sequencing_summary.txt'):
+        errors['sequencing_summary'] = "Sequencing summary file does not exist."
+        
     #both pipelines running
     if pipeline == "both":
 
@@ -405,7 +413,7 @@ def parameters():
 
         # check errors
         errors = {}
-        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath)
 
         # if an output folder does not exist, make one
         if not output_folder:
@@ -557,7 +565,7 @@ def error(job_name):
 
         # check errors
         errors = {}
-        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath)
 
         # if an output folder does not exist, make one
         if not output_folder:

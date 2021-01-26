@@ -171,14 +171,14 @@ class Job:
             if self._barcode_type == "rapid":
                 demult_cmd = "echo '*****GATHER COMMAND COMPLETE!*****\n*****STARTING PORECHOP COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; echo 'porechop --verbosity 2 --untrimmed -i " + self._job_name + "_fastq_pass.fastq -b ./ --rapid_barcodes --discard_middle --barcode_threshold 80 --threads " + self._num_threads + " --check_reads 10000 --barcode_diff 5 > " + self._job_name + "_fastq_pass.fastq.demultiplexreport.txt' >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; porechop --verbosity 2 --untrimmed -i " + self._job_name + "_fastq_pass.fastq -b ./ --rapid_barcodes --discard_middle --barcode_threshold 80 --threads " + self._num_threads + " --check_reads 10000 --barcode_diff 5 > " + self._job_name + "_fastq_pass.fastq.demultiplexreport.txt;"
                 #open csv file
-                with open(self._csv_file,'rt')as f:
+                with open(self._csv_file,'rt') as f:
                     data = csv.reader(f)
                     for row in data:
                         barcode = row[1]
                         demult_cmd = demult_cmd + " mv " + barcode + ".fastq " + self._job_name + "_fastq_pass-" + barcode + ".fastq;"
-            else:
-                demult_cmd = "echo '*****GATHER COMMAND COMPLETE!*****\n*****STARTING DEMULTIPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
-            #change directory into output folder
+            else: #check if fastq_pass.fasta file exists
+                demult_cmd = "echo '*****GATHER COMMAND COMPLETE!*****\n*****STARTING DEMULTIPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic demultiplex --threads " + self._num_threads + " " + self._job_name + "_fastq_pass.fastq" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt ; [ -e \"" + self._input_folder + "/" + self._job_name + "_fastq_pass.fastq\" ] && echo 1 || echo \"fastq_pass.fastq file not generated, aborting run\" " #TODO: fix what happens when a fastq file isnt generated
+            #change directory into output folder 
             demult_cmd = "cd " + self._output_folder + "; " + demult_cmd
         return demult_cmd
 
