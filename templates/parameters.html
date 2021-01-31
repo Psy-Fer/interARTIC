@@ -145,7 +145,20 @@
                     </datalist>
 
                 <br><br>
+                <div class="field">
+                  <div class="control">
+                    <!-- single or multiple samples -->
+                    <br>
+                    <h1 class="subtitle">This input contains: *</h1>
+                    <input type="radio" id="single" name="num_samples" value="single" required>
+                    <label for="single">A single sample</label><br>
+                    <input type="radio" id="multiple" name="num_samples" value="multiple">
+                    <label for="multiple">Multiple samples</label><br>
+                  </div>
+                </div>
+                
                 <!-- select sample-csv -->
+                <br>
                 <label class="subtitle is-5">Select a CSV file: </label><br>
                 <small>(Only needed if there are multiple samples)</small><br>
                   <input class="input" list="csv_search" name="csv_file" id="csv_file" placeholder="Search for CSV file" value="{{csv_name}}">
@@ -306,18 +319,6 @@
                     <div id="medakaParams" style="display:none">
                       <h1 class="title is-6">Medaka parameters:</h1>
                     </div> -->
-                  </div>
-                </div>
-
-                <div class="field">
-                  <div class="control">
-                    <!-- single or multiple samples -->
-                    <br>
-                    <h1 class="subtitle">This input contains: *</h1>
-                    <input type="radio" id="single" name="num_samples" value="single" required>
-                    <label for="single">A single sample</label><br>
-                    <input type="radio" id="multiple" name="num_samples" value="multiple">
-                    <label for="multiple">Multiple samples</label><br>
                   </div>
                 </div>
                 

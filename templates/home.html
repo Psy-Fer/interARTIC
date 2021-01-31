@@ -83,6 +83,15 @@
         }
         
       }
+
+      function checkDefaults(){
+        var errors = document.getElementsByClassName("help").length
+        if (errors != 0) {
+          alert("There is something wrong with the defaults. Please change them before proceeding.");
+        } else {
+          window.location.href = "/parameters";
+        }
+      }
     </script>
     <title>Home</title>
   </head>
@@ -107,7 +116,7 @@
         <form method=POST>
           <div class="field">
             <div class="control">
-              <label class="subtitle is-5" for="file_path">Please enter the base filepath where your input data is located:</label><br>
+              <label class="subtitle is-5" for="file_path">Input data base filepath:</label><br>
               <input class="input" name="file_path" id="file_path" type="text" value="{{input_folder}}" placeholder="Enter a file path"> 
                 {% if errors %}
                   {% if errors['invalid_input_file_path'] %}
@@ -118,8 +127,8 @@
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="csv_folder">Please enter the base filepath where your sample-barcode CSV files are located:</label>
-              <input class="input" type="text" name="csv_folder" id="csv_folder" value="{{csv_folder}}" placeholder="Ener a file path">
+              <label class="subtitle is-5" for="csv_folder">Sample-barcode CSV base filepath:</label>
+              <input class="input" type="text" name="csv_folder" id="csv_folder" value="{{csv_folder}}" placeholder="Enter a file path">
               {% if errors %}
                   {% if errors['invalid_csv_file_path'] %}
                     <script>
@@ -129,8 +138,8 @@
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="kirby_folder">Please enter the base filepath where your Kirby primer schemes are located:</label>
-              <input class="input" type="text" name="kirby_folder" id="kirby_folder" value="{{kirby_folder}}" placeholder="Ener a file path">
+              <label class="subtitle is-5" for="kirby_folder">Kirby primer schemes base filepath:</label>
+              <input class="input" type="text" name="kirby_folder" id="kirby_folder" value="{{kirby_folder}}" placeholder="Enter a file path">
               {% if errors %}
                   {% if errors['invalid_kirby_path'] %}
                     <script>
@@ -140,8 +149,8 @@
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="kirby_name">Please enter the Kirby primer schemes name:</label>
-              <input class="input" type="text" name="kirby_name" id="kirby_name" value="{{kirby_name}}" placeholder="Ener a scheme name">
+              <label class="subtitle is-5" for="kirby_name">Kirby primer schemes name:</label>
+              <input class="input" type="text" name="kirby_name" id="kirby_name" value="{{kirby_name}}" placeholder="Enter a scheme name">
               {% if errors %}
                   {% if errors['invalid_kirby_name'] %}
                     <script>
@@ -151,8 +160,8 @@
                   {% endif %}
                 {% endif %}
                <br><br>
-              <label class="subtitle is-5" for="artic_folder">Please enter the base filepath where your Artic primer schemes are located:</label>
-              <input class="input" type="text" name="artic_folder" id="artic_folder" value="{{artic_folder}}" placeholder="Ener a file path">
+              <label class="subtitle is-5" for="artic_folder">Artic primer schemes base filepath:</label>
+              <input class="input" type="text" name="artic_folder" id="artic_folder" value="{{artic_folder}}" placeholder="Enter a file path">
               {% if errors %}
                   {% if errors['invalid_artic_path'] %}
                     <script>
@@ -161,9 +170,9 @@
                     <p class="help is-danger"> {{ errors['invalid_artic_path'] }} </p>
                   {% endif %}
                 {% endif %}
-              <br>
-              <label class="subtitle is-5" for="artic_name">Please enter the Artic primer schemes name:</label>
-              <input class="input" type="text" name="artic_name" id="artic_name" value="{{artic_name}}" placeholder="Ener a scheme name">
+              <br><br>
+              <label class="subtitle is-5" for="artic_name">Artic primer schemes name:</label>
+              <input class="input" type="text" name="artic_name" id="artic_name" value="{{artic_name}}" placeholder="Enter a scheme name">
               {% if errors %}
                   {% if errors['invalid_artic_name'] %}
                     <script>
@@ -204,7 +213,7 @@
                 </tbody>
             </table>
                 
-            <a class="button" href="/parameters">Add Job</a><br>
+            <a class="button" onclick="checkDefaults()">Add Job</a><br>
       
           </div>
           <div class="column">

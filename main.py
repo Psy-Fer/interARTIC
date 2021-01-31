@@ -320,11 +320,10 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 def getInputFolders(filepath):
     # find all the current input folders
     checkFoldersCmd = "cd && cd " + filepath + " && ls"
-    print("check folders command")
-    print(checkFoldersCmd)
+    #print("check folders command")
+    #print(checkFoldersCmd)
 
     folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
-
     return folders
 
 @app.route("/parameters", methods = ["POST","GET"])
