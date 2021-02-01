@@ -219,7 +219,7 @@ def home():
 def about():
 	return render_template("about.html")
 
-def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath):
+def checkInputs(input_folder, output_folder, primer_scheme_dir, primer_scheme, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath):
     errors = {}
 
     #Check if jobname is used
@@ -246,19 +246,28 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     if not os.path.isdir(primer_scheme_dir):
         errors['primer_scheme_dir'] = "Invalid path."
 
-    primer_scheme_dir_files = os.listdir(primer_scheme_dir)
-    
-    if len(primer_scheme_dir_files == 0):
+    if len(os.listdir(primer_scheme_dir)) == 0:
         errors['primer_scheme_dir'] = "Directory is empty."
-    
-    fai_file = 0
-    for files in primer_scheme_dir_files:
-        if files.endswith(".fai"):
-            fai_file = 1
-            break
-    
-    if fai_file == 0:
-        errors['fai_file'] = "Missing index file. Please run samtools faith on the fasta file in " + primer_scheme_dir
+
+    full_primer_path = primer_scheme_dir + '/' + primer_scheme
+
+    if not os.path.isdir(full_primer_path):
+        errors['primer_name'] = "No such primer scheme folder exists in the scheme folder provided."
+    else:
+        primer_scheme_dir_files = os.listdir(full_primer_path)
+
+        if len(primer_scheme_dir_files) == 0:
+            errors['primer_name'] = "Directory is empty."
+
+        fai_file = 0
+        for files in primer_scheme_dir_files:
+            print(files)
+            if files.endswith(".fai"):
+                fai_file = 1
+                break
+        
+        if fai_file == 0:
+            errors['primer_name'] = "Missing index file. Please run samtools faidx on the fasta file in " + primer_scheme_dir + '/' + primer_scheme
 
     #if read file is specified by user
     if read_file:
@@ -424,7 +433,7 @@ def parameters():
 
         # check errors
         errors = {}
-        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, primer_scheme, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath)
 
         # if an output folder does not exist, make one
         if not output_folder:
@@ -438,7 +447,7 @@ def parameters():
         if len(errors) != 0:
             #Update displayed queue on home page
             queueList = []
-
+            print(errors)
             if qSys.queue.empty():
                 return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
 
@@ -576,7 +585,7 @@ def error(job_name):
 
         # check errors
         errors = {}
-        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, primer_scheme, read_file, pipeline, override_data, min_length, max_length, job_name, csv_filepath)
 
         # if an output folder does not exist, make one
         if not output_folder:

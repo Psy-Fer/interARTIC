@@ -259,7 +259,14 @@
                 <label class="subtitle is-5" for="primer_scheme">Primer Name: *</label><br>
                 <small> e.g. nCoV-2019/V1 </small><br>
                 <input class="input" type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
-
+                {% if errors %}
+                {% if errors['primer_name'] %}
+                <script>
+                  document.getElementById("primer_scheme").className = "input is-danger";
+                </script>
+                <p class="help is-danger"> {{ errors['primer_name'] }} </p>
+                {% endif %}
+                {% endif %}
 
                 <div class="field">
                   <div class="control">
