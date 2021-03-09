@@ -1,198 +1,48 @@
 # InterARTIC
 
-InterARTIC is web application designed to automate the use of the Conda ARTIC pipeline. It is designed for use for the Nanopolish and Medaka pipelines.
+InterARTIC is a web application designed to ease the use of the convoluted [ARTIC pipeline](https://github.com/artic-network/artic-ncov2019). InterARTIC supports both Nanopolish and Medaka pipelines.
 
 # Full documentation
 
 The complete documentation can be accessed at [here](https://tthnguyen11.github.io/interARTIC/)
 
-# Installation
 
-## Dependencies
+# Quick start
 
-* Python 3.7 or above
-* Celery v4.4.6 (cliffs)
-* Redis Server v6.0.5
-* Miniconda
+We provide binary release for common Linux distributions. Tested to work well on Ubuntu 14, 16, 18 and 20. Should work on other distributions as long as GLIBC 2.17 or higher and `/usr/bin/env` are present.
 
-## Opening terminal
+First download the latest release and run the provided script as below.
 
-Your operating system's command line will be used to install the dependencies and start interARTIC. 
-
-* For Mac OS: Type “terminal” into your spotlight search, then hit Return.
-* For Windows: Type “cmd” into your search bar in the Start menu, then hit Enter.
-* For Linux: Enter the keyboard shortcut: Ctrl+Alt+T.
-
-If these instructions don't work on your operating system, google how to open command line on your operating system and software version.
-
-## Installing Python and pip
-
-In order to use interARTIC, you’ll need Python and its package manager pip installed on your system.
-
-Check if they're already installed by entering the following into your command prompt:
-
-```
-python --version
-pip --version
+```bash
+wget https://cloudstor.aarnet.edu.au/plus/s/VvslkxgQrIcTm78/download -O interartic_bin.tar.gz		#download the release
+tar xf interartic_bin.tar.gz		#extract
+cd interartic_bin
+./run.sh
 ```
 
-If Python is not installed, follow [this link](https://www.python.org/downloads/) and follow the instructions there.
+Now download the sample data and extract to a suitable location as below. We will put onto `/data` as the location in this example.
 
-* This application uses Python3 as the default, Python2.7.
-
-If you are a Linux user, you may instead follow the commands below to install Python:
-```
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt-get update
-sudo apt install python3.7 python3.7-dev
-python3.7-venv
+```bash
+cd /data
+wget https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download -O FLFL031920_sample_data.tar.gz
+tar xf FLFL031920_sample_data.tar.gz
+rm FLFL031920_sample_data.tar.gz
 ```
 
-If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary using the 2nd command below.
+Now visit (http://127.0.0.1:5000)[http://127.0.0.1:5000] on your browser.
 
-```
-pip --version
-pip install --upgrade pip
-```
-
-If pip is not installed, follow [this link](https://pip.pypa.io/en/stable/installing/) and follow the prompts there.
-
-## Installing miniconda
-
-The miniconda installation guide can be found [here](https://docs.conda.io/en/latest/miniconda.html)
-
-We suggest you undergo the 'Regular Installation' process.
-
-## Installing the ARTIC pipeline environment
-
-Enter the following into your command prompt:
-
-```
-git clone https://github.com/artic-network/artic-ncov2019.git
-cd artic-ncov2019
-conda env remove -n artic-ncov2019
-conda env create -f environment.yml
-```
-
-### Trouble installing Artic?
-
-Follow [this link](https://artic.readthedocs.io/en/latest/installation/) to access the documentation for installing Artic.
-
-## Installing the Redis Server and Celery
-
-To install the redis server, enter the following into your command prompt in your base folder:
-
-```
-bash run-redis.sh
-```
-
-Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to install the Redis Server manually.
+TODO: Step by step tutorial (with screen shots) on how to configure paths and then do the test run.
 
 
-## Installing Python packages for Redis, Celery and Flask
+# Building from source
 
-To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt:
+Building from source is not for the faint hearted. Step by step instructions for building from source are given (here)[https://tthnguyen11.github.io/interARTIC/installation/].
 
-```
-pip3 install celery==4.4.6 redis==3.5.3 flask 
-```
 
-## Installing interARTIC
+# interARTIC usage
 
-Clone the repository from github by entering the following commands into your terminal.
+See (https://tthnguyen11.github.io/interARTIC/usage/)[https://tthnguyen11.github.io/interARTIC/usage/]
 
-```
-git clone https://github.com/tthnguyen11/interARTIC.git
-```
+# Troubleshooting
 
-## Setting Up interARTIC
-
-#### Job Concurrency
-
-By default, job concurrency is turned off and the automatic and manual setups will allow one job to be run at a time. 
-
-If you wish to **turn concurrency on** and run multiple jobs at a time, then please run the commands under the Concurrency Manual setup heading, which will allow all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.
-
-### Automatic setup
-
-To start interARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:
-
-```
-cd interARTIC
-bash run.sh <terminal type>
-# Terminal types: macos, xterm, konsole
-```
-
-### Manual setup
-
-If your terminal is not listed, enter the following commands into your command prompt:
-
-```
-cd interARTIC
-bash run-redis.sh
-python3 main.py
-conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info
-```
-
-### Concurrency Manual setup
-
-If you wish to turn job concurrency on, enter the following commands into your command prompt:
-
-```
-cd interARTIC
-bash run-redis.sh
-python3 main.py
-conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
-```
-
-### Configure interARTIC
-
-On any text editor, open ```config.init```. Update each of the configurations as necessary. All inputs should be file paths. More information about this can be found in the next section.
-
-The default config folder is as below:
-
-```
-{
-	"data-folder": "/data",
-	"sample-barcode-csvs": "/Users/stephanietong/sample-barcodes",
-	"kirby-primer-scheme-folder": "/Users/stephanietong/primer-schemes",
-	"kirby-scheme-name": "IturiEBOV/V1",
-	"artic-primer-scheme-folder": "/Users/stephanietong/primer-schemes",
-	"artic-scheme-name": "IturiEBOV/V2"
-}
-```
-
-* **data-folder**: This is the folder where all your data is located. By default, it is set to "/data"
-* **sample-barcode-csvs**: This is the folder where your csv containing barcode names is placed.
-* **kirby-primer-scheme-folder**: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
-* **kirby-scheme-name**: This is the name of the kirby primer scheme being used for your nanopore sequencing run.
-* **artic-primer-scheme-folder**: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
-* **artic-scheme-name**: This is the name of the artic primer scheme being used for your nanopore sequencing run.
-
-####  File path input
-
-* Folders and files should be inputted by their file paths.
-* File paths can be retrieved by running 'pwd' in the appropriate folder on any terminal.
-* Folders may also be referred to as directories.
-* File paths should start with “/” (Mac or Linux) or “C:\” (Windows). If you have not worked with navigating folders and files in the terminal before, take a look at this [resource](https://www.earthdatascience.org/courses/intro-to-earth-data-science/python-code-fundamentals/work-with-files-directories-paths-in-python/).
-
-For example:
-
-```
-$ pwd                                    # get file path of current directory
-/Users/YOURNAME
-$ ls                                     # list contents of current directory
-folder1     folder2     file1       documents
-$ cd documents                           # change current directory to documents
-$ pwd
-/Users/YOURNAME/documents
-$ cd outputFolder                         # change current directory to your output folder
-
-$ pwd                                    # obtain file path you will input into interARTIC
-/Users/YOURNAME/documents/outputFolder
-```
-Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path. 
-
-## Running interARTIC
-
-Navigate to your browser and follow [this link](http://127.0.0.1:5000) to access interARTIC.
+See (https://tthnguyen11.github.io/interARTIC/troubleshooting/)[https://tthnguyen11.github.io/interARTIC/troubleshooting/]
