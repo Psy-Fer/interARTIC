@@ -14,8 +14,8 @@ We provide binary release for common Linux distributions. Tested to work well on
 First download the latest release and run the provided script as below.
 
 ```bash
-wget https://cloudstor.aarnet.edu.au/plus/s/VvslkxgQrIcTm78/download -O interartic_bin.tar.gz		#download the release
-tar xf interartic_bin.tar.gz		#extract
+wget https://cloudstor.aarnet.edu.au/plus/s/VvslkxgQrIcTm78/download -O interartic_bin.tar.gz	
+tar xf interartic_bin.tar.gz
 cd interartic_bin
 ./run.sh
 ```
