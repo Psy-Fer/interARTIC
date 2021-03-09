@@ -29,20 +29,19 @@ tar xf FLFL031920_sample_data.tar.gz
 rm FLFL031920_sample_data.tar.gz
 ```
 
-Now visit (http://127.0.0.1:5000)[http://127.0.0.1:5000] on your browser.
+Now visit [http://127.0.0.1:5000](http://127.0.0.1:5000) on your browser.
 
 TODO: Step by step tutorial (with screen shots) on how to configure paths and then do the test run.
 
 
 # Building from source
 
-Building from source is not for the faint hearted. Step by step instructions for building from source are given (here)[https://tthnguyen11.github.io/interARTIC/installation/].
+Building from source is not for the faint hearted. Step by step instructions for building from source are given [here](https://tthnguyen11.github.io/interARTIC/installation/).
 
 
 # interARTIC usage
 
-See (https://tthnguyen11.github.io/interARTIC/usage/)[https://tthnguyen11.github.io/interARTIC/usage/]
-
+See [https://tthnguyen11.github.io/interARTIC/usage/](https://tthnguyen11.github.io/interARTIC/usage/)
 # Troubleshooting
 
-See (https://tthnguyen11.github.io/interARTIC/troubleshooting/)[https://tthnguyen11.github.io/interARTIC/troubleshooting/]
+See [https://tthnguyen11.github.io/interARTIC/troubleshooting/](https://tthnguyen11.github.io/interARTIC/troubleshooting/)
