@@ -129,7 +129,7 @@ class Job:
     @property
     def task_id(self):
         return self._task_id
-    
+
     @property
     def barcode_type(self):
         return self._barcode_type
@@ -137,11 +137,11 @@ class Job:
     @property
     def csv_file(self):
         return self._csv_file
-    
+
     @property
     def primer_select(self):
         return self._primer_select
-    
+
     @property
     def input_name(self):
         return self._input_name
@@ -154,7 +154,7 @@ class Job:
 
     def __generateGatherCmd(self):
         gather_cmd = ""
-        # if job is running medaka 
+        # if job is running medaka
         if self._pipeline == "medaka":
             gather_cmd = "echo '*****STARTING GATHER COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic gather --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + self._input_folder +" --no-fast5s" + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
         # if job is running nanopolish
@@ -194,7 +194,7 @@ class Job:
             if self._read_file != "":
                 # if medaka is chosen
                 if self._pipeline == "medaka":
-                    minion_cmd = minion_cmd + "; echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; cd " + dir_path + "; artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file " + self._read_file + " " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                    minion_cmd = minion_cmd + "; echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; cd " + dir_path + "; artic minion --minimap2 --medaka --medaka-model r941_min_high_g360 --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file " + self._read_file + " " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 # if nanopolish is chosen
                 elif self._pipeline == "nanopolish":
                     minion_cmd = minion_cmd + "; echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ../" + self._read_file + " --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
@@ -202,7 +202,7 @@ class Job:
             else:
                 # if medaka is chosen
                 if self._pipeline == "medaka":
-                    minion_cmd = minion_cmd + "; echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; cd " + dir_path + "; artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ../" + self._job_name + "_fastq_pass.fastq " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                    minion_cmd = minion_cmd + "; echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; cd " + dir_path + "; artic minion --minimap2 --medaka --medaka-model r941_min_high_g360 --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ../" + self._job_name + "_fastq_pass.fastq " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 # if nanopolish is chosen
                 elif self._pipeline == "nanopolish":
                     minion_cmd = minion_cmd + "; echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****STARTING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ../" + self._job_name + "_fastq_pass.fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
@@ -221,10 +221,10 @@ class Job:
                         dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + barcode + "_" + self._pipeline
                         #make directory
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
-                        #move fastq_pass file into folder 
+                        #move fastq_pass file into folder
                         minion_cmd = minion_cmd + "; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + dir_path
                         #append minion cmd in barcode directory
-                        minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --minimap2 --medaka --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --minimap2 --medaka --medaka-model r941_min_high_g360 --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 
             elif self._pipeline == "nanopolish":
                 #open csv file
@@ -237,11 +237,11 @@ class Job:
                         dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + barcode + "_" + self._pipeline
                         #make directory
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
-                        #move fastq_pass file into folder 
+                        #move fastq_pass file into folder
                         minion_cmd = minion_cmd + "; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + dir_path
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
-        
+
         minion_cmd = minion_cmd + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
         #change directory into output folder at the start
         minion_cmd = "cd " + self._output_folder + "; " + minion_cmd
