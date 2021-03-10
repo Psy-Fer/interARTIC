@@ -3,6 +3,8 @@
 	"sample-barcode-csvs": "/Users/thanhnguyen/sample-barcodes",
 	"kirby-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
 	"kirby-scheme-name": "",
+	"midnight-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
+	"midnight-scheme-name": "",
 	"artic-primer-scheme-folder": "/Users/thanhnguyen/primer-schemes",
 	"artic-scheme-name": "nCoV-2019/V1"
 }
