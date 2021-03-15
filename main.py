@@ -17,8 +17,6 @@ import re
 import threading
 import gzip
 import glob
-<<<<<<< HEAD
-=======
 import argparse
 
 
@@ -27,13 +25,6 @@ class MyParser(argparse.ArgumentParser):
         sys.stderr.write('error: %s\n' % message)
         self.print_help()
         sys.exit(2)
-
-
-
-
-
-
->>>>>>> e921c014715f3f017480bb172d49b9449edcfed5
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
