@@ -7,59 +7,85 @@
 * Python 3.7 or above
 * Celery v4.4.6 (cliffs)
 * Redis Server v6.0.5
-* Miniconda
+* Artic 1.2.1 (Miniconda required for Artic installation)
 
 ## Opening terminal
 
-Your operating system's command line will be used to install the dependencies and start interARTIC. 
+Your operating system's command line will be used to install the dependencies and start interARTIC.
 
 * For Mac OS: Type “terminal” into your spotlight search, then hit Return.
-* For Windows: Type “cmd” into your search bar in the Start menu, then hit Enter.
+* For Windows: Type “Ubuntu” into your search bar in the Start menu, then hit Enter (you need to have an Ubuntu distribution installed via Windows Subsystem for Linux. See (here)[https://linuxhint.com/install_ubuntu_windows_10_wsl/] for steps.
 * For Linux: Enter the keyboard shortcut: Ctrl+Alt+T.
 
 If these instructions don't work on your operating system, google how to open command line on your operating system and software version.
 
 ## Installing Python and pip
 
-In order to use interARTIC, you’ll need Python and its package manager pip installed on your system.
+In order to use interARTIC, you’ll need Python and its package manager pip installed on your system. Python and associated libraries has limited compatibility across different versions and thus we recommend using a Python 3.7 virtual environment.
 
-Check if they're already installed by entering the following into your command prompt:
+### Linux users (distributions supporting apt)
+
+If you are a Linux user using a distribution that supports `apt`, you may instead follow the commands below to install Python:
+```
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt install python3.7 python3.7-dev python3.7-venv
+```
+Now create a Python virtual environment called interARTIC-venv, activate it and upgrade pip:
 
 ```
-python --version
-pip --version
+python3.7 -m venv interARTIC-venv
+source interARTIC-venv/bin/activate
+pip install --upgrade pip
+```
+
+
+### Other users
+
+Check if Python and Pip are already installed by entering the following into your command prompt:
+
+```
+python --version	# or this can be python3 --version
+pip --version		# or this can be pip3 --version
 ```
 
 If Python is not installed, follow [this link](https://www.python.org/downloads/) and follow the instructions there.
 
-* This application uses Python3 as the default, not Python2.7.
+* This application uses Python3 as the default, not Python2.
 
-If you are a Linux user, you may instead follow the commands below to install Python:
-```
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt-get update
-sudo apt install python3.7 python3.7-dev
-python3.7-venv
-```
-
-If you have just installed Python, it will likely have also installed pip. Check that it is installed, and upgrade if necessary using the 2nd command below.
+If you have just installed Python, it will likely have also installed pip. Check that it is installed.
 
 ```
 pip --version
-pip install --upgrade pip
 ```
 
 If pip is not installed, follow [this link](https://pip.pypa.io/en/stable/installing/) and follow the prompts there.
 
-## Installing miniconda
+Now create a Python virtual environment called interARTIC-venv, activate it and upgrade pip:
 
-The miniconda installation guide can be found [here](https://docs.conda.io/en/latest/miniconda.html)
+```
+python -m venv interARTIC-venv
+source interARTIC-venv/bin/activate
+pip install --upgrade pip
+```
 
-We suggest you undergo the 'Regular Installation' process.
+## Installing Python packages for Redis, Celery and Flask
+
+To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt (make sure you have activated the interARTIC-venv virtual environment created above):
+
+```
+pip install celery==4.4.6 redis==3.5.3 flask
+```
 
 ## Installing the ARTIC pipeline environment
 
-Enter the following into your command prompt:
+The ARTIC pipeline has to be installed via conda.
+
+If you do not have conda installed, we suggest installing miniconda.
+The miniconda installation guide can be found [here](https://docs.conda.io/en/latest/miniconda.html)
+We suggest you undergo the 'Regular Installation' process.
+
+After installing conda, enter the following into your command prompt to install ARTIC:
 
 ```
 git clone https://github.com/artic-network/artic-ncov2019.git
@@ -68,27 +94,21 @@ conda env remove -n artic-ncov2019
 conda env create -f environment.yml
 ```
 
+Conda will download half of the Internet (pun intended!) so wait patiently.
+After installation completes, run the following command and verify artic ins installed.
+
+```
+conda activate artic-ncov2019
+artic --version
+conda deactivate
+```
+
+
 ### Trouble installing Artic?
 
 Follow [this link](https://artic.readthedocs.io/en/latest/installation/) to access the documentation for installing Artic.
 
-## Installing the Redis Server
 
-To install the redis server, enter the following into your command prompt in your base folder:
-
-```
-bash run-redis.sh
-```
-
-Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to install the Redis Server manually.
-
-## Installing Python packages for Redis, Celery and Flask
-
-To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt:
-
-```
-pip3 install celery==4.4.6 redis==3.5.3 flask 
-```
 
 ## Installing interARTIC
 
@@ -96,49 +116,72 @@ Clone the repository from github by entering the following commands into your te
 
 ```
 git clone https://github.com/tthnguyen11/interARTIC.git
+cd interARTIC
 ```
+
+## Installing the Redis Server
+
+To install the redis server, enter the following into your command prompt in your base folder:
+
+```
+./run-redis.sh
+```
+
+Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to install the Redis Server manually.
+
 
 ## Setting Up interARTIC
 
-#### Job Concurrency
-
-By default, job concurrency is turned off and the automatic and manual setups will allow one job to be run at a time. 
-
-If you wish to **turn concurrency on** and run multiple jobs at a time, then please run the commands under the Concurrency Manual setup heading, which will allow all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.
+Setting up interARTIC can be done by running the provided `run_dev.sh` script under Automatic setup below. If something goes wrong, follow the steps under Manual setup. **Make sure you are inside the interARTIC-venv virtual environment we created above**.
 
 ### Automatic setup
 
 To start interARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:
 
 ```
-cd interARTIC
-bash run.sh <terminal type>
-# Terminal types: macos, xterm, konsole
+./run_dev.sh
 ```
 
 ### Manual setup
 
-If your terminal is not listed, enter the following commands into your command prompt:
+1. Take a new terminal, and run redis.
 
 ```
 cd interARTIC
-bash run-redis.sh
+./run-redis.sh
+```
+2. Take another new terminal, activate the interARTIC-venv virtual environment we created above and run interARTIC main script.
+
+```
+source interARTIC-venv/bin/activate
+cd interARTIC
 python3 main.py
+```
+
+3. Take another new terminal, activate the interARTIC-venv virtual environment followed by the ARTIC conda environment and run celery.
+
+```
+source interARTIC-venv/bin/activate
+cd interARTIC
 conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info
 ```
 
-### Concurrency Manual setup
 
-If you wish to turn job concurrency on, enter the following commands into your command prompt:
+### Job Concurrency
 
-```
-cd interARTIC
-bash run-redis.sh
-python3 main.py
-conda activate artic-ncov2019; celery worker -A main.celery --loglevel=info
-```
+By default, job concurrency is turned off and the automatic and manual setups will allow one job to be run at a time.
 
-### Configure interARTIC
+If you wish to **turn concurrency on** and run multiple jobs at a time, then please run the commands under the Concurrency Manual setup heading, which will allow all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.
+
+
+If you wish to turn job concurrency on, follow the steps under Manual Setup above except that now you should not pass `--concurrency=1` to celery.
+
+## Running interARTIC
+
+Navigate to your browser and follow [this link](http://127.0.0.1:5000) to access interARTIC.
+
+
+## Configure interARTIC
 
 On any text editor, open ```config.init```. Update each of the configurations as necessary. All inputs should be file paths. More information about this can be found in the next section.
 
@@ -147,11 +190,11 @@ The default config folder is as below:
 ```
 {
 	"data-folder": "/data",
-	"sample-barcode-csvs": "/Users/YOURNAME/sample-barcodes",
-	"kirby-primer-scheme-folder": "/Users/YOURNAME/primer-schemes",
-	"kirby-scheme-name": "IturiEBOV/V1",
-	"artic-primer-scheme-folder": "/Users/YOURNAME/primer-schemes",
-	"artic-scheme-name": "IturiEBOV/V2"
+	"sample-barcode-csvs": "/data/sample-barcodes",
+	"kirby-primer-scheme-folder": "/data/primer_schemes_kirby",
+	"kirby-scheme-name": "nCoV-2019/V1",
+	"artic-primer-scheme-folder": "/data/primer_schemes",
+	"artic-scheme-name": "nCoV-2019/V1"
 }
 ```
 
@@ -191,8 +234,4 @@ $ cd outputFolder                         # change current directory to your out
 $ pwd                                    # obtain file path you will input into interARTIC
 /Users/YOURNAME/documents/outputFolder
 ```
-Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path. 
-
-## Running interARTIC
-
-Navigate to your browser and follow [this link](http://127.0.0.1:5000) to access interARTIC.
+Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path.
