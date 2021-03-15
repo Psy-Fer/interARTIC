@@ -11,7 +11,7 @@
         console.log("loaded window")
         var buttons = document.getElementsByClassName("abort");
         for (var i = 0; i < buttons.length; i++) {
-          buttons[i].addEventListener('click', function(){ 
+          buttons[i].addEventListener('click', function(){
             console.log("clicked!!!!")
             // alert(this.name);
             var job_name = this.name;
@@ -25,12 +25,12 @@
             var close2 = document.getElementById("close2");
             var cancel2 = document.getElementById("cancel2");
             var conDel = document.getElementById("confirmD");
-            
+
             modal.style.display = "block";
             var job = document.getElementById("jobname");
             job.innerHTML = '"' + job_name + '"';
             job.name = job_name;
-            
+
             close.onclick = function() {
               modal.style.display = "none";
             }
@@ -73,7 +73,7 @@
 					{% endfor %}
 				{% endif %}
 			{% endwith %}
-      
+
       <div class="container is-widescreen">
         <div class="columns">
           <div class="column is-one-quarter">
@@ -125,9 +125,9 @@
                         document.getElementById("medaka").checked = true;
                       } else if ( {{ pipeline }}.value == "both") {
                         document.getElementById("both").checked = true;
-                      } 
+                      }
                     </script>
-                    
+
                   </div>
                 </div>
 
@@ -137,8 +137,8 @@
                 <label class="subtitle is-5">Select an input folder: *</label><br><br>
                   <input class="input" list="search" name="input_folder" id="input_folder" placeholder="Search for input folder" value="{{input_name}}" required>
                     <datalist id="search">
-                      {% if folders %}                      
-                        {% for folder in folders %}                          
+                      {% if folders %}
+                        {% for folder in folders %}
                           <option value="{{ folder }}">{{ folder }}</option>
                         {% endfor %}
                       {% endif %}
@@ -150,8 +150,8 @@
                 <small>(Only needed if there are multiple samples)</small><br>
                   <input class="input" list="csv_search" name="csv_file" id="csv_file" placeholder="Search for CSV file" value="{{csv_name}}">
                     <datalist id="csv_search">
-                      {% if csvs %}                      
-                        {% for csv in csvs %}                          
+                      {% if csvs %}
+                        {% for csv in csvs %}
                           <option value="{{ csv }}">{{ csv }}</option>
                         {% endfor %}
                       {% endif %}
@@ -205,23 +205,27 @@
                     <!-- primer type -->
                     <label class="subtitle is-5" for="primer_type"> Select a primer type: *</label><br>
                     <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}})">
-                    <label for="artic"> Artic</label><br>
+                    <label for="artic"> Artic (400bp)</label><br>
                     <input type="radio" id="kirby" name="primer_type" value="kirby" onclick="setSchemes(this.id, {{schemes}})">
-                    <label for="kirby"> Kirby</label><br>
+                    <label for="kirby"> Kirby (2500bp)</label><br>
+                    <input type="radio" id="midnight" name="primer_type" value="midnight" onclick="setSchemes(this.id, {{schemes}})">
+                    <label for="midnight"> Midnight (1200bp)</label><br>
                     <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer()">
                     <label for="other">Other</label><br><br>
                    </div>
-                   
+
                   <div id="other_primer" style="display:none">
                     Please enter your primer here:
                     <input class="input" type="text" id="other_primer_type" name="other_primer_type" value={{other_primer_type}}>
                   </div><br>
-                  
+
                   <script>
                     if ( {{ primer_select }}.id == "artic") {
                       document.getElementById("artic").checked = true;
                     } else if ( {{ primer_select }}.id == "kirby") {
                         document.getElementById("kirby").checked = true;
+                    } else if ( {{ primer_select }}.id == "midnight") {
+                        document.getElementById("midnight").checked = true;
                     } else {
                       document.getElementById("other").checked = true;
                       document.getElementById("other_primer").style.display = "block";
@@ -258,14 +262,14 @@
                     <input type="radio" id="rapid" name="barcode_type" value="rapid" onclick="setParams()">
                     <label for="rapid"> Rapid</label><br>
                   </div>
-                 
+
                 </div>
                  <script>
                     if ( {{ barcode_type }}.id == "native") {
                       document.getElementById("native").checked = true;
                     } else if ( {{ barcode_type }}.id == "rapid") {
                        document.getElementById("rapid").checked = true;
-                    } 
+                    }
                   </script>
                 <br>
 
@@ -276,7 +280,7 @@
                     <!-- threads - Medaka/ Nanopolish-->
                     <center><h1 class="subtitle"><b>Select parameters</b></h1></center><br>
                     <h1 class="subtitle is-5">Gather command: *</h1>
-                   
+
                     <label for="min_length">Minimum Length: *</label>
                     <input class="input" type="number" id="min_length" name="min_length" value="{{ min_length }}" required><br>
                     <br><label for="max_length">Maximum Length: *</label>
@@ -320,13 +324,13 @@
                     <label for="multiple">Multiple samples</label><br>
                   </div>
                 </div>
-                
+
                 <script>
                     if ( {{ num_samples }}.id == "single") {
                       document.getElementById("single").checked = true;
                     } else if ( {{ num_samples }}.id == "multiple") {
                        document.getElementById("multiple").checked = true;
-                    } 
+                    }
                   </script>
 
                 <br>
@@ -387,6 +391,7 @@
         //primers
         var artic = document.getElementById("artic");
         var kirby = document.getElementById("kirby");
+        var midnight = document.getElementById("midnight");
         //barcodes
         var native = document.getElementById("native");
         var rapid = document.getElementById("rapid");
@@ -404,10 +409,13 @@
           } else if (id == 'kirby') {
             primer_scheme_dir.value = schemesJson['kirby_scheme'];
             primer_scheme.value = schemesJson['kirby_scheme_name'];
+          } else if (id == 'midnight') {
+            primer_scheme_dir.value = schemesJson['midnight_scheme'];
+            primer_scheme.value = schemesJson['midnight_scheme_name'];
           }
           setParams()
         }
-        
+
         //max/min length
         function setParams() {
           var max_length = document.getElementById("max_length");
@@ -420,6 +428,12 @@
             min_length.value = '2300';
           } else if (kirby.checked && rapid.checked) {
             max_length.value = '2700';
+            min_length.value = '300';
+          } else if (midnight.checked && native.checked) {
+            max_length.value = '1400';
+            min_length.value = '1000';
+          } else if (midnight.checked && rapid.checked) {
+            max_length.value = '1400';
             min_length.value = '300';
           } else {
             max_length.value = '';
