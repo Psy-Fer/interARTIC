@@ -16,7 +16,7 @@ import sys
 import re
 import threading
 import gzip
-import glob 
+import glob
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
@@ -290,6 +290,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         os.system(make_log_n)
 
     else:
+        #TODO: if not "both" still make the folders medaka | nanopolish based on selection
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder):
             make_dir = 'mkdir "' + output_folder + '"'
@@ -387,15 +388,24 @@ def parameters():
         # global input_filepath
         input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
-
-        # get the correct input folder filepath from user input
-        path = glob.glob(input_folder + '/*/*')[0]
-        os.chdir(path)
-        input_folder = os.getcwd()
-
-        #if no output folder entered, creates one inside of input folder
+        # if no output folder entered, creates one inside of input folder
+        # Do this to put output above input folder to stop fastq cross talk
         if not output_folder:
             output_folder = input_folder + "/output"
+
+        # get the correct input folder filepath from user input
+        # path = glob.glob(input_folder + '/*/*')[0]
+        # use fnmatch with walk to get fastq_pass, fastq_fail folders
+        # then split off the last bit to get the top folder for the gather command
+        tmp_folder_list = []
+        for dName, sdName, fList in os.walk(input_folder):
+            for fileName in sdName:
+                if fnmatch.fnmatch(fileName, "fastq*"):
+                    tmp_folder_list.append(os.path.join(dName, fileName))
+        tmp_path = tmp_folder_list[0].split("/")[:-1]
+        path = "/".join(tmp_path)
+        os.chdir(path)
+        input_folder = os.getcwd()
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
@@ -545,7 +555,18 @@ def error(job_name):
         filename = os.path.dirname(os.path.realpath(__file__))
 
         # get the correct input folder filepath from user input
-        path = glob.glob(input_folder + '/*/*')[0]
+        # path = glob.glob(input_folder + '/*/*')[0]
+        # use fnmatch with walk to get fastq_pass, fastq_fail folders
+        # then split off the last bit to get the top folder for the gather command
+        tmp_folder_list = []
+        for dName, sdName, fList in os.walk(input_folder):
+            for fileName in sdName:
+                if fnmatch.fnmatch(fileName, "fastq*"):
+                    tmp_folder_list.append(os.path.join(dName, fileName))
+        tmp_path = tmp_folder_list[0].split("/")[:-1]
+        path = "/".join(tmp_path)
+        os.chdir(path)
+        input_folder = os.getcwd()
         os.chdir(path)
         input_folder = os.getcwd()
 
