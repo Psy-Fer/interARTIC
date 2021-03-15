@@ -17,13 +17,32 @@ import re
 import threading
 import gzip
 import glob
+<<<<<<< HEAD
+=======
+import argparse
+
+
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write('error: %s\n' % message)
+        self.print_help()
+        sys.exit(2)
+
+
+
+
+
+
+>>>>>>> e921c014715f3f017480bb172d49b9449edcfed5
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
 
 # Celery configuration
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:7777/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:7777/0'
+# app.config['CELERY_BROKER_URL'] = 'redis://localhost:{}/0'.format(args.redis_port)
+# app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:{}/0'.format(args.redis_port)
 app.secret_key = "shhhh"
 
 # Initialize Celery
@@ -48,6 +67,8 @@ sample_csv = data['sample-barcode-csvs']
 schemes = {}
 schemes['kirby_scheme'] = data['kirby-primer-scheme-folder']
 schemes['kirby_scheme_name'] = data['kirby-scheme-name']
+schemes['midnight_scheme'] = data['midnight-primer-scheme-folder']
+schemes['midnight_scheme_name'] = data['midnight-scheme-name']
 schemes['artic_scheme'] = data['artic-primer-scheme-folder']
 schemes['artic_scheme_name'] = data['artic-scheme-name']
 
@@ -182,6 +203,8 @@ def home():
         search_csv = request.form.get('csv_folder')
         kirby_scheme = request.form.get('kirby_folder')
         kirby_scheme_name = request.form.get('kirby_name')
+        midnight_scheme = request.form.get('midnight_folder')
+        midnight_scheme_name = request.form.get('midnight_name')
         artic_scheme = request.form.get('artic_folder')
         artic_scheme_name = request.form.get('artic_name')
 
@@ -195,11 +218,14 @@ def home():
         if not os.path.isdir(kirby_scheme):
             errors['invalid_kirby_path'] = "File path entered is not valid"
 
+        if not os.path.isdir(midnight_scheme):
+            errors['invalid_midnight_path'] = "File path entered is not valid"
+
         if not os.path.isdir(artic_scheme):
             errors['invalid_artic_path'] = "File path entered is not valid"
 
         if len(errors) != 0:
-            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, kirby_folder=kirby_scheme, artic_folder=artic_scheme, kirby_name=kirby_scheme_name, artic_name=artic_scheme_name)
+            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, kirby_folder=kirby_scheme, midnight_folder=midnight_scheme, artic_folder=artic_scheme, kirby_name=kirby_scheme_name, midnight_name=midnight_scheme_name, artic_name=artic_scheme_name)
         else: # update global variables
             global input_filepath
             input_filepath = search_input
@@ -210,10 +236,12 @@ def home():
             global schemes
             schemes['kirby_scheme'] = kirby_scheme
             schemes['kirby_scheme_name'] = kirby_scheme_name
+            schemes['midnight_scheme'] = midnight_scheme
+            schemes['midnight_scheme_name'] = midnight_scheme_name
             schemes['artic_scheme'] = artic_scheme
             schemes['artic_scheme_name'] = artic_scheme_name
 
-    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, kirby_folder=schemes['kirby_scheme'], kirby_name=schemes['kirby_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
+    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, kirby_folder=schemes['kirby_scheme'], kirby_name=schemes['kirby_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
 
 @app.route("/about")
 def about():
@@ -865,4 +893,29 @@ def output(job_name):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    """
+    ---------------------------------------------------------------------------
+       Arguments
+    ---------------------------------------------------------------------------
+    """
+
+    parser = MyParser(
+        description="interARTIC - coronavirus genome analysis web app")
+    #group = parser.add_mutually_exclusive_group()
+    parser.add_argument("-r", "--redis_port", default=7777,
+                        help="port to use for redis server")
+    parser.add_argument("-a", "--web_address", default="127.0.0.1",
+                        help="localhost default 127.0.0.1, but for use on other computers (under VPN) can be 0.0.0.0 *WARNING*")
+    parser.add_argument("-p", "--web_port", default=5000,
+                        help="port used with web address, eg -p 5000 would be 127.0.0.1:5000")
+
+
+    args = parser.parse_args()
+
+    # print help if no arguments given
+    # if len(sys.argv) == 1:
+    #     parser.print_help(sys.stderr)
+    #     sys.exit(1)
+
+    app.run(host=args.web_address, port=args.web_port , debug=True)

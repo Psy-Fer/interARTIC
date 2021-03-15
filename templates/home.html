@@ -11,7 +11,7 @@
         console.log("loaded window")
         var buttons = document.getElementsByClassName("abort");
         for (var i=0; i<buttons.length;i++) {
-          buttons[i].addEventListener('click', function(){ 
+          buttons[i].addEventListener('click', function(){
             console.log("clicked!!!!")
             // alert(this.name);
             var job_name = this.name;
@@ -25,12 +25,12 @@
             var close2 = document.getElementById("close2");
             var cancel2 = document.getElementById("cancel2");
             var conDel = document.getElementById("confirmD");
-            
+
             modal.style.display = "block";
             var job = document.getElementById("jobname");
             job.innerHTML = '"' + job_name + '"';
             job.name = job_name;
-            
+
             close.onclick = function() {
               modal.style.display = "none";
             }
@@ -56,18 +56,18 @@
 
         var complete = document.getElementsByClassName("complete");
         for (var i=0; i<complete.length; i++) {
-          complete[i].addEventListener('click', function(){ 
+          complete[i].addEventListener('click', function(){
             var job_name = this.name;
             var cmodal = document.getElementById("completeDelete");
             var close3 = document.getElementById("close3");
             var cancel3 = document.getElementById("cancel3");
             var completeDel = document.getElementById("confirmC");
-            
+
             cmodal.style.display = "block";
             var job = document.getElementById("jobname2");
             job.innerHTML = '"' + job_name + '"';
             job.name = job_name;
-            
+
             close3.onclick = function() {
               cmodal.style.display = "none";
             }
@@ -81,7 +81,7 @@
 
           });
         }
-        
+
       }
     </script>
     <title>Home</title>
@@ -95,20 +95,20 @@
         <div class="content">
           <p class="subtitle is-5">This is a web application designed to run the Nanopore Analysis using the ARTIC pipeline.</p>
         </div>
-      
+
       <!-- search for input folder -->
       <input type="button" class="button is-small" name="answer" value="Edit Default Input Folder, CSV Folder, Primer Scheme Folder(s)/Name(s)" onclick="showDiv()" />
       <div id="editDiv" style="display: none"><br>
         {% if errors %}
           <script>
             document.getElementById("editDiv").style.display = "block";
-          </script> 
+          </script>
         {% endif%}
         <form method=POST>
           <div class="field">
             <div class="control">
               <label class="subtitle is-5" for="file_path">Please enter the base filepath where your input data is located:</label><br>
-              <input class="input" name="file_path" id="file_path" type="text" value="{{input_folder}}" placeholder="Enter a file path"> 
+              <input class="input" name="file_path" id="file_path" type="text" value="{{input_folder}}" placeholder="Enter a file path">
                 {% if errors %}
                   {% if errors['invalid_input_file_path'] %}
                     <script>
@@ -151,6 +151,28 @@
                   {% endif %}
                 {% endif %}
                <br><br>
+              <label class="subtitle is-5" for="midnight_folder">Please enter the base filepath where your Midnight primer schemes are located:</label>
+              <input class="input" type="text" name="midnight_folder" id="midnight_folder" value="{{midnight_folder}}" placeholder="Ener a file path">
+              {% if errors %}
+                  {% if errors['invalid_midnight_path'] %}
+                    <script>
+                      document.getElementById("midnight_folder").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['invalid_midnight_path'] }} </p>
+                  {% endif %}
+                {% endif %}
+              <br><br>
+              <label class="subtitle is-5" for="midnight_name">Please enter the Midnight primer schemes name:</label>
+              <input class="input" type="text" name="midnight_name" id="midnight_name" value="{{midnight_name}}" placeholder="Ener a scheme name">
+              {% if errors %}
+                  {% if errors['invalid_midnight_name'] %}
+                    <script>
+                      document.getElementById("midnight_name").className = "input is-danger";
+                    </script>
+                    <p class="help is-danger"> {{ errors['invalid_midnight_name'] }} </p>
+                  {% endif %}
+                {% endif %}
+               <br><br>
               <label class="subtitle is-5" for="artic_folder">Please enter the base filepath where your Artic primer schemes are located:</label>
               <input class="input" type="text" name="artic_folder" id="artic_folder" value="{{artic_folder}}" placeholder="Ener a file path">
               {% if errors %}
@@ -173,7 +195,7 @@
                   {% endif %}
                 {% endif %}
                 <br><br>
-              <input class="button is-small" type="submit" name="search_input" id="search_input" value="Confirm"><br> 
+              <input class="button is-small" type="submit" name="search_input" id="search_input" value="Confirm"><br>
             </div>
           </div>
         </form>
@@ -203,9 +225,9 @@
                 <tbody id=jobsQueue>
                 </tbody>
             </table>
-                
+
             <a class="button" href="/parameters">Add Job</a><br>
-      
+
           </div>
           <div class="column">
             <table class="table is-hoverable is-bordered is-fullwidth">
@@ -217,7 +239,7 @@
                 <tbody id=completedJobs>
                 </tbody>
             </table>
-            
+
           </div>
         </div>
       </div>
@@ -290,7 +312,7 @@
             alert('Unexpected error');
           }
         });
-      
+
 
         function update_jobs(checkTasksUrl) {
           $.getJSON(checkTasksUrl, function(data) {
@@ -308,10 +330,10 @@
 
             if (changed == true || jobsQueue.childElementCount == 0) {
               //Remove child nodes from jobsQueue and completedJobs
-              while (jobsQueue.hasChildNodes()) {  
+              while (jobsQueue.hasChildNodes()) {
                 jobsQueue.removeChild(jobsQueue.firstChild);
               }
-              while (completedJobs.hasChildNodes()) {  
+              while (completedJobs.hasChildNodes()) {
                 completedJobs.removeChild(completedJobs.firstChild);
               }
 
@@ -323,10 +345,10 @@
                     const curJob = document.createElement("td");
                     const linkNode = document.createElement("a");
                     const textNode = document.createTextNode(key);
-                    linkNode.href = job[key]; 
-                    
-                    const btn = document.createElement("a"); 
-                    btn.innerHTML = "Abort"; 
+                    linkNode.href = job[key];
+
+                    const btn = document.createElement("a");
+                    btn.innerHTML = "Abort";
                     btn.classList.add("button");
                     btn.classList.add("is-danger");
                     btn.classList.add("is-light");
@@ -349,7 +371,7 @@
                 const textNode = document.createTextNode("You currently have no queued jobs.");
                 curJob.classList.add("has-text-grey-light");
                 curJob.classList.add("is-italic");
-                
+
                 curJob.appendChild(textNode);
                 curJobRow.appendChild(curJob);
                 jobsQueue.appendChild(curJobRow);
@@ -364,9 +386,9 @@
                       const linkNode = document.createElement("a");
                       const textNode = document.createTextNode(key);
                       linkNode.href = job[key];
-                      
-                      const btn = document.createElement("a"); 
-                      btn.innerHTML = "Delete"; 
+
+                      const btn = document.createElement("a");
+                      btn.innerHTML = "Delete";
                       btn.classList.add("button");
                       btn.classList.add("is-danger");
                       btn.classList.add("is-light");
@@ -375,7 +397,7 @@
                       btn.id = "delete"
                       btn.name = job[key].replace('/delete/', '');
                       linkNode.href = job[key].replace('delete', 'output');
-                      
+
                       linkNode.appendChild(textNode);
                       curJob.appendChild(linkNode);
                       curJob.appendChild(btn);
@@ -389,7 +411,7 @@
                 const textNode = document.createTextNode("You currently have no completed jobs.");
                 curJob.classList.add("has-text-grey-light");
                 curJob.classList.add("is-italic");
-                
+
                 curJob.appendChild(textNode);
                 curJobRow.appendChild(curJob);
                 completedJobs.appendChild(curJobRow);
@@ -400,7 +422,7 @@
             setTimeout(function() {
               update_jobs(checkTasksUrl);
             }, 2000);
-            
+
           });
         }
 

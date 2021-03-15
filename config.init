@@ -3,6 +3,8 @@
 	"sample-barcode-csvs": "/data/sample-barcodes",
 	"kirby-primer-scheme-folder": "/data/primer_schemes_kirby",
 	"kirby-scheme-name": "nCoV-2019/V1",
+  "midnight-primer-scheme-folder": "/data/primer-schemes",
+	"midnight-scheme-name": "nCoV-2019/V1",
 	"artic-primer-scheme-folder": "/data/primer_schemes",
 	"artic-scheme-name": "nCoV-2019/V1"
 }
