@@ -191,8 +191,8 @@ The default config folder is as below:
 {
 	"data-folder": "/data",
 	"sample-barcode-csvs": "/data/sample-barcodes",
-	"kirby-primer-scheme-folder": "/data/primer_schemes_kirby",
-	"kirby-scheme-name": "nCoV-2019/V1",
+	"eden-primer-scheme-folder": "/data/primer_schemes_eden",
+	"eden-scheme-name": "nCoV-2019/V1",
 	"artic-primer-scheme-folder": "/data/primer_schemes",
 	"artic-scheme-name": "nCoV-2019/V1"
 }
@@ -200,8 +200,8 @@ The default config folder is as below:
 
 * **data-folder**: This is the folder where all your data is located. By default, it is set to "/data"
 * **sample-barcode-csvs**: This is the folder where your csv containing barcode names is placed.
-* **kirby-primer-scheme-folder**: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
-* **kirby-scheme-name**: This is the name of the kirby primer scheme being used for your nanopore sequencing run.
+* **eden-primer-scheme-folder**: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
+* **eden-scheme-name**: This is the name of the eden primer scheme being used for your nanopore sequencing run.
 * **artic-primer-scheme-folder**: This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
 * **artic-scheme-name**: This is the name of the artic primer scheme being used for your nanopore sequencing run.
 

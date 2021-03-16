@@ -56,8 +56,8 @@ with open(config_file) as f:
 input_filepath = data['data-folder']
 sample_csv = data['sample-barcode-csvs']
 schemes = {}
-schemes['kirby_scheme'] = data['kirby-primer-scheme-folder']
-schemes['kirby_scheme_name'] = data['kirby-scheme-name']
+schemes['eden_scheme'] = data['eden-primer-scheme-folder']
+schemes['eden_scheme_name'] = data['eden-scheme-name']
 schemes['midnight_scheme'] = data['midnight-primer-scheme-folder']
 schemes['midnight_scheme_name'] = data['midnight-scheme-name']
 schemes['artic_scheme'] = data['artic-primer-scheme-folder']
@@ -192,8 +192,8 @@ def home():
         # get global variables
         search_input = request.form.get('file_path')
         search_csv = request.form.get('csv_folder')
-        kirby_scheme = request.form.get('kirby_folder')
-        kirby_scheme_name = request.form.get('kirby_name')
+        eden_scheme = request.form.get('eden_folder')
+        eden_scheme_name = request.form.get('eden_name')
         midnight_scheme = request.form.get('midnight_folder')
         midnight_scheme_name = request.form.get('midnight_name')
         artic_scheme = request.form.get('artic_folder')
@@ -206,8 +206,8 @@ def home():
         if not os.path.isdir(search_csv):
             errors['invalid_csv_file_path'] = "File path entered is not valid"
 
-        if not os.path.isdir(kirby_scheme):
-            errors['invalid_kirby_path'] = "File path entered is not valid"
+        if not os.path.isdir(eden_scheme):
+            errors['invalid_eden_path'] = "File path entered is not valid"
 
         if not os.path.isdir(midnight_scheme):
             errors['invalid_midnight_path'] = "File path entered is not valid"
@@ -216,7 +216,7 @@ def home():
             errors['invalid_artic_path'] = "File path entered is not valid"
 
         if len(errors) != 0:
-            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, kirby_folder=kirby_scheme, midnight_folder=midnight_scheme, artic_folder=artic_scheme, kirby_name=kirby_scheme_name, midnight_name=midnight_scheme_name, artic_name=artic_scheme_name)
+            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, eden_folder=eden_scheme, midnight_folder=midnight_scheme, artic_folder=artic_scheme, eden_name=eden_scheme_name, midnight_name=midnight_scheme_name, artic_name=artic_scheme_name)
         else: # update global variables
             global input_filepath
             input_filepath = search_input
@@ -225,14 +225,14 @@ def home():
             sample_csv = search_csv
 
             global schemes
-            schemes['kirby_scheme'] = kirby_scheme
-            schemes['kirby_scheme_name'] = kirby_scheme_name
+            schemes['eden_scheme'] = eden_scheme
+            schemes['eden_scheme_name'] = eden_scheme_name
             schemes['midnight_scheme'] = midnight_scheme
             schemes['midnight_scheme_name'] = midnight_scheme_name
             schemes['artic_scheme'] = artic_scheme
             schemes['artic_scheme_name'] = artic_scheme_name
 
-    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, kirby_folder=schemes['kirby_scheme'], kirby_name=schemes['kirby_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
+    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, eden_folder=schemes['eden_scheme'], eden_name=schemes['eden_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
 
 @app.route("/about")
 def about():

@@ -129,25 +129,25 @@
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="kirby_folder">Please enter the base filepath where your Kirby primer schemes are located:</label>
-              <input class="input" type="text" name="kirby_folder" id="kirby_folder" value="{{kirby_folder}}" placeholder="Ener a file path">
+              <label class="subtitle is-5" for="eden_folder">Please enter the base filepath where your Eden primer schemes are located:</label>
+              <input class="input" type="text" name="eden_folder" id="eden_folder" value="{{eden_folder}}" placeholder="Ener a file path">
               {% if errors %}
-                  {% if errors['invalid_kirby_path'] %}
+                  {% if errors['invalid_eden_path'] %}
                     <script>
-                      document.getElementById("kirby_folder").className = "input is-danger";
+                      document.getElementById("eden_folder").className = "input is-danger";
                     </script>
-                    <p class="help is-danger"> {{ errors['invalid_kirby_path'] }} </p>
+                    <p class="help is-danger"> {{ errors['invalid_eden_path'] }} </p>
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="kirby_name">Please enter the Kirby primer schemes name:</label>
-              <input class="input" type="text" name="kirby_name" id="kirby_name" value="{{kirby_name}}" placeholder="Ener a scheme name">
+              <label class="subtitle is-5" for="eden_name">Please enter the Eden primer schemes name:</label>
+              <input class="input" type="text" name="eden_name" id="eden_name" value="{{eden_name}}" placeholder="Ener a scheme name">
               {% if errors %}
-                  {% if errors['invalid_kirby_name'] %}
+                  {% if errors['invalid_eden_name'] %}
                     <script>
-                      document.getElementById("kirby_name").className = "input is-danger";
+                      document.getElementById("eden_name").className = "input is-danger";
                     </script>
-                    <p class="help is-danger"> {{ errors['invalid_kirby_name'] }} </p>
+                    <p class="help is-danger"> {{ errors['invalid_eden_name'] }} </p>
                   {% endif %}
                 {% endif %}
                <br><br>
