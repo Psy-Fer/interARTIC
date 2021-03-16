@@ -30,14 +30,15 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
 
 # Celery configuration
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:7777/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:7777/0'
+# app.config['CELERY_BROKER_URL'] = 'redis://localhost:7777/0'
+# app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:7777/0'
 # app.config['CELERY_BROKER_URL'] = 'redis://localhost:{}/0'.format(args.redis_port)
 # app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:{}/0'.format(args.redis_port)
 app.secret_key = "shhhh"
 
 # Initialize Celery
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery = Celery(app.name)
+# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 logger = get_task_logger(__name__)
