@@ -38,7 +38,7 @@ usage() {
 	echo "  -r REDIS_PORT                                                                                " 1>&2;
 	echo "                  port to use for redis server (default: $REDIS_PORT)                          " 1>&2;
 	echo "  -a WEB_ADDRESS                                                                               " 1>&2;
-	echo "                  address to bind the web interface (default $WEB_ADDR), but to run from other " 1>&2;
+	echo "                  address to bind the web interface (default: $WEB_ADDR), but to run from other" 1>&2;
 	echo "                  computers over the network (under VPN) can be 0.0.0.0 *WARNING*              " 1>&2;
 	echo "  -p WEB_PORT                                                                                  " 1>&2;
 	echo "                  port used with web address (default: $WEB_PORT)                              " 1>&2;
