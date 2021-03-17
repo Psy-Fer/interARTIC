@@ -83,7 +83,7 @@ echo "Starting redis server on port $REDIS_PORT. Log location: $REDIS_LOG"
 ( bin/redis-server --port $REDIS_PORT &> $REDIS_LOG || die "Launching redis server on port $REDIS_PORT failed. See $REDIS_LOG" ) &
 sleep 1
 echo "Starting interartic on $WEB_ADDR:$WEB_PORT. Log location: $INTERARTIC_LOG"
-( bin/python3.7 main.py -r $REDIS_PORT -a $WEB_ADDR -p $WEB_PORT &>  $INTERARTIC_LOG || die "Launching interartic on $WEB_ADDR:$WEB_PORT failed. See $INTERARTIC_LOG") &
+( bin/python3.7 main.py $REDIS_PORT -a $WEB_ADDR -p $WEB_PORT &>  $INTERARTIC_LOG || die "Launching interartic on $WEB_ADDR:$WEB_PORT failed. See $INTERARTIC_LOG") &
 sleep 1
 echo "Starting celery. Log location: $CELERY_LOG"
 ( export PATH=`pwd`/artic_bin/bin:$PATH; export LD_LIBRARY_PATH=`pwd`/artic_bin/lib/:$LD_LIBRARY_PATH; bin/python3.7m bin/celery worker -A main.celery -b redis://localhost:$REDIS_PORT/0 --result-backend redis://localhost:$REDIS_PORT/0 --concurrency=1 --loglevel=info &> $CELERY_LOG || die "Launching celery failed. See $CELERY_LOG" ) &

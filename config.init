@@ -1,10 +1,4 @@
 {
-	"data-folder": "/data",
-	"sample-barcode-csvs": "/data/sample-barcodes",
-	"eden-primer-scheme-folder": "/data/primer_schemes_eden",
-	"eden-scheme-name": "nCoV-2019/V1",
-  "midnight-primer-scheme-folder": "/data/primer-schemes",
-	"midnight-scheme-name": "nCoV-2019/V1",
-	"artic-primer-scheme-folder": "/data/primer_schemes",
-	"artic-scheme-name": "nCoV-2019/V1"
+	"data-folder": "/home/jamfer/data/SARS-CoV-2/test_interARTIC",
+	"sample-barcode-csvs": "/home/jamfer/data/SARS-CoV-2/test_interARTIC"
 }

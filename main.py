@@ -26,19 +26,21 @@ class MyParser(argparse.ArgumentParser):
         self.print_help()
         sys.exit(2)
 
+redis_port = sys.argv[1]
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
 
 # Celery configuration
 # app.config['CELERY_BROKER_URL'] = 'redis://localhost:7777/0'
 # app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:7777/0'
-# app.config['CELERY_BROKER_URL'] = 'redis://localhost:{}/0'.format(args.redis_port)
-# app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:{}/0'.format(args.redis_port)
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:{}/0'.format(redis_port)
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:{}/0'.format(redis_port)
 app.secret_key = "shhhh"
 
 # Initialize Celery
-celery = Celery(app.name)
-# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+# celery = Celery(app.name)
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 logger = get_task_logger(__name__)
@@ -52,17 +54,24 @@ qSys = System(max_queue_size)
 #Global variable for base filepath
 #initialised as /user/data
 config_file = os.path.dirname(os.path.realpath(__file__))+'/config.init'
+primer_folder = os.path.dirname(os.path.realpath(__file__))+'/primer-schemes'
 with open(config_file) as f:
         data = json.load(f)
 input_filepath = data['data-folder']
 sample_csv = data['sample-barcode-csvs']
 schemes = {}
-schemes['eden_scheme'] = data['eden-primer-scheme-folder']
-schemes['eden_scheme_name'] = data['eden-scheme-name']
-schemes['midnight_scheme'] = data['midnight-primer-scheme-folder']
-schemes['midnight_scheme_name'] = data['midnight-scheme-name']
-schemes['artic_scheme'] = data['artic-primer-scheme-folder']
-schemes['artic_scheme_name'] = data['artic-scheme-name']
+schemes['eden_scheme'] = os.path.join(primer_folder, "eden")
+schemes['eden_scheme_name'] = "nCoV-2019/V1"
+schemes['midnight_scheme'] = os.path.join(primer_folder, "midnight")
+schemes['midnight_scheme_name'] = "nCoV-2019/V1"
+schemes['artic_scheme'] = os.path.join(primer_folder, "artic")
+schemes['artic_scheme_name'] = "nCoV-2019/V3"
+# schemes['eden_scheme'] = data['eden-primer-scheme-folder']
+# schemes['eden_scheme_name'] = data['eden-scheme-name']
+# schemes['midnight_scheme'] = data['midnight-primer-scheme-folder']
+# schemes['midnight_scheme_name'] = data['midnight-scheme-name']
+# schemes['artic_scheme'] = data['artic-primer-scheme-folder']
+# schemes['artic_scheme_name'] = data['artic-scheme-name']
 
 
 @app.route('/getCheckTasksUrl', methods = ['POST'])
@@ -894,9 +903,8 @@ if __name__ == "__main__":
 
     parser = MyParser(
         description="interARTIC - coronavirus genome analysis web app")
-    #group = parser.add_mutually_exclusive_group()
-    parser.add_argument("-r", "--redis_port", default=7777,
-                        help="port to use for redis server")
+    parser.add_argument("redis_port", nargs='?',
+                        help="redis port *pass_through**")
     parser.add_argument("-a", "--web_address", default="127.0.0.1",
                         help="localhost default 127.0.0.1, but for use on other computers (under VPN) can be 0.0.0.0 *WARNING*")
     parser.add_argument("-p", "--web_port", default=5000,
@@ -904,10 +912,5 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
-
-    # print help if no arguments given
-    # if len(sys.argv) == 1:
-    #     parser.print_help(sys.stderr)
-    #     sys.exit(1)
 
     app.run(host=args.web_address, port=args.web_port , debug=True)
