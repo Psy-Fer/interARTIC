@@ -242,6 +242,13 @@ def home():
             schemes['artic_scheme'] = artic_scheme
             schemes['artic_scheme_name'] = artic_scheme_name
 
+            # Save config if paths all work
+            with open(os.path.dirname(os.path.realpath(__file__))+"/config.init", 'w') as c:
+                c.write("{\n")
+                c.write('\t"data-folder": "{}",\n'.format(search_input))
+                c.write('\t"sample-barcode-csvs": "{}"'.format(search_csv))
+                c.write('}\n')
+
     return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, eden_folder=schemes['eden_scheme'], eden_name=schemes['eden_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
 
 @app.route("/about")
