@@ -5,18 +5,22 @@ InterARTIC is a web application designed to ease the use of the convoluted [ARTI
 
 # Quick start
 
-We provide binary release for common Linux distributions. Tested to work well on Ubuntu 14, 16, 18 and 20. Should work on other distributions as long as GLIBC 2.17 or higher and `/usr/bin/env` are present.
+## Installing interARTIC
+
+We provide binary release for common Linux distributions. Tested to work well on Ubuntu 14, 16, 18 and 20. Should work on other distributions as long as GLIBC 2.17 (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
 
 First download the latest release and run the provided script as below.
 
 ```bash
-wget https://cloudstor.aarnet.edu.au/plus/s/VvslkxgQrIcTm78/download -O interartic_bin.tar.gz	
+wget https://cloudstor.aarnet.edu.au/plus/s/VvslkxgQrIcTm78/download -O interartic_bin.tar.gz
 tar xf interartic_bin.tar.gz
 cd interartic_bin
 ./run.sh
 ```
 
 To launch the interARTIC web interface visit [http://127.0.0.1:5000](http://127.0.0.1:5000) on your browser. Make sure you keep the terminal open to keep interARTIC running.
+
+## Downloading test dataset
 
 Now take a new terminal to download and extract the sample data by entering the commands below. This example downloads and extracts the data to `/data` assuming you have write permission to `/data`.
 
@@ -27,7 +31,30 @@ tar xf FLFL031920_sample_data.tar.gz
 rm FLFL031920_sample_data.tar.gz
 ```
 
-TODO: Step by step tutorial (with screen shots) on how to configure paths and then do the test run.
+Once extracted, you should see two directories: *FLFL031920* containing a subset of data generated from a sequencing run of 10 multiplexed COVID-19 samples and *sample-barcodes* containing a csv file that maps sample names to barcodes.
+
+## Configuring interARTIC
+
+Configuration is only required if you downloaded the dataset to a custom location instead of `/data`.
+On the interARTIC web interface, click *Edit Default Input Folder* and the first two fields (1. location of your input data and 2.where your sample barcode csvs are located). Click `confirm` to save the settings.
+
+## Running InterARTIC on test dataset
+
+CLick `Add Job` on the interARTIC web interface. Then fill the following fields.
+
+| field  | value  | description  |
+|---|---|---|
+| **Job name**                  | *test*    | whatever name that you like  |
+| **Select a pipeline to run**  | *Both*   |   |
+| **Select an input folder**    | *FLFL031920*  | this is the directory containing the nanopore data (should contain fast5_pass and fastq_pass directories inside)  |
+| **Select a CSV file**         | *sample-barcode.csv*  | sample names to barcode mapping  |
+| **Select a primer type**      | *Eden V1 (2500bp)*    | the test dataset is based on Eden V1 primers |
+| **Select a barcode type**     | *Native*              | the test dataset used native barcodes |
+| **This input contains**       | *Multiple samples*    | the test dataset contains multiple samples |
+
+
+
+TODO: some screen shots
 
 
 # Building from source
