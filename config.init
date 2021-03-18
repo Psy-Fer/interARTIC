@@ -1,4 +1,4 @@
 {
-	"data-folder": "/home/jamfer/data/SARS-CoV-2/test_interARTIC",
-	"sample-barcode-csvs": "/home/jamfer/data/SARS-CoV-2/test_interARTIC"
+	"data-folder": "/data",
+	"sample-barcode-csvs": "/data/sample-barcodes"
 }
