@@ -58,11 +58,11 @@ TODO: some screen shots
 
 # interARTIC usage
 
-For detailed information on using interARTIC visit [https://tthnguyen11.github.io/interARTIC/usage/](https://tthnguyen11.github.io/interARTIC/usage/)
+For detailed information on using interARTIC visit [here](https://tthnguyen11.github.io/interARTIC/usage/)
 
 # Troubleshooting
 
-See [https://tthnguyen11.github.io/interARTIC/troubleshooting/](https://tthnguyen11.github.io/interARTIC/troubleshooting/) for troubleshooting common issues.
+See [here](https://tthnguyen11.github.io/interARTIC/troubleshooting/) for troubleshooting common issues.
 
 
 # Building from source
@@ -72,9 +72,10 @@ Building from source is not the easiest to do due to the dependency hell of Pyth
 
 # Acknowledgement
 
-Binaries contain
-1. ARTIC pipeline including python 3.6 distribution with associated modules and dependencies
-2. Python 3.7 binaries and modules including flask, redis, celery
+Binaries contain:
+1. [Python 3.7 binaries](https://github.com/indygreg/python-build-standalone) (build: [cpython-3.7.7-linux64-20200409T0045](https://github.com/indygreg/python-build-standalone/releases/download/20200408/cpython-3.7.7-linux64-20200409T0045.tar.zst))
+2. Python 3.7 modules: [celery](https://pypi.org/project/celery/), [redis](https://pypi.org/project/redis/), [flask](https://pypi.org/project/Flask/), [redis-server](https://pypi.org/project/redis-server/)
+3. [ARTIC pipeline](https://github.com/artic-network/artic-ncov2019) that includes its dependencies: python 3.6, associated modules and dependencies
 
 
 
