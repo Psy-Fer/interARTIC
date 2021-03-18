@@ -5,7 +5,7 @@ InterARTIC is a web application designed to ease the use of the convoluted [ARTI
 
 # Quick start
 
-## Installing interARTIC
+## step 1: Installing interARTIC
 
 We provide binary release for common Linux distributions. Tested to work well on Ubuntu 14, 16, 18 and 20. Should work on other distributions as long as GLIBC 2.17 (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
 
@@ -20,7 +20,7 @@ cd interartic_bin
 
 To launch the interARTIC web interface visit [http://127.0.0.1:5000](http://127.0.0.1:5000) on your browser. Make sure you keep the terminal open to keep interARTIC running.
 
-## Downloading test dataset
+## step2: Downloading test dataset
 
 Now take a new terminal to download and extract the sample data by entering the commands below. This example downloads and extracts the data to `/data` assuming you have write permission to `/data`.
 
@@ -33,12 +33,12 @@ rm FLFL031920_sample_data.tar.gz
 
 Once extracted, you should see two directories: *FLFL031920* containing a subset of data generated from a sequencing run of 10 multiplexed COVID-19 samples and *sample-barcodes* containing a csv file that maps sample names to barcodes.
 
-## Configuring interARTIC
+## step3: Configuring interARTIC
 
 Configuration is only required if you downloaded the dataset to a custom location instead of `/data`.
 On the interARTIC web interface, click *Edit Default Input Folder* and the first two fields (1. location of your input data and 2.where your sample barcode csvs are located). Click `confirm` to save the settings.
 
-## Running InterARTIC on test dataset
+## step 4: Running InterARTIC on test dataset
 
 CLick `Add Job` on the interARTIC web interface. Then fill the following fields.
 
@@ -52,9 +52,17 @@ CLick `Add Job` on the interARTIC web interface. Then fill the following fields.
 | **Select a barcode type**     | *Native*              | the test dataset used native barcodes |
 | **This input contains**       | *Multiple samples*    | the test dataset contains multiple samples |
 
-
+Now click *Submit job(s)* and you should see the pipeline running.
 
 TODO: some screen shots
+
+# interARTIC usage
+
+For detailed information on using interARTIC visit [https://tthnguyen11.github.io/interARTIC/usage/](https://tthnguyen11.github.io/interARTIC/usage/)
+
+# Troubleshooting
+
+See [https://tthnguyen11.github.io/interARTIC/troubleshooting/](https://tthnguyen11.github.io/interARTIC/troubleshooting/) for troubleshooting common issues.
 
 
 # Building from source
@@ -62,10 +70,5 @@ TODO: some screen shots
 Building from source is not the easiest to do due to the dependency hell of Python versions. Step by step instructions for building from source are given [here](https://tthnguyen11.github.io/interARTIC/installation/).
 
 
-# interARTIC usage
 
-See [https://tthnguyen11.github.io/interARTIC/usage/](https://tthnguyen11.github.io/interARTIC/usage/)
 
-# Troubleshooting
-
-See [https://tthnguyen11.github.io/interARTIC/troubleshooting/](https://tthnguyen11.github.io/interARTIC/troubleshooting/)
