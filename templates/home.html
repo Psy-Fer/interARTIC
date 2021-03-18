@@ -91,13 +91,13 @@
     {% block content %}
     <div class="hero-body">
       <div class="container is-widescreen ">
-        <h1 class="title is-4">SARS-CoV-2 Nanopore Analysis</h1>
+        <h1 class="title is-4">Viral Whole Genome Nanopore Sequencing Analysis</h1>
         <div class="content">
-          <p class="subtitle is-5">This is a web application designed to run the Nanopore Analysis using the ARTIC pipeline.</p>
+          <p class="subtitle is-5">Viral WGS using the ARTIC pipelines</p>
         </div>
 
       <!-- search for input folder -->
-      <input type="button" class="button is-small" name="answer" value="Edit Default Input Folder, CSV Folder, Primer Scheme Folder(s)/Name(s)" onclick="showDiv()" />
+      <input type="button" class="button is-small" name="answer" value="Edit Input and Sample .csv Directories" onclick="showDiv()" />
       <div id="editDiv" style="display: none"><br>
         {% if errors %}
           <script>
@@ -129,7 +129,9 @@
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="eden_folder">Please enter the base filepath where your Eden primer schemes are located:</label>
+              <label class="subtitle is-5" for="eden_folder"><strong>Preset protocols below **Advanced use**</strong></label>
+              <br><br>
+              <label class="subtitle is-5" for="eden_folder">Default Eden primer schemes are located:</label>
               <input class="input" type="text" name="eden_folder" id="eden_folder" value="{{eden_folder}}" placeholder="Ener a file path">
               {% if errors %}
                   {% if errors['invalid_eden_path'] %}
@@ -140,7 +142,7 @@
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="eden_name">Please enter the Eden primer schemes name:</label>
+              <label class="subtitle is-5" for="eden_name">Default Eden primer scheme name:</label>
               <input class="input" type="text" name="eden_name" id="eden_name" value="{{eden_name}}" placeholder="Ener a scheme name">
               {% if errors %}
                   {% if errors['invalid_eden_name'] %}
@@ -151,7 +153,7 @@
                   {% endif %}
                 {% endif %}
                <br><br>
-              <label class="subtitle is-5" for="midnight_folder">Please enter the base filepath where your Midnight primer schemes are located:</label>
+              <label class="subtitle is-5" for="midnight_folder">Default Midnight primer schemes are located:</label>
               <input class="input" type="text" name="midnight_folder" id="midnight_folder" value="{{midnight_folder}}" placeholder="Ener a file path">
               {% if errors %}
                   {% if errors['invalid_midnight_path'] %}
@@ -162,7 +164,7 @@
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="midnight_name">Please enter the Midnight primer schemes name:</label>
+              <label class="subtitle is-5" for="midnight_name">Default Midnight primer scheme name:</label>
               <input class="input" type="text" name="midnight_name" id="midnight_name" value="{{midnight_name}}" placeholder="Ener a scheme name">
               {% if errors %}
                   {% if errors['invalid_midnight_name'] %}
@@ -173,7 +175,7 @@
                   {% endif %}
                 {% endif %}
                <br><br>
-              <label class="subtitle is-5" for="artic_folder">Please enter the base filepath where your Artic primer schemes are located:</label>
+              <label class="subtitle is-5" for="artic_folder">Default Artic primer schemes are located:</label>
               <input class="input" type="text" name="artic_folder" id="artic_folder" value="{{artic_folder}}" placeholder="Ener a file path">
               {% if errors %}
                   {% if errors['invalid_artic_path'] %}
@@ -184,7 +186,7 @@
                   {% endif %}
                 {% endif %}
               <br>
-              <label class="subtitle is-5" for="artic_name">Please enter the Artic primer schemes name:</label>
+              <label class="subtitle is-5" for="artic_name">Default Artic primer scheme name:</label>
               <input class="input" type="text" name="artic_name" id="artic_name" value="{{artic_name}}" placeholder="Ener a scheme name">
               {% if errors %}
                   {% if errors['invalid_artic_name'] %}
