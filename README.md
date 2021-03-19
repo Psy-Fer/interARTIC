@@ -7,7 +7,7 @@ InterARTIC is a web application designed to ease the use of the convoluted [ARTI
 
 ## Step 1: Installing interARTIC
 
-We provide binary release for common Linux distributions. Tested to work well on Ubuntu 14, 16, 18 and 20. Should work on other distributions as long as GLIBC 2.17 (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
+We provide binary release for common Linux distributions. Tested to work well on Ubuntu 14, 16, 18 and 20 distributions (on Windows Subsystem for Linux as well). Should work on other distributions as long as GLIBC 2.17 (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
 
 First download the latest release and run the provided script as below.
 
