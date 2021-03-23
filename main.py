@@ -149,6 +149,7 @@ def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd):
         if returnCode != 0:
             self.update_state(state='FAILURE', meta={'current': n, 'status': 'Command failed', 'command': cmd})
             raise Exception("Command {} got return code {}.\nSTDOUT: {}\nSTDERR: {}".format(cmd, returnCode, stdout, stderr))
+            break
 
         print("JOB CMD {} RETURNED: {}".format(cmd, returnCode))
 
@@ -711,7 +712,7 @@ def progress(job_name):
 
     # find any errors that occur in the output log
     pattern = "<br\/>[A-Za-z0-9\s]*ERROR"
-    numErrors = len(re.findall(pattern, outputLog, re.IGNORECASE))
+    numErrors = len(re.findall(pattern, outputLog, re.IGNORECASE)) + len(re.findall(r'No such file or directory', outputLog, re.IGNORECASE))
 
     # get all the parameters in the job so that they can be displayed for the user
     num_in_queue = qSys.queue.getJobNumber(job_name)
