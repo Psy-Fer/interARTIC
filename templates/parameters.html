@@ -160,10 +160,10 @@
                 <br><br>
                 <!-- file path input -->
                 <center><p class="subtitle is-5"><b>Input file paths</b> </p></center><br>
-                <small>These must be absolute file paths, starting with either "/" or "C:\"</small><br><br>
+                <small>Must be absolute file path, starting with "/"</small><br><br>
                 <!-- read file path - Medaka/ Nanopolish-->
-                <label class="subtitle is-5" for="scheme_folder">Read file:</label><br>
-                <small>(only input if you already have this file, otherwise artic gather/ demultiplex will generate it)</small><br>
+                <label class="subtitle is-5" for="scheme_folder">Fastq file:</label><br>
+                <small>(only input if you already have this file, otherwise artic gather/demultiplex will generate it)</small><br>
                 <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
                 {% if errors %}
                 {% if errors['read_file'] %}
@@ -215,7 +215,7 @@
                    </div>
 
                   <div id="other_primer" style="display:none">
-                    Please enter your primer here:
+                    Please enter your custom primer here:
                     <input class="input" type="text" id="other_primer_type" name="other_primer_type" value={{other_primer_type}}>
                   </div><br>
 
@@ -296,11 +296,11 @@
                     {% endif %}
                     <br>
                     <h1 class="subtitle is-5">Other parameters: *</h1>
-                    <label for="num_threads">Thread usage: *</label>
+                    <label for="num_threads">CPU thread usage: *</label>
                     <input class="input" type="number" id="num_threads" name="num_threads" value="4" required><br>
                     <!-- normalise - Medaka/ Nanopolish-->
                     <br>
-                    <label for="normalise">Normalise: *</label>
+                    <label for="normalise">Normalise depth: *</label>
                     <input class="input" type="number" id="normalise" name="normalise" value="200" required><br>
                     <!--<br>
                     <div id="nanoParams" style="display:none">
