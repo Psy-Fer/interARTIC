@@ -187,7 +187,7 @@ class Job:
         # if only one sample in input
         if self._num_samples == "single":
             #create directory for minion output
-            dir_path = self._output_folder + "/" + self._primer_type + "_sample1_" + self._run_name + "_single_" + self._pipeline
+            dir_path = self._output_folder + "/" + self._primer_type + "_sample1_" + self._run_name + "_" + self._job_name + "_single_" + self._pipeline
             #make directory
             minion_cmd = "mkdir " + dir_path
             # if read file is provided by user
@@ -218,13 +218,13 @@ class Job:
                         sample_name = row[0]
                         barcode = row[1]
                         #create directory for barcode with naming system
-                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + barcode + "_" + self._pipeline
+                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + self._job_name + "_" + barcode + "_" + self._pipeline
                         #make directory
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #move fastq_pass file into folder
                         minion_cmd = minion_cmd + "; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + dir_path
                         #append minion cmd in barcode directory
-                        minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --minimap2 --medaka --medaka-model r941_min_high_g360 --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --minimap2 --medaka --medaka-model r941_min_high_g360 --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + sample_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 
             elif self._pipeline == "nanopolish":
                 #open csv file
@@ -234,13 +234,13 @@ class Job:
                         sample_name = row[0]
                         barcode = row[1]
                         #create directory for barcode with naming system
-                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + barcode + "_" + self._pipeline
+                        dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + self._job_name + "_" + barcode + "_" + self._pipeline
                         #make directory
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #move fastq_pass file into folder
                         minion_cmd = minion_cmd + "; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + dir_path
                         #append minion cmd in barcode directory
-                        minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + sample_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 
         minion_cmd = minion_cmd + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
         #change directory into output folder at the start
