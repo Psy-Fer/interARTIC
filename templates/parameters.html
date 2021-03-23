@@ -205,11 +205,11 @@
                     <!-- primer type -->
                     <label class="subtitle is-5" for="primer_type"> Select a primer type: *</label><br>
                     <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}})">
-                    <label for="artic"> Artic (400bp)</label><br>
-                    <input type="radio" id="kirby" name="primer_type" value="kirby" onclick="setSchemes(this.id, {{schemes}})">
-                    <label for="kirby"> Kirby (2500bp)</label><br>
+                    <label for="artic"> Artic V3 (400bp)</label><br>
+                    <input type="radio" id="eden" name="primer_type" value="eden" onclick="setSchemes(this.id, {{schemes}})">
+                    <label for="eden"> Eden V1 (2500bp)</label><br>
                     <input type="radio" id="midnight" name="primer_type" value="midnight" onclick="setSchemes(this.id, {{schemes}})">
-                    <label for="midnight"> Midnight (1200bp)</label><br>
+                    <label for="midnight"> Midnight V1 (1200bp)</label><br>
                     <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer()">
                     <label for="other">Other</label><br><br>
                    </div>
@@ -222,8 +222,8 @@
                   <script>
                     if ( {{ primer_select }}.id == "artic") {
                       document.getElementById("artic").checked = true;
-                    } else if ( {{ primer_select }}.id == "kirby") {
-                        document.getElementById("kirby").checked = true;
+                    } else if ( {{ primer_select }}.id == "eden") {
+                        document.getElementById("eden").checked = true;
                     } else if ( {{ primer_select }}.id == "midnight") {
                         document.getElementById("midnight").checked = true;
                     } else {
@@ -390,7 +390,7 @@
       <script>
         //primers
         var artic = document.getElementById("artic");
-        var kirby = document.getElementById("kirby");
+        var eden = document.getElementById("eden");
         var midnight = document.getElementById("midnight");
         //barcodes
         var native = document.getElementById("native");
@@ -406,9 +406,9 @@
           if (id == 'artic') {
             primer_scheme_dir.value = schemesJson['artic_scheme'];
             primer_scheme.value = schemesJson['artic_scheme_name'];
-          } else if (id == 'kirby') {
-            primer_scheme_dir.value = schemesJson['kirby_scheme'];
-            primer_scheme.value = schemesJson['kirby_scheme_name'];
+          } else if (id == 'eden') {
+            primer_scheme_dir.value = schemesJson['eden_scheme'];
+            primer_scheme.value = schemesJson['eden_scheme_name'];
           } else if (id == 'midnight') {
             primer_scheme_dir.value = schemesJson['midnight_scheme'];
             primer_scheme.value = schemesJson['midnight_scheme_name'];
@@ -423,10 +423,10 @@
           if(artic.checked && native.checked) {
             max_length.value = '500';
             min_length.value = '300';
-          } else if (kirby.checked && native.checked) {
+          } else if (eden.checked && native.checked) {
             max_length.value = '2700';
             min_length.value = '2300';
-          } else if (kirby.checked && rapid.checked) {
+          } else if (eden.checked && rapid.checked) {
             max_length.value = '2700';
             min_length.value = '300';
           } else if (midnight.checked && native.checked) {

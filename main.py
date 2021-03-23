@@ -26,23 +26,20 @@ class MyParser(argparse.ArgumentParser):
         self.print_help()
         sys.exit(2)
 
-
-
-
-
-
+redis_port = sys.argv[1]
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'top-secret!'
 
 # Celery configuration
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
-# app.config['CELERY_BROKER_URL'] = 'redis://localhost:{}/0'.format(args.redis_port)
-# app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:{}/0'.format(args.redis_port)
+# app.config['CELERY_BROKER_URL'] = 'redis://localhost:7777/0'
+# app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:7777/0'
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:{}/0'.format(redis_port)
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:{}/0'.format(redis_port)
 app.secret_key = "shhhh"
 
 # Initialize Celery
+# celery = Celery(app.name)
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
@@ -57,17 +54,24 @@ qSys = System(max_queue_size)
 #Global variable for base filepath
 #initialised as /user/data
 config_file = os.path.dirname(os.path.realpath(__file__))+'/config.init'
+primer_folder = os.path.dirname(os.path.realpath(__file__))+'/primer-schemes'
 with open(config_file) as f:
         data = json.load(f)
 input_filepath = data['data-folder']
 sample_csv = data['sample-barcode-csvs']
 schemes = {}
-schemes['kirby_scheme'] = data['kirby-primer-scheme-folder']
-schemes['kirby_scheme_name'] = data['kirby-scheme-name']
-schemes['midnight_scheme'] = data['midnight-primer-scheme-folder']
-schemes['midnight_scheme_name'] = data['midnight-scheme-name']
-schemes['artic_scheme'] = data['artic-primer-scheme-folder']
-schemes['artic_scheme_name'] = data['artic-scheme-name']
+schemes['eden_scheme'] = os.path.join(primer_folder, "eden")
+schemes['eden_scheme_name'] = "nCoV-2019/V1"
+schemes['midnight_scheme'] = os.path.join(primer_folder, "midnight")
+schemes['midnight_scheme_name'] = "nCoV-2019/V1"
+schemes['artic_scheme'] = os.path.join(primer_folder, "artic")
+schemes['artic_scheme_name'] = "nCoV-2019/V3"
+# schemes['eden_scheme'] = data['eden-primer-scheme-folder']
+# schemes['eden_scheme_name'] = data['eden-scheme-name']
+# schemes['midnight_scheme'] = data['midnight-primer-scheme-folder']
+# schemes['midnight_scheme_name'] = data['midnight-scheme-name']
+# schemes['artic_scheme'] = data['artic-primer-scheme-folder']
+# schemes['artic_scheme_name'] = data['artic-scheme-name']
 
 
 @app.route('/getCheckTasksUrl', methods = ['POST'])
@@ -199,8 +203,8 @@ def home():
         # get global variables
         search_input = request.form.get('file_path')
         search_csv = request.form.get('csv_folder')
-        kirby_scheme = request.form.get('kirby_folder')
-        kirby_scheme_name = request.form.get('kirby_name')
+        eden_scheme = request.form.get('eden_folder')
+        eden_scheme_name = request.form.get('eden_name')
         midnight_scheme = request.form.get('midnight_folder')
         midnight_scheme_name = request.form.get('midnight_name')
         artic_scheme = request.form.get('artic_folder')
@@ -213,8 +217,8 @@ def home():
         if not os.path.isdir(search_csv):
             errors['invalid_csv_file_path'] = "File path entered is not valid"
 
-        if not os.path.isdir(kirby_scheme):
-            errors['invalid_kirby_path'] = "File path entered is not valid"
+        if not os.path.isdir(eden_scheme):
+            errors['invalid_eden_path'] = "File path entered is not valid"
 
         if not os.path.isdir(midnight_scheme):
             errors['invalid_midnight_path'] = "File path entered is not valid"
@@ -223,7 +227,7 @@ def home():
             errors['invalid_artic_path'] = "File path entered is not valid"
 
         if len(errors) != 0:
-            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, kirby_folder=kirby_scheme, midnight_folder=midnight_scheme, artic_folder=artic_scheme, kirby_name=kirby_scheme_name, midnight_name=midnight_scheme_name, artic_name=artic_scheme_name)
+            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, eden_folder=eden_scheme, midnight_folder=midnight_scheme, artic_folder=artic_scheme, eden_name=eden_scheme_name, midnight_name=midnight_scheme_name, artic_name=artic_scheme_name)
         else: # update global variables
             global input_filepath
             input_filepath = search_input
@@ -232,14 +236,21 @@ def home():
             sample_csv = search_csv
 
             global schemes
-            schemes['kirby_scheme'] = kirby_scheme
-            schemes['kirby_scheme_name'] = kirby_scheme_name
+            schemes['eden_scheme'] = eden_scheme
+            schemes['eden_scheme_name'] = eden_scheme_name
             schemes['midnight_scheme'] = midnight_scheme
             schemes['midnight_scheme_name'] = midnight_scheme_name
             schemes['artic_scheme'] = artic_scheme
             schemes['artic_scheme_name'] = artic_scheme_name
 
-    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, kirby_folder=schemes['kirby_scheme'], kirby_name=schemes['kirby_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
+            # Save config if paths all work
+            with open(os.path.dirname(os.path.realpath(__file__))+"/config.init", 'w') as c:
+                c.write("{\n")
+                c.write('\t"data-folder": "{}",\n'.format(search_input))
+                c.write('\t"sample-barcode-csvs": "{}"'.format(search_csv))
+                c.write('}\n')
+
+    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, eden_folder=schemes['eden_scheme'], eden_name=schemes['eden_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
 
 @app.route("/about")
 def about():
@@ -316,6 +327,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         os.system(make_log_n)
 
     else:
+        #TODO: if not "both" still make the folders medaka | nanopolish based on selection
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder):
             make_dir = 'mkdir "' + output_folder + '"'
@@ -413,15 +425,24 @@ def parameters():
         # global input_filepath
         input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
-
-        # get the correct input folder filepath from user input
-        path = glob.glob(input_folder + '/*/*')[0]
-        os.chdir(path)
-        input_folder = os.getcwd()
-
-        #if no output folder entered, creates one inside of input folder
+        # if no output folder entered, creates one inside of input folder
+        # Do this to put output above input folder to stop fastq cross talk
         if not output_folder:
             output_folder = input_folder + "/output"
+
+        # get the correct input folder filepath from user input
+        # path = glob.glob(input_folder + '/*/*')[0]
+        # use fnmatch with walk to get fastq_pass, fastq_fail folders
+        # then split off the last bit to get the top folder for the gather command
+        tmp_folder_list = []
+        for dName, sdName, fList in os.walk(input_folder):
+            for fileName in sdName:
+                if fnmatch.fnmatch(fileName, "fastq*"):
+                    tmp_folder_list.append(os.path.join(dName, fileName))
+        tmp_path = tmp_folder_list[0].split("/")[:-1]
+        path = "/".join(tmp_path)
+        os.chdir(path)
+        input_folder = os.getcwd()
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
@@ -571,7 +592,18 @@ def error(job_name):
         filename = os.path.dirname(os.path.realpath(__file__))
 
         # get the correct input folder filepath from user input
-        path = glob.glob(input_folder + '/*/*')[0]
+        # path = glob.glob(input_folder + '/*/*')[0]
+        # use fnmatch with walk to get fastq_pass, fastq_fail folders
+        # then split off the last bit to get the top folder for the gather command
+        tmp_folder_list = []
+        for dName, sdName, fList in os.walk(input_folder):
+            for fileName in sdName:
+                if fnmatch.fnmatch(fileName, "fastq*"):
+                    tmp_folder_list.append(os.path.join(dName, fileName))
+        tmp_path = tmp_folder_list[0].split("/")[:-1]
+        path = "/".join(tmp_path)
+        os.chdir(path)
+        input_folder = os.getcwd()
         os.chdir(path)
         input_folder = os.getcwd()
 
@@ -879,9 +911,8 @@ if __name__ == "__main__":
 
     parser = MyParser(
         description="interARTIC - coronavirus genome analysis web app")
-    #group = parser.add_mutually_exclusive_group()
-    parser.add_argument("-r", "--redis_port", default=7777,
-                        help="port to use for redis server")
+    parser.add_argument("redis_port", nargs='?',
+                        help="redis port *pass_through**")
     parser.add_argument("-a", "--web_address", default="127.0.0.1",
                         help="localhost default 127.0.0.1, but for use on other computers (under VPN) can be 0.0.0.0 *WARNING*")
     parser.add_argument("-p", "--web_port", default=5000,
@@ -889,10 +920,5 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
-
-    # print help if no arguments given
-    # if len(sys.argv) == 1:
-    #     parser.print_help(sys.stderr)
-    #     sys.exit(1)
 
     app.run(host=args.web_address, port=args.web_port , debug=True)

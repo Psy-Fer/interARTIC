@@ -2,24 +2,24 @@
 <html lang="en" dir="ltr">
   <head>
     <style>
-		
+
 	</style>
 	<meta charset="utf-8">
     <title>Progress</title>
 	<link rel="stylesheet" href="/static/css/bulma.css"/>
-	<link rel="stylesheet" href="/static/css/confirm_modal.css"/>	
+	<link rel="stylesheet" href="/static/css/confirm_modal.css"/>
 	<link rel="stylesheet" href="/static/css/page_template.css"/>
 	<link rel="icon" type="image/png" href="/static/icon.png" sizes="400x400">
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-	
+
   </head>
   <body>
     {% extends "page_template.html" %}
     {% block content %}
     <div class="hero-body">
 		<div class="container is-widescreen">
-	
+
 			<center>
 				<h1 class="title is-4">Progress for {{ job_name }}</h1>
 				<div id="jobPlace">
@@ -47,7 +47,7 @@
 		            var rerun = document.getElementById("rerun");
 
 		            modal.style.display = "block";
-		            
+
 		            close.onclick = function() {
 		              modal.style.display = "none";
 		            }
@@ -73,15 +73,15 @@
 				<div id="progress-bar">
 
 				</div>
-				
-				
+
+
 				<br>
 				<input type="button" class="button is-small" name="answer" value="View Job Parameters here" onclick="showDiv()" />
 				</center>
 				<center>
-					<div id="parameterDiv"  style="display:none;width:1152px;"> 
-						<br> 
-						<p style="text-align:left;"><br> 
+					<div id="parameterDiv"  style="display:none;width:1152px;">
+						<br>
+						<p style="text-align:left;"><br>
 							<b>Input Folder:</b> {{ input_folder }}<br>
 							<b>Output Folder:</b> {{ output_folder }} <br>
 							<b>Pipeline(s) used:</b> {{ pipeline }} <br>
@@ -93,7 +93,7 @@
 							<b>Maximum Length:</b>  {{ max_length }}<br>
 							<b>Number of Samples:</b> {{ num_samples }}
 						</p>
-					
+
 					</div><br>
 				</center>
 				<script>
@@ -105,20 +105,20 @@
 						}
 					}
 				</script>
-			
+
 
 				</div>
 			<br>
 
 			<center>
 				<h1 class="title is-5">Output from the ARTIC Pipeline:</h1>
-			
+
 				<div id="outputLog">
 					<br>
 					<pre style="width:1152px;white-space: pre-wrap; word-wrap: break-word;"><code><p style="text-align:left;">{{ outputLog|safe }}</p>
 					</code></pre><br><br></center>
 				</div>
-			
+
 			<br><br>
 			<script type="text/javascript">
 				document.getElementById("direct_to_output").onclick = function () {
@@ -170,7 +170,7 @@
             <button id="close3" class="delete" aria-label="close"></button>
           </header>
           <section class="modal-card-body">
-          Are you sure you want to Rerun <p id="jobname" style="display:inline"></p>? 
+          Are you sure you want to Rerun <p id="jobname" style="display:inline"></p>?
           This will stop the current run and take you back the to parameters page to resubmit the job.
           </section>
           <footer class="modal-card-foot">
@@ -181,7 +181,7 @@
       </div>
       <!-- // -->
 	</div>
-	
+
 	<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script>
@@ -197,12 +197,12 @@
             var close2 = document.getElementById("close2");
             var cancel2 = document.getElementById("cancel2");
             var conDel = document.getElementById("confirmD");
-            
+
             modal.style.display = "block";
             var job = document.getElementById("jobname");
             job.innerHTML = '"' + job_name + '"';
             job.name = job_name;
-            
+
             close.onclick = function() {
               modal.style.display = "none";
             }
@@ -223,7 +223,7 @@
             cancel2.onclick = function() {
               dmodal.style.display = "none";
               // alert(this.name);
-            }		
+            }
         };
 
 		const status_div = document.getElementById('status');
@@ -287,7 +287,7 @@
 				}
 			});
     	}
-	
+
 	</script>
 
 	<script>
@@ -315,10 +315,10 @@
 						document.getElementById('multipleErrorMsg').style.display = "block";
 					}
 					document.getElementById('errorParams').style.display = "block";
-					document.getElementById('abort').style.display = "none";	
-				} 
+					document.getElementById('abort').style.display = "none";
+				}
 			}, 900);
-			
+
 			var interval = setInterval(function() {
 				console.log("reloading....")
 				$( "#outputLog" ).load(window.location.href + " #outputLog" );
@@ -332,8 +332,8 @@
 				console.log("checking!!!")
 			}, 900);
 
-			
-			 
+
+
 		});
 	</script>
     {% endblock %}
