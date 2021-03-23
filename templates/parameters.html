@@ -1,5 +1,45 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+<style>
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 350px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/static/css/bulma.css" />
@@ -111,7 +151,12 @@
                 <div class="field">
                   <div class="control">
                     <!-- pipeline select -->
-                    <label class="subtitle is-5" for="pipeline"> Select a pipeline to run: *</label><br><br>
+                    <label class="subtitle is-5" for="pipeline"> Select a pipeline to run: *</label>
+                        <div class="tooltip"> (info)
+                            <span class="tooltiptext">- The Nanopolish pipeline uses both .fastq and .fast5 files for variant calling<br><br>
+                                                      - The Medaka pipeline only uses .fastq files for variant calling<br><br>
+                                                      - Both will run each pipeline, one after the other</span>
+                        </div><br>
                         <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
                         <label for="nanopolish"> Nanopolish</label><br>
                         <input type="radio" id="medaka" name="pipeline" value="medaka">
@@ -203,7 +248,10 @@
                 <div class="field">
                   <div class="control">
                     <!-- primer type -->
-                    <label class="subtitle is-5" for="primer_type"> Select a primer type: *</label><br>
+                    <label class="subtitle is-5" for="primer_type"> Select a primer type: *</label>
+                    <div class="tooltip"> (info)
+                        <span class="tooltiptext"><ul><li>There are 3 default primer sets available with interArtic</li></ul></span>
+                    </div><br>
                     <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}})">
                     <label for="artic"> Artic V3 (400bp)</label><br>
                     <input type="radio" id="eden" name="primer_type" value="eden" onclick="setSchemes(this.id, {{schemes}})">
