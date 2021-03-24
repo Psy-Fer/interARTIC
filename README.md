@@ -12,7 +12,7 @@ We provide a binary release for common Linux distributions. The binary releases 
 First, download the latest release and run the provided `run.sh` script:
 
 ```bash
-wget https://github.com/tthnguyen11/interARTIC/releases/download/v0.1-alpha/interartic-v0.1-linux-binaries.tar.gz -O interartic_bin.tar.gz
+wget https://cloudstor.aarnet.edu.au/plus/s/jtIWKun0E6SmpMj/download -O interartic_bin.tar.gz
 tar xf interartic_bin.tar.gz
 cd interartic_bin
 ./run.sh
