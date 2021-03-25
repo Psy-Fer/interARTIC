@@ -14,7 +14,7 @@
 Your operating system's command line will be used to install the dependencies and start interARTIC.
 
 * For Mac OS: Type “terminal” into your spotlight search, then hit Return.
-* For Windows: Type “Ubuntu” into your search bar in the Start menu, then hit Enter (you need to have an Ubuntu distribution installed via Windows Subsystem for Linux. See (here)[https://linuxhint.com/install_ubuntu_windows_10_wsl/] for steps.
+* For Windows: Type “Ubuntu” into your search bar in the Start menu, then hit Enter (you need to have an Ubuntu distribution installed via Windows Subsystem for Linux. See [here](https://linuxhint.com/install_ubuntu_windows_10_wsl/) for steps.
 * For Linux: Enter the keyboard shortcut: Ctrl+Alt+T.
 
 If these instructions don't work on your operating system, google how to open command line on your operating system and software version.
