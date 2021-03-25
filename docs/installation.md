@@ -165,7 +165,7 @@ python3 main.py 7777
 ```
 source interARTIC-venv/bin/activate
 cd interARTIC
-conda activate artic-ncov2019; celery worker -A main.celery redis://localhost:7777/0 --result-backend redis://localhost:7777/0 --concurrency=1 --loglevel=info
+conda activate artic-ncov2019; celery worker -A main.celery -b redis://localhost:7777/0 --result-backend redis://localhost:7777/0 --concurrency=1 --loglevel=info
 ```
 
 
