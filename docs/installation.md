@@ -180,12 +180,19 @@ If you wish to **turn concurrency on** and run multiple jobs at a time, then ple
 Navigate to your browser and follow [this link](http://127.0.0.1:5000) to access interARTIC.
 
 
-TODO: the following must be replaces with the newer instructions applicable to the web interface
+## Configuring interARTIC
 
-## Configure interARTIC
+1. On the interARTIC web interface, click on `Edit Input and Sample .csv Directories`.
 
+2. Fill the first two fields (1. location of your input data, and 2. where your sample barcode .csv files are located). 
+
+3. Click `confirm` to save the settings.
+
+
+<!--
 On any text editor, open ```config.init```. Update each of the configurations as necessary. All inputs should be file paths. More information about this can be found in the next section.
 
+<!--
 The default config folder is as below:
 
 ```
@@ -237,3 +244,4 @@ $ pwd                                    # obtain file path you will input into 
 /Users/YOURNAME/documents/outputFolder
 ```
 Note: your input folder may not be located in documents folder. Simply navigate, using these commands, to inside your input folder and obtain the file path.
+-->
