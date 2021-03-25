@@ -7,11 +7,11 @@ die() {
 }
 
 if [ ! -e redis-stable/src/redis-server ]; then
-    rm -rf redis-stable redis-stable.tar.gz
-    wget http://download.redis.io/redis-stable.tar.gz || die "Downloading failed"
+    rm -rf redis-stable redis-6.0.12.tar.gz
+    wget https://download.redis.io/releases/redis-6.0.12.tar.gz || die "Downloading failed"
     tar xf redis-stable.tar.gz || die "Extracting failed"
-    rm redis-stable.tar.gz
+    rm redis-6.0.12.tar.gz
     cd redis-stable && make || die "Building redis failed"
 fi
 
-redis-stable/src/redis-server || die "Running redis failed"
+redis-stable/src/redis-server --port $1 || die "Running redis failed"
