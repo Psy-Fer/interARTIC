@@ -25,7 +25,7 @@ In order to use interARTIC, you’ll need Python and its package manager pip ins
 
 ### Linux users (distributions supporting apt)
 
-If you are a Linux user using a distribution that supports `apt`, you may instead follow the commands below to install Python:
+If you are a Linux user using a distribution that supports `apt`, you may follow the commands below to install Python 3.7:
 ```
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt-get update
@@ -40,7 +40,7 @@ pip install --upgrade pip
 ```
 
 
-### Other users
+### Other operating system users
 
 Check if Python and Pip are already installed by entering the following into your command prompt:
 
@@ -74,7 +74,7 @@ pip install --upgrade pip
 To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt (make sure you have activated the interARTIC-venv virtual environment created above):
 
 ```
-pip install celery==4.4.6 redis==3.5.3 flask
+pip install celery==4.4.6 redis==3.5.3 flask==1.1.2
 ```
 
 ## Installing the ARTIC pipeline environment
@@ -89,13 +89,13 @@ After installing conda, enter the following into your command prompt to install 
 
 ```
 git clone https://github.com/artic-network/artic-ncov2019.git
-cd artic-ncov2019
+cd artic-ncov2019 && git checkout 7e359dae37d894b40ae7e35c3582f14244ef4d36
 conda env remove -n artic-ncov2019
 conda env create -f environment.yml
 ```
 
 Conda will download half of the Internet (pun intended!) so wait patiently.
-After installation completes, run the following command and verify artic ins installed.
+After installation completes, run the following command and verify artic is installed.
 
 ```
 conda activate artic-ncov2019
@@ -116,46 +116,48 @@ Clone the repository from github by entering the following commands into your te
 
 ```
 git clone https://github.com/tthnguyen11/interARTIC.git
-cd interARTIC
+cd interARTIC 
 ```
 
 ## Installing the Redis Server
 
-To install the redis server, enter the following into your command prompt in your base folder:
+To locally build the redis server and do a test launch, enter the following into your command prompt in your interARTIC base folder:
 
 ```
-./run-redis.sh
+./run-redis.sh 7777
 ```
+
+Exit the redis server by pressing ctrl+c now.
 
 Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to install the Redis Server manually.
 
 
-## Setting Up interARTIC
+## Launching interARTIC
 
-Setting up interARTIC can be done by running the provided `run_dev.sh` script under Automatic setup below. If something goes wrong, follow the steps under Manual setup. **Make sure you are inside the interARTIC-venv virtual environment we created above**.
+interARTIC can be launched by running the provided `run-dev.sh` script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below. **Make sure you are inside the interARTIC-venv virtual environment we created above**.
 
-### Automatic setup
+### Automatic launch
 
-To start interARTIC, navigate to the directory where the repository was cloned and enter the following command into your command prompt:
+To start interARTIC, navigate to the directory where the interARTIC repository was cloned and enter the following command into your command prompt:
 
 ```
 ./run_dev.sh
 ```
 
-### Manual setup
+### Manual launch
 
-1. Take a new terminal, and run redis.
+1. Take a new terminal, and run redis on port 7777.
 
 ```
 cd interARTIC
-./run-redis.sh
+./run-redis.sh 7777
 ```
 2. Take another new terminal, activate the interARTIC-venv virtual environment we created above and run interARTIC main script.
 
 ```
 source interARTIC-venv/bin/activate
 cd interARTIC
-python3 main.py
+python3 main.py 7777
 ```
 
 3. Take another new terminal, activate the interARTIC-venv virtual environment followed by the ARTIC conda environment and run celery.
@@ -163,23 +165,22 @@ python3 main.py
 ```
 source interARTIC-venv/bin/activate
 cd interARTIC
-conda activate artic-ncov2019; celery worker -A main.celery --concurrency=1 --loglevel=info
+conda activate artic-ncov2019; celery worker -A main.celery redis://localhost:7777/0 --result-backend redis://localhost:7777/0 --concurrency=1 --loglevel=info
 ```
 
 
 ### Job Concurrency
 
-By default, job concurrency is turned off and the automatic and manual setups will allow one job to be run at a time.
+By default, job concurrency is turned off and the automatic and manual launchs will allow one job to be run at a time.
 
-If you wish to **turn concurrency on** and run multiple jobs at a time, then please run the commands under the Concurrency Manual setup heading, which will allow all the CPUs available on your machine to be used to run jobs. Note that running jobs concurrently will likely slow down the speed of your machine.
+If you wish to **turn concurrency on** and run multiple jobs at a time, then please follow the steps under Manual launcyh above except that now you should not pass `--concurrency=1` to celery.
 
-
-If you wish to turn job concurrency on, follow the steps under Manual Setup above except that now you should not pass `--concurrency=1` to celery.
-
-## Running interARTIC
+## Launching interARTIC web interface
 
 Navigate to your browser and follow [this link](http://127.0.0.1:5000) to access interARTIC.
 
+
+TODO: the following must be replaces with the newer instructions applicable to the web interface
 
 ## Configure interARTIC
 
@@ -211,6 +212,7 @@ After you update your config file, close main.py and rerun it as below:
 CTRL + C
 python3 main.py
 ```
+
 
 ####  File path input
 
