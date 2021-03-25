@@ -11,7 +11,7 @@ if [ ! -e redis-stable/src/redis-server ]; then
     wget https://download.redis.io/releases/redis-6.0.12.tar.gz || die "Downloading failed"
     tar xf redis-6.0.12.tar.gz || die "Extracting failed"
     rm redis-6.0.12.tar.gz
-    cd redis-stable && make || die "Building redis failed"
+    cd redis-6.0.12 && make || die "Building redis failed"
 fi
 
-redis-stable/src/redis-server --port $1 || die "Running redis failed"
+redis-6.0.12/src/redis-server --port $1 || die "Running redis failed"
