@@ -127,21 +127,21 @@ To locally build the redis server and do a test launch, enter the following into
 ./run-redis.sh 7777
 ```
 
-Exit the redis server by pressing ctrl+c now.
+Exit the redis server by pressing ctrl+c now. Now close the terminal.
 
 Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to install the Redis Server manually.
 
 
 ## Launching interARTIC
 
-interARTIC can be launched by running the provided `run-dev.sh` script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below. **Make sure you are inside the interARTIC-venv virtual environment we created above**.
+Now launch a new terminal and go inside the interARTIC-venv virtual environment we created above by calling `source interARTIC-venv/bin/activate`.  interARTIC can be launched by running the provided `run-dev.sh` script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below. 
 
 ### Automatic launch
 
 To start interARTIC, navigate to the directory where the interARTIC repository was cloned and enter the following command into your command prompt:
 
 ```
-./run_dev.sh
+./run-dev.sh
 ```
 
 ### Manual launch
@@ -165,7 +165,7 @@ python3 main.py 7777
 ```
 source interARTIC-venv/bin/activate
 cd interARTIC
-conda activate artic-ncov2019; celery worker -A main.celery redis://localhost:7777/0 --result-backend redis://localhost:7777/0 --concurrency=1 --loglevel=info
+conda activate artic-ncov2019; celery worker -A main.celery -b redis://localhost:7777/0 --result-backend redis://localhost:7777/0 --concurrency=1 --loglevel=info
 ```
 
 
