@@ -54,7 +54,16 @@ max_queue_size = 10
 qSys = System(max_queue_size)
 
 if fnmatch.fnmatch(sys.argv[0], "*celery"):
-    worker_port = int(sys.argv[5].split(":")[2].split("/")[0])
+    test_arg = False
+    for a in sys.argv:
+        if a == "-b":
+            test_arg = True
+            continue
+        if test_arg:
+            redis_port_arg = a
+            break
+    # worker_port = int(sys.argv[5].split(":")[2].split("/")[0])
+    worker_port = int(redis_port_arg.split(":")[2].split("/")[0])
     red = redis.StrictRedis(host='localhost', port=worker_port, db=0)
 
 #Global variable for base filepath
