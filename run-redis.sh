@@ -12,6 +12,7 @@ if [ ! -e redis-6.0.12/src/redis-server ]; then
     tar xf redis-6.0.12.tar.gz || die "Extracting failed"
     rm redis-6.0.12.tar.gz
     cd redis-6.0.12 && make || die "Building redis failed"
+    cd ..
 fi
 
 redis-6.0.12/src/redis-server --port $1 || die "Running redis failed"
