@@ -173,7 +173,7 @@ conda activate artic-ncov2019; celery worker -A main.celery -b redis://localhost
 
 By default, job concurrency is turned off and the automatic and manual launchs will allow one job to be run at a time.
 
-If you wish to **turn concurrency on** and run multiple jobs at a time, then please follow the steps under Manual launcyh above except that now you should not pass `--concurrency=1` to celery.
+If you wish to **turn concurrency on** and run multiple jobs at a time, then please follow the steps under Manual launch above except that now you should not pass `--concurrency=1` to celery.
 
 ## Launching interARTIC web interface
 
