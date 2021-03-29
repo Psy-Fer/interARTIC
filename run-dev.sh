@@ -4,12 +4,13 @@ trap cleanup SIGINT
 
 list_descendants ()
 {
-	local children=$(ps -o pid= --ppid "$1")
-	for pid in $children
-	do
-		list_descendants "$pid"
-	done
-	echo "$children"
+    argproc=$1
+    local children=$(ps -x -o pid,ppid  | awk -v argproc=$argproc '{ if($2==argproc) {print $1} }')
+    for pid in $children
+    do
+        list_descendants "$pid"
+    done
+    echo "$children"
 }
 
 cleanup() {
