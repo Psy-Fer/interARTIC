@@ -12,7 +12,7 @@
   width: 350px;
   background-color: #555;
   color: #fff;
-  text-align: center;
+  text-align: left;
   border-radius: 6px;
   padding: 5px 0;
   position: absolute;
@@ -250,7 +250,10 @@
                     <!-- primer type -->
                     <label class="subtitle is-5" for="primer_type"> Select a primer type: *</label>
                     <div class="tooltip"> (info)
-                        <span class="tooltiptext"><ul><li>There are 3 default primer sets available with interArtic</li></ul></span>
+                        <span class="tooltiptext">There are 3 default primer sets available with interArtic:<br>
+                                                  - <b>artic:</b> The original 400bp amplicon set, great for high CT samples<br>
+                                                  - <b>eden:</b> 2500bp amplicon set used for gaining even coverage depth<br>
+                                                  - <b>midnight:</b> 1200bp amplicon set used for striking a balance between above 2</span>
                     </div><br>
                     <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}})">
                     <label for="artic"> Artic V3 (400bp)</label><br>
