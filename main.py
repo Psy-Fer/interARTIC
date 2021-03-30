@@ -312,7 +312,7 @@ def home():
 def about():
 	return render_template("about.html")
 
-def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name):
+def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input):
     errors = {}
 
     #Check of jobname is used
@@ -324,10 +324,24 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         errors['input_folder'] = "Directory is empty."
 
     #if no output folder entered, creates one inside of input folder
-    if not output_folder and not os.path.isdir(input_folder):
+    if not output_folder and not os.path.isdir(output_input):
+        errors['input_output_folder'] = "Input and output don't exist"
         return errors, output_folder
-    elif not output_folder and os.path.isdir(input_folder):
-        output_folder = input_folder + "/output"
+    elif not output_folder and os.path.isdir(output_input):
+        output_folder = output_input + "/output"
+    elif output_folder and os.path.isdir(output_input):
+        if output_folder[0] == "/":
+            check_out = "/".join(output_folder.split("/")[:-1])
+            if not os.path.isdir(check_out):
+                errors['output_folder'] = "Parent directory of new output folder ( {} ) does not exist".format(check_out)
+                flash("Warning: Parent directory of new output folder ( {} ) does not exist".format(check_out))
+                return errors, output_folder
+        else:
+            output_folder = output_input + "/" + output_folder
+    else:
+        errors['input_folder'] = "Input folder does not exist, pleas check: {}".format(output_input)
+        flash("Warning: Input folder does not exist, pleas check: {}".format(output_input))
+        return errors, output_folder
 
     if output_folder[-1] == "/":
         output_folder = output_folder[:-1]
@@ -351,53 +365,65 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
     #both pipelines running
     if pipeline == "both":
-
+        # TODO: check all os.system() calls
         if override_data is True and os.path.exists(output_folder):
             remove = "rm -r " + output_folder + "/all_cmds_log.txt"
             os.system(remove)
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder + "/medaka"):
             make_dir = 'mkdir "' + output_folder + '"'
-            os.system(make_dir)
+            if os.system(make_dir) != 0:
+                errors['mkdir_m1'] = "Failed to create output directory, please check parent path exists and has write permission"
             make_dir_m = 'mkdir "' + output_folder + '/medaka"'
-            os.system(make_dir_m)
+            if os.system(make_dir_m) != 0:
+                errors['mkdir_m2'] = "Failed to create output directory, please check parent path exists and has write permission"
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder + "/nanopolish"):
             make_dir = 'mkdir "' + output_folder + '"'
             os.system(make_dir)
+            if os.system(make_dir) != 0:
+                errors['mkdir_n1'] = "Failed to create output directory, please check parent path exists and has write permission"
             make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
-            os.system(make_dir_n)
+            if os.system(make_dir_n) != 0:
+                errors['mkdir_n2'] = "Failed to create output directory, please check parent path exists and has write permission"
 
-        if check_override(output_folder + "/medaka", override_data) and os.path.exists(input_folder):
+        if check_override(output_folder + "/medaka", override_data) and os.path.exists(output_input):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
 
-        if check_override(output_folder + "/nanopolish", override_data) and os.path.exists(input_folder):
+        if check_override(output_folder + "/nanopolish", override_data) and os.path.exists(output_input):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
 
         # Make empty log file for initial progress rendering
         make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
         make_log_n = 'touch \"' + output_folder + '\"/nanopolish/all_cmds_log.txt'
-        os.system(make_log_m)
-        os.system(make_log_n)
-
+        if os.system(make_log_m) != 0:
+            errors['touch_m'] = "Failed to write to output directory, please check path exists and has write permission"
+        if os.system(make_log_n) != 0:
+            errors['touch_n'] = "Failed to write to output directory, please check path exists and has write permission"
     else:
         #TODO: if not "both" still make the folders medaka | nanopolish based on selection
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder):
             make_dir = 'mkdir "' + output_folder + '"'
-            os.system(make_dir)
+            if os.system(make_dir) != 0:
+                errors['mkdir'] = "Failed to create output directory, please check parent path exists and has write permission"
+                flash("Warning: Failes to create output directory, please check parent path exists and has write permission")
 
         if override_data is True:
             remove = "rm -r " + output_folder + "/all_cmds_log.txt"
             os.system(remove)
-        elif check_override(output_folder, override_data) and os.path.exists(input_folder):
+        elif check_override(output_folder, override_data) and os.path.exists(output_input):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
         # Make empty log file for initial progress rendering
         make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
-        os.system(make_log)
+        if os.system(make_log) != 0:
+            errors['touch'] = "Failed to write to output directory, please check path exists and has write permission"
+            flash("Warning: Failes to write to output directory, please check parent path exists and has write permission")
+
+
 
     #check length parameters are valid
     if min_length.isdigit() == False:
@@ -483,8 +509,13 @@ def parameters():
         filename = os.path.dirname(os.path.realpath(__file__))
         # if no output folder entered, creates one inside of input folder
         # Do this to put output above input folder to stop fastq cross talk
-        if not output_folder:
-            output_folder = input_folder + "/output"
+        # if not output_folder:
+        #     output_folder = input_folder + "/output"
+        # else:
+        #     if output_folder[0] != "/":
+        #         output_folder = input_folder + output_folder
+
+        output_input = input_folder
 
         # get the correct input folder filepath from user input
         # path = glob.glob(input_folder + '/*/*')[0]
@@ -508,11 +539,13 @@ def parameters():
 
         # check errors
         errors = {}
-        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input)
 
         # if an output folder does not exist, make one
-        if not output_folder:
-            output_folder = output_folder_checked
+        # if not output_folder:
+        #     output_folder = output_folder_checked
+
+        output_folder = output_folder_checked
 
         # if queue is full, add an error to the list
         if qSys.queue.full():
@@ -648,6 +681,8 @@ def error(job_name):
         input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
 
+        output_input = input_folder
+
         # get the correct input folder filepath from user input
         # path = glob.glob(input_folder + '/*/*')[0]
         # use fnmatch with walk to get fastq_pass, fastq_fail folders
@@ -672,11 +707,13 @@ def error(job_name):
 
         # check errors
         errors = {}
-        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length,job_name)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input)
 
         # if an output folder does not exist, make one
-        if not output_folder:
-            output_folder = output_folder_checked
+        # if not output_folder:
+        #     output_folder = output_folder_checked
+
+        output_folder = output_folder_checked
 
         # if queue is full, add an error to the list
         if qSys.queue.full():
