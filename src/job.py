@@ -222,7 +222,7 @@ class Job:
                         #make directory
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #move fastq_pass file into folder
-                        minion_cmd = minion_cmd + ";echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        minion_cmd = minion_cmd + ";echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + dir_path + "/ 2>> " + self._output_folder + "/all_cmds_log.txt"
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --minimap2 --medaka --medaka-model r941_min_high_g360 --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + self._primer_scheme + " " + self._job_name + "_" + sample_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 
@@ -238,7 +238,7 @@ class Job:
                         #make directory
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #move fastq_pass file into folder
-                        minion_cmd = minion_cmd + ";echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        minion_cmd = minion_cmd + ";echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + dir_path + "/ 2>> " + self._output_folder + "/all_cmds_log.txt"
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + sample_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 
