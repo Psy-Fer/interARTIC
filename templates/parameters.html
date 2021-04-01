@@ -138,12 +138,18 @@
                     <label class="subtitle is-5" for="job_name">Job name: *</label><br>
                     <input class="input" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{ job_name }}" required>
                     {% if errors %}
-                    {% if errors['job_name'] %}
-                    <script>
-                      document.getElementById("job_name").className = "input is-danger";
-                    </script>
-                    <p class="help is-danger"> {{ errors['job_name'] }} </p>
-                    {% endif %}
+                        {% if errors['job_name'] %}
+                            <script>
+                              document.getElementById("job_name").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['job_name'] }} </p>
+                        {% endif %}
+                        {% if errors['char_error_job_name'] %}
+                            <script>
+                              document.getElementById("job_name").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['char_error_job_name'] }} </p>
+                        {% endif %}
                     {% endif %}
                   </div>
                 </div>
@@ -187,6 +193,14 @@
                           <option value="{{ folder }}">{{ folder }}</option>
                         {% endfor %}
                       {% endif %}
+                      {% if errors %}
+                          {% if errors['char_error_input_folder'] %}
+                              <script>
+                                document.getElementById("input_folder").className = "input is-danger";
+                              </script>
+                              <p class="help is-danger"> {{ errors['char_error_input_folder'] }} </p>
+                          {% endif %}
+                      {% endif %}
                     </datalist>
 
                 <br><br>
@@ -211,12 +225,18 @@
                 <small>(only input if you already have this file, otherwise artic gather/demultiplex will generate it)</small><br>
                 <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
                 {% if errors %}
-                {% if errors['read_file'] %}
-                <script>
-                  document.getElementById("read_file").className = "input is-danger";
-                </script>
-                <p class="help is-danger"> {{ errors['read_file'] }} </p>
-                {% endif %}
+                    {% if errors['read_file'] %}
+                        <script>
+                          document.getElementById("read_file").className = "input is-danger";
+                        </script>
+                        <p class="help is-danger"> {{ errors['read_file'] }} </p>
+                    {% endif %}
+                    {% if errors['char_error_read_file'] %}
+                        <script>
+                          document.getElementById("read_file").className = "input is-danger";
+                        </script>
+                        <p class="help is-danger"> {{ errors['char_error_read_file'] }} </p>
+                    {% endif %}
                 {% endif %}
                 <br>
 
@@ -225,11 +245,17 @@
                 <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
                 <input class="input" type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
                 {% if errors %}
-                {% if errors['override'] == True %}
-                <script>
-                  document.getElementById("output_folder").classList.add("is-danger");
-                </script>
-                {% endif %}
+                    {% if errors['char_error_output_folder'] %}
+                        <script>
+                          document.getElementById("output_folder").className = "input is-danger";
+                        </script>
+                        <p class="help is-danger"> {{ errors['char_error_output_folder'] }} </p>
+                    {% endif %}
+                    {% if errors['override'] == True %}
+                        <script>
+                          document.getElementById("output_folder").classList.add("is-danger");
+                        </script>
+                    {% endif %}
                 {% endif %}
                 <br>
                 <!-- override output data?-->
@@ -288,12 +314,18 @@
                 <label class="subtitle is-5" for="primer_scheme">Scheme folder: *</label><br>
                 <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br>
                 {% if errors %}
-                {% if errors['primer_scheme_dir'] %}
-                <script>
-                  document.getElementById("primer_scheme_dir").className = "input is-danger";
-                </script>
-                <p class="help is-danger"> {{ errors['primer_scheme_dir'] }} </p>
-                {% endif %}
+                    {% if errors['primer_scheme_dir'] %}
+                        <script>
+                          document.getElementById("primer_scheme_dir").className = "input is-danger";
+                        </script>
+                        <p class="help is-danger"> {{ errors['primer_scheme_dir'] }} </p>
+                    {% endif %}
+                    {% if errors['char_error_primer_scheme_dir'] %}
+                        <script>
+                          document.getElementById("primer_scheme_dir").className = "input is-danger";
+                        </script>
+                        <p class="help is-danger"> {{ errors['char_error_primer_scheme_dir'] }} </p>
+                    {% endif %}
                 {% endif %}
                 <br>
 
@@ -337,13 +369,25 @@
                     <br><label for="max_length">Maximum Length: *</label>
                     <input class="input" type="number" id="max_length" name="max_length" value="{{ max_length }}" required><br>
                     {% if errors %}
-                    {% if errors['invalid_length'] %}
-                      <script>
-                        document.getElementById("min_length").className = "input is-danger";
-                        document.getElementById("max_length").className = "input is-danger";
-                      </script>
-                      <p class="help is-danger"> {{ errors['invalid_length'] }} </p>
-                    {% endif %}
+                        {% if errors['invalid_length'] %}
+                          <script>
+                            document.getElementById("min_length").className = "input is-danger";
+                            document.getElementById("max_length").className = "input is-danger";
+                          </script>
+                          <p class="help is-danger"> {{ errors['invalid_length'] }} </p>
+                        {% endif %}
+                        {% if errors['char_error_min_length'] %}
+                            <script>
+                              document.getElementById("min_length").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['char_error_min_length'] }} </p>
+                        {% endif %}
+                        {% if errors['char_error_max_length'] %}
+                            <script>
+                              document.getElementById("max_length").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['char_error_max_length'] }} </p>
+                        {% endif %}
                     {% endif %}
                     <br>
                     <h1 class="subtitle is-5">Other parameters: *</h1>

@@ -21,6 +21,8 @@ import glob
 import argparse
 import redis
 import traceback
+import functools
+import inspect
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
@@ -312,6 +314,40 @@ def home():
 def about():
 	return render_template("about.html")
 
+def check_special_characters(func):
+    @functools.wraps(func)
+    def wraper_check_char(*args, **kwargs):
+        """
+        check input args for special characters
+        return error dic handled after call
+        """
+        def _detect_special_characer(pass_string):
+            regex= re.compile('^[a-zA-Z0-9_/-]+$')
+            if(regex.search(pass_string) == None):
+                ret = True
+            else:
+                ret = False
+            return ret
+        # gets names of arguments
+        args_name = inspect.getargspec(func)[0]
+        # argnames: values into dic
+        args_dict = dict(zip(args_name, args))
+
+        errors = {}
+        for arg in args_dict:
+            a = args_dict[arg]
+            if a:
+                # sys.stderr.write(str(a))
+                # sys.stderr.write("\n")
+                if _detect_special_characer(str(a)):
+                    errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use: a-Z, 0-9, _, /".format(arg, str(a))
+        if len(errors) != 0:
+            return errors, args[1]
+        return func(*args, **kwargs)
+
+    return wraper_check_char
+
+@check_special_characters
 def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input):
     errors = {}
 
