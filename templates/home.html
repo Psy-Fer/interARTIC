@@ -1,5 +1,45 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+<style>
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 350px;
+  background-color: #555;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/static/css/bulma.min.css" />
@@ -93,11 +133,11 @@
       <div class="container is-widescreen ">
         <h1 class="title is-4">Viral Whole Genome Nanopore Sequencing Analysis</h1>
         <div class="content">
-          <p class="subtitle is-5">Viral WGS using the ARTIC pipelines</p>
+          <p class="subtitle is-5">Viral WGS using bioinformatic pipelines from the ARTIC network</p>
         </div>
 
       <!-- search for input folder -->
-      <input type="button" class="button is-small" name="answer" value="Edit Input and Sample .csv Directories" onclick="showDiv()" />
+      <input type="button" class="button is-medium" name="answer" value="Set locations of input data" onclick="showDiv()" />
       <div id="editDiv" style="display: none"><br>
         {% if errors %}
           <script>
@@ -107,7 +147,11 @@
         <form method=POST>
           <div class="field">
             <div class="control">
-              <label class="subtitle is-5" for="file_path">Please enter the base filepath where your input data is located:</label><br>
+              <label class="subtitle is-5" for="file_path">Please enter the base filepath where your input data is located:</label>
+              <div class="tooltip"> (info)
+                  <span class="tooltiptext">- This is the base path where your input data is located, not a specific file.<br><br>
+                                            - This directory can contain data from multiple nanopore sequencing flowcells or experiments.</span>
+              </div><br>
               <input class="input" name="file_path" id="file_path" type="text" value="{{input_folder}}" placeholder="Enter a file path">
                 {% if errors %}
                   {% if errors['invalid_input_file_path'] %}
@@ -119,6 +163,11 @@
                 {% endif %}
               <br><br>
               <label class="subtitle is-5" for="csv_folder">Please enter the base filepath where your sample-barcode CSV files are located:</label>
+              <div class="tooltip"> (info)
+                  <span class="tooltiptext">- This is the base filepath where your sample-barcode metadata files are located, not a specific file.<br><br>
+                                            - This directory can contain metadata files for multiple nanopore sequencing flow cells and/or experiments.<br><br>
+                                            - Please see the InterARTIC user-manual for formatting requirements for your metadata files.</span>
+              </div><br>
               <input class="input" type="text" name="csv_folder" id="csv_folder" value="{{csv_folder}}" placeholder="Ener a file path">
               {% if errors %}
                   {% if errors['invalid_csv_file_path'] %}
@@ -129,75 +178,89 @@
                   {% endif %}
                 {% endif %}
               <br><br>
-              <label class="subtitle is-5" for="eden_folder"><strong>Preset protocols below **Advanced use**</strong></label>
-              <br><br>
-              <label class="subtitle is-5" for="eden_folder">Default Eden primer schemes are located:</label>
-              <input class="input" type="text" name="eden_folder" id="eden_folder" value="{{eden_folder}}" placeholder="Ener a file path">
-              {% if errors %}
-                  {% if errors['invalid_eden_path'] %}
-                    <script>
-                      document.getElementById("eden_folder").className = "input is-danger";
-                    </script>
-                    <p class="help is-danger"> {{ errors['invalid_eden_path'] }} </p>
-                  {% endif %}
-                {% endif %}
-              <br><br>
-              <label class="subtitle is-5" for="eden_name">Default Eden primer scheme name:</label>
-              <input class="input" type="text" name="eden_name" id="eden_name" value="{{eden_name}}" placeholder="Ener a scheme name">
-              {% if errors %}
-                  {% if errors['invalid_eden_name'] %}
-                    <script>
-                      document.getElementById("eden_name").className = "input is-danger";
-                    </script>
-                    <p class="help is-danger"> {{ errors['invalid_eden_name'] }} </p>
-                  {% endif %}
-                {% endif %}
-               <br><br>
-              <label class="subtitle is-5" for="midnight_folder">Default Midnight primer schemes are located:</label>
-              <input class="input" type="text" name="midnight_folder" id="midnight_folder" value="{{midnight_folder}}" placeholder="Ener a file path">
-              {% if errors %}
-                  {% if errors['invalid_midnight_path'] %}
-                    <script>
-                      document.getElementById("midnight_folder").className = "input is-danger";
-                    </script>
-                    <p class="help is-danger"> {{ errors['invalid_midnight_path'] }} </p>
-                  {% endif %}
-                {% endif %}
-              <br><br>
-              <label class="subtitle is-5" for="midnight_name">Default Midnight primer scheme name:</label>
-              <input class="input" type="text" name="midnight_name" id="midnight_name" value="{{midnight_name}}" placeholder="Ener a scheme name">
-              {% if errors %}
-                  {% if errors['invalid_midnight_name'] %}
-                    <script>
-                      document.getElementById("midnight_name").className = "input is-danger";
-                    </script>
-                    <p class="help is-danger"> {{ errors['invalid_midnight_name'] }} </p>
-                  {% endif %}
-                {% endif %}
-               <br><br>
-              <label class="subtitle is-5" for="artic_folder">Default Artic primer schemes are located:</label>
-              <input class="input" type="text" name="artic_folder" id="artic_folder" value="{{artic_folder}}" placeholder="Ener a file path">
-              {% if errors %}
-                  {% if errors['invalid_artic_path'] %}
-                    <script>
-                      document.getElementById("artic_folder").className = "input is-danger";
-                    </script>
-                    <p class="help is-danger"> {{ errors['invalid_artic_path'] }} </p>
-                  {% endif %}
-                {% endif %}
-              <br>
-              <label class="subtitle is-5" for="artic_name">Default Artic primer scheme name:</label>
-              <input class="input" type="text" name="artic_name" id="artic_name" value="{{artic_name}}" placeholder="Ener a scheme name">
-              {% if errors %}
-                  {% if errors['invalid_artic_name'] %}
-                    <script>
-                      document.getElementById("artic_name").className = "input is-danger";
-                    </script>
-                    <p class="help is-danger"> {{ errors['invalid_artic_name'] }} </p>
-                  {% endif %}
-                {% endif %}
-                <br><br>
-              <input class="button is-small" type="submit" name="search_input" id="search_input" value="Confirm"><br>
+              <input class="button is-small" type="submit" name="search_input" id="search_input" value="Confirm"><br><br>
+              <input type="button" class="button is-small" name="answer" value="Preset protocols below **Advanced use**" onclick="showDivAdv()" />
+              <div id="editDivAdv" style="display: none"><br>
+                {% if errors %}
+                  <script>
+                    document.getElementById("editDivAdv").style.display = "block";
+                  </script>
+                {% endif%}
+                <form method=POST>
+                  <div class="field">
+                    <div class="control">
+                      <label class="subtitle is-5" for="eden_folder"><strong>Preset protocols below **Advanced use**</strong></label>
+                      <br><br>
+                      <label class="subtitle is-5" for="eden_folder">Default Eden primer schemes are located:</label>
+                      <input class="input" type="text" name="eden_folder" id="eden_folder" value="{{eden_folder}}" placeholder="Ener a file path">
+                      {% if errors %}
+                          {% if errors['invalid_eden_path'] %}
+                            <script>
+                              document.getElementById("eden_folder").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['invalid_eden_path'] }} </p>
+                          {% endif %}
+                        {% endif %}
+                      <br><br>
+                      <label class="subtitle is-5" for="eden_name">Default Eden primer scheme name:</label>
+                      <input class="input" type="text" name="eden_name" id="eden_name" value="{{eden_name}}" placeholder="Ener a scheme name">
+                      {% if errors %}
+                          {% if errors['invalid_eden_name'] %}
+                            <script>
+                              document.getElementById("eden_name").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['invalid_eden_name'] }} </p>
+                          {% endif %}
+                        {% endif %}
+                       <br><br>
+                      <label class="subtitle is-5" for="midnight_folder">Default Midnight primer schemes are located:</label>
+                      <input class="input" type="text" name="midnight_folder" id="midnight_folder" value="{{midnight_folder}}" placeholder="Ener a file path">
+                      {% if errors %}
+                          {% if errors['invalid_midnight_path'] %}
+                            <script>
+                              document.getElementById("midnight_folder").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['invalid_midnight_path'] }} </p>
+                          {% endif %}
+                        {% endif %}
+                      <br><br>
+                      <label class="subtitle is-5" for="midnight_name">Default Midnight primer scheme name:</label>
+                      <input class="input" type="text" name="midnight_name" id="midnight_name" value="{{midnight_name}}" placeholder="Ener a scheme name">
+                      {% if errors %}
+                          {% if errors['invalid_midnight_name'] %}
+                            <script>
+                              document.getElementById("midnight_name").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['invalid_midnight_name'] }} </p>
+                          {% endif %}
+                        {% endif %}
+                       <br><br>
+                      <label class="subtitle is-5" for="artic_folder">Default Artic primer schemes are located:</label>
+                      <input class="input" type="text" name="artic_folder" id="artic_folder" value="{{artic_folder}}" placeholder="Ener a file path">
+                      {% if errors %}
+                          {% if errors['invalid_artic_path'] %}
+                            <script>
+                              document.getElementById("artic_folder").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['invalid_artic_path'] }} </p>
+                          {% endif %}
+                        {% endif %}
+                      <br>
+                      <label class="subtitle is-5" for="artic_name">Default Artic primer scheme name:</label>
+                      <input class="input" type="text" name="artic_name" id="artic_name" value="{{artic_name}}" placeholder="Ener a scheme name">
+                      {% if errors %}
+                          {% if errors['invalid_artic_name'] %}
+                            <script>
+                              document.getElementById("artic_name").className = "input is-danger";
+                            </script>
+                            <p class="help is-danger"> {{ errors['invalid_artic_name'] }} </p>
+                          {% endif %}
+                        {% endif %}
+                        <br><br>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </form>
@@ -208,6 +271,13 @@
               document.getElementById('editDiv').style.display = "none";
             } else {
               document.getElementById('editDiv').style.display = "block";
+            }
+          }
+          function showDivAdv() {
+            if (document.getElementById('editDivAdv').style.display == "block") {
+              document.getElementById('editDivAdv').style.display = "none";
+            } else {
+              document.getElementById('editDivAdv').style.display = "block";
             }
           }
         </script>
