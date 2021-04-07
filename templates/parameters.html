@@ -129,13 +129,16 @@
           </div>
           <div class="column">
               <!-- Start parameter input -->
-              <center><h1 class="title is-4">Input your parameters here:</h1> <br></center>
+              <center><h1 class="title is-4">Prepare your InterARTIC job</h1> <br></center>
               <form method=POST>
                 <div class="field">
                   <div class="control">
                     <!-- Job name input -->
                     <b> * = required </b><br><br>
-                    <label class="subtitle is-5" for="job_name">Job name: *</label><br>
+                    <label class="subtitle is-5" for="job_name">Job name: *</label>
+                    <div class="tooltip"> (info)
+                        <span class="tooltiptext">Must be unique for each job.</span>
+                    </div><br>
                     <input class="input" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{ job_name }}" required>
                     {% if errors %}
                         {% if errors['job_name'] %}
@@ -153,39 +156,7 @@
                     {% endif %}
                   </div>
                 </div>
-                <br>
-                <div class="field">
-                  <div class="control">
-                    <!-- pipeline select -->
-                    <label class="subtitle is-5" for="pipeline"> Select a pipeline to run: *</label>
-                        <div class="tooltip"> (info)
-                            <span class="tooltiptext">- The Nanopolish pipeline uses both .fastq and .fast5 files for variant calling<br><br>
-                                                      - The Medaka pipeline only uses .fastq files for variant calling<br><br>
-                                                      - Both will run each pipeline, one after the other</span>
-                        </div><br>
-                        <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
-                        <label for="nanopolish"> Nanopolish</label><br>
-                        <input type="radio" id="medaka" name="pipeline" value="medaka">
-                        <label for="medaka"> Medaka</label><br>
-                        <input type="radio" id="both" name="pipeline" value="both">
-                        <label for="both"> Both</label>
-                    <script>
-                      if ( {{ pipeline }}.value == "nanopolish") {
-                        document.getElementById("nanopolish").checked = true;
-                      } else if ( {{ pipeline }}.value == "medaka") {
-                        document.getElementById("medaka").checked = true;
-                      } else if ( {{ pipeline }}.value == "both") {
-                        document.getElementById("both").checked = true;
-                      }
-                    </script>
-
-                  </div>
-                </div>
-
-                <!-- select input folder -->
-
-                <br>
-                <label class="subtitle is-5">Select an input folder: *</label><br><br>
+                <label class="subtitle is-5">Select the input data directory for your experiment: *</label><br>
                   <input class="input" list="search" name="input_folder" id="input_folder" placeholder="Search for input folder" value="{{input_name}}" required>
                     <datalist id="search">
                       {% if folders %}
@@ -202,158 +173,201 @@
                           {% endif %}
                       {% endif %}
                     </datalist>
-
-                <br><br>
-                <!-- select sample-csv -->
-                <label class="subtitle is-5">Select a CSV file: </label><br>
-                <small>(Only needed if there are multiple samples)</small><br>
-                  <input class="input" list="csv_search" name="csv_file" id="csv_file" placeholder="Search for CSV file" value="{{csv_name}}">
-                    <datalist id="csv_search">
-                      {% if csvs %}
-                        {% for csv in csvs %}
-                          <option value="{{ csv }}">{{ csv }}</option>
-                        {% endfor %}
-                      {% endif %}
-                    </datalist>
-
-                <br><br>
-                <!-- file path input -->
-                <center><p class="subtitle is-5"><b>Input file paths</b> </p></center><br>
-                <small>Must be absolute file path, starting with "/"</small><br><br>
-                <!-- read file path - Medaka/ Nanopolish-->
-                <label class="subtitle is-5" for="scheme_folder">Fastq file:</label><br>
-                <small>(only input if you already have this file, otherwise artic gather/demultiplex will generate it)</small><br>
-                <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
-                {% if errors %}
-                    {% if errors['read_file'] %}
-                        <script>
-                          document.getElementById("read_file").className = "input is-danger";
-                        </script>
-                        <p class="help is-danger"> {{ errors['read_file'] }} </p>
-                    {% endif %}
-                    {% if errors['char_error_read_file'] %}
-                        <script>
-                          document.getElementById("read_file").className = "input is-danger";
-                        </script>
-                        <p class="help is-danger"> {{ errors['char_error_read_file'] }} </p>
-                    {% endif %}
-                {% endif %}
                 <br>
-
-                <!-- output folder file path - Medaka/ Nanopolish-->
-                <label class="subtitle is-5" for="output_folder">Output folder: </label><br>
-                <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
-                <input class="input" type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
-                {% if errors %}
-                    {% if errors['char_error_output_folder'] %}
-                        <script>
-                          document.getElementById("output_folder").className = "input is-danger";
-                        </script>
-                        <p class="help is-danger"> {{ errors['char_error_output_folder'] }} </p>
-                    {% endif %}
-                    {% if errors['override'] == True %}
-                        <script>
-                          document.getElementById("output_folder").classList.add("is-danger");
-                        </script>
-                    {% endif %}
-                {% endif %}
-                <br>
-                <!-- override output data?-->
-                <input type="checkbox" id="override_data" name="override_data">
-                <label for="override_data">Override existing data?</label><br><br>
-                  <script>
-                    function getOtherPrimer() {
-                      if (document.getElementById("other_primer").style.display == "block") {
-                        document.getElementById("other_primer").style.display = "none";
-                      } else {
-                        document.getElementById("other_primer").style.display = "block";
-                      }
+                <script>
+                  function getMultiSample(id) {
+                    if (id == "multiple") {
+                        document.getElementById("multi_sample").style.display = "block"
+                        }
+                    else {
+                        document.getElementById("multi_sample").style.display = "none";
+                        }
                     }
-                  </script>
-                <center><h2 class="subtitle"><b>Primer Scheme</b></h2></center><br>
+                </script>
                 <div class="field">
                   <div class="control">
-                    <!-- primer type -->
-                    <label class="subtitle is-5" for="primer_type"> Select a primer type: *</label>
-                    <div class="tooltip"> (info)
-                        <span class="tooltiptext">There are 3 default primer sets available with interArtic:<br>
-                                                  - <b>artic:</b> The original 400bp amplicon set, great for high CT samples<br>
-                                                  - <b>eden:</b> 2500bp amplicon set used for gaining even coverage depth<br>
-                                                  - <b>midnight:</b> 1200bp amplicon set used for striking a balance between above 2</span>
-                    </div><br>
-                    <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}})">
-                    <label for="artic"> Artic V3 (400bp)</label><br>
-                    <input type="radio" id="eden" name="primer_type" value="eden" onclick="setSchemes(this.id, {{schemes}})">
-                    <label for="eden"> Eden V1 (2500bp)</label><br>
-                    <input type="radio" id="midnight" name="primer_type" value="midnight" onclick="setSchemes(this.id, {{schemes}})">
-                    <label for="midnight"> Midnight V1 (1200bp)</label><br>
-                    <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer()">
-                    <label for="other">Other</label><br><br>
-                   </div>
-
-                  <div id="other_primer" style="display:none">
-                    Please enter your custom primer here:
-                    <input class="input" type="text" id="other_primer_type" name="other_primer_type" value={{other_primer_type}}>
-                  </div><br>
-
-                  <script>
-                    if ( {{ primer_select }}.id == "artic") {
-                      document.getElementById("artic").checked = true;
-                    } else if ( {{ primer_select }}.id == "eden") {
-                        document.getElementById("eden").checked = true;
-                    } else if ( {{ primer_select }}.id == "midnight") {
-                        document.getElementById("midnight").checked = true;
-                    } else {
-                      document.getElementById("other").checked = true;
-                      document.getElementById("other_primer").style.display = "block";
-                    }
-                  </script>
-                </div>
-
-                <!-- primer scheme directory -->
-                <label class="subtitle is-5" for="primer_scheme">Scheme folder: *</label><br>
-                <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br>
-                {% if errors %}
-                    {% if errors['primer_scheme_dir'] %}
-                        <script>
-                          document.getElementById("primer_scheme_dir").className = "input is-danger";
-                        </script>
-                        <p class="help is-danger"> {{ errors['primer_scheme_dir'] }} </p>
-                    {% endif %}
-                    {% if errors['char_error_primer_scheme_dir'] %}
-                        <script>
-                          document.getElementById("primer_scheme_dir").className = "input is-danger";
-                        </script>
-                        <p class="help is-danger"> {{ errors['char_error_primer_scheme_dir'] }} </p>
-                    {% endif %}
-                {% endif %}
-                <br>
-
-                <!-- primer scheme name -->
-                <label class="subtitle is-5" for="primer_scheme">Primer Name: *</label><br>
-                <small> e.g. nCoV-2019/V1 </small><br>
-                <input class="input" type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br><br>
-
-
-                <div class="field">
-                  <div class="control">
-                    <!-- barcode type -->
+                    <!-- single or multiple samples -->
                     <br>
-                    <label class="subtitle is-5" for="barcode_type"> Select a barcode type: *</label><br><br>
-                    <input type="radio" id="native" name="barcode_type" value="native" onclick="setParams()">
-                    <label for="native"> Native</label><br>
-                    <input type="radio" id="rapid" name="barcode_type" value="rapid" onclick="setParams()">
-                    <label for="rapid"> Rapid</label><br>
+                    <h1 class="subtitle">This input contains: *</h1>
+                    <input type="radio" id="single" name="num_samples" value="single" onClick="getMultiSample(this.id)" required>
+                    <label for="single">A single sample</label><br>
+                    <input type="radio" id="multiple" name="num_samples" value="multiple" onClick="getMultiSample(this.id)">
+                    <label for="multiple">Multiple samples</label><br><br>
                   </div>
+                    <div id="multi_sample" style="display:none">
+                        <!-- select sample-csv -->
+                        <label class="subtitle is-5">Select the sample-barcode metadata file (CSV) for your experiment: </label><br>
+                        <small>(Only needed if there are multiple samples)</small><br>
+                          <input class="input" list="csv_search" name="csv_file" id="csv_file" placeholder="Search for CSV file" value="{{csv_name}}">
+                            <datalist id="csv_search">
+                              {% if csvs %}
+                                {% for csv in csvs %}
+                                  <option value="{{ csv }}">{{ csv }}</option>
+                                {% endfor %}
+                              {% endif %}
+                            </datalist>
+                       </div><br>
 
-                </div>
-                 <script>
-                    if ( {{ barcode_type }}.id == "native") {
-                      document.getElementById("native").checked = true;
-                    } else if ( {{ barcode_type }}.id == "rapid") {
-                       document.getElementById("rapid").checked = true;
+                  <label class="subtitle is-5" for="scheme_folder">Select concatenated fastq file (optional):</label>
+                  <div class="tooltip"> (info)
+                      <span class="tooltiptext">- If you already have a concatenated fastq file/s you may specify it here. Otherwise, this will be generated by the artic gather/demultiplex functions<br><br>
+                                                - Must be absolute file path, starting with "/"</span>
+                      </div><br>
+                  <!-- <small>(only input if you already have this file, otherwise artic gather/demultiplex will generate it)</small><br> -->
+                  <input class="input" type="text" id="read_file" name="read_file" size="80" value="{{read_file}}"><br>
+                  {% if errors %}
+                      {% if errors['read_file'] %}
+                          <script>
+                            document.getElementById("read_file").className = "input is-danger";
+                          </script>
+                          <p class="help is-danger"> {{ errors['read_file'] }} </p>
+                      {% endif %}
+                      {% if errors['char_error_read_file'] %}
+                          <script>
+                            document.getElementById("read_file").className = "input is-danger";
+                          </script>
+                          <p class="help is-danger"> {{ errors['char_error_read_file'] }} </p>
+                      {% endif %}
+                  {% endif %}
+                  <br>
+
+                  <!-- output folder file path - Medaka/ Nanopolish-->
+                  <label class="subtitle is-5" for="output_folder">Output folder (optional): </label>
+                  <div class="tooltip"> (info)
+                      <span class="tooltiptext">- Must be absolute file path, starting with "/" or single folder name to be created in input folder</span>
+                  </div><br>
+                  <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
+                  <input class="input" type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
+                  {% if errors %}
+                      {% if errors['char_error_output_folder'] %}
+                          <script>
+                            document.getElementById("output_folder").className = "input is-danger";
+                          </script>
+                          <p class="help is-danger"> {{ errors['char_error_output_folder'] }} </p>
+                      {% endif %}
+                      {% if errors['override'] == True %}
+                          <script>
+                            document.getElementById("output_folder").classList.add("is-danger");
+                          </script>
+                      {% endif %}
+                  {% endif %}
+                  <br>
+                  <!-- override output data?-->
+                  <input type="checkbox" id="override_data" name="override_data">
+                  <label for="override_data">Override existing data?</label><br>
+                  </div>
+                   <!-- refernce genome -->
+                  <script>
+                  function getReference(id) {
+                    if (id == "SARS-CoV-2") {
+                        document.getElementById("SARS-CoV-2_virus").style.display = "block"
+                    } else {
+                        document.getElementById("SARS-CoV-2_virus").style.display = "none";
+                        setSchemes("none", "")
+                        }
+                    // if (id == "ebola") {
+                    //     document.getElementById("ebola").style.display = "block"
+                    //     }
+                    // else {
+                    //     document.getElementById("ebola").style.display = "none";
+                    //     }
                     }
+
+                    function getOtherPrimer() {
+                        if (document.getElementById("other_primer").style.display == "block") {
+                          document.getElementById("other_primer").style.display = "none";
+                        } else {
+                          document.getElementById("other_primer").style.display = "block";
+                        }
+                        }
+
                   </script>
+                  <div class="field">
+                    <div class="control">
+                      <!-- Which virus/reference -->
+                      <br>
+                      <h1 class="subtitle">Select the virus you want to analyse: *</h1>
+                      <input type="radio" id="SARS-CoV-2" name="virus" value="SARS-CoV-2" onClick="getReference(this.id)" required>
+                      <label for="SARS-CoV-2">SARS-CoV-2 (nCoV-2019)</label><br>
+                      <input type="radio" id="ebola" name="virus" value="ebola" onClick="getReference(this.id)">
+                      <label for="ebola">Ebola</label><br>
+                      <input type="radio" id="nipah" name="virus" value="nipah" onClick="getReference(this.id)">
+                      <label for="nipah">Nipah</label><br><br>
+                    </div>
+                      <div id="SARS-CoV-2_virus" style="display:none">
+                          <!-- nCoV-2019 prime schemes -->
+                            <label class="subtitle is-5" for="primer_type"> Select your primer scheme: *</label>
+                            <div class="tooltip"> (info)
+                                <span class="tooltiptext">There are 3 default primer sets available with interArtic:<br>
+                                                          - <b>artic:</b> The original 400bp amplicon set, great for high CT samples<br>
+                                                          - <b>eden:</b> 2500bp amplicon set used for gaining even coverage depth<br>
+                                                          - <b>midnight:</b> 1200bp amplicon set used for striking a balance between above 2</span>
+                            </div><br><br>
+                            <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}})">
+                            <label for="artic"> Artic V3 (400bp)</label><br>
+                            <input type="radio" id="eden" name="primer_type" value="eden" onclick="setSchemes(this.id, {{schemes}})">
+                            <label for="eden"> Eden V1 (2500bp)</label><br>
+                            <input type="radio" id="midnight" name="primer_type" value="midnight" onclick="setSchemes(this.id, {{schemes}})">
+                            <label for="midnight"> Midnight V1 (1200bp)</label><br>
+                            <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer()">
+                            <label for="other">Other</label><br>
+                       </div>
+
+                          <div id="other_primer" style="display:none">
+                            Please enter your custom primer here:
+                            <input class="input" type="text" id="other_primer_type" name="other_primer_type" value={{other_primer_type}}>
+                          </div><br>
+
+                          <!-- primer scheme directory -->
+                          <label class="subtitle is-5" for="primer_scheme">Primer scheme directory: *</label><br>
+                          <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br>
+                          {% if errors %}
+                              {% if errors['primer_scheme_dir'] %}
+                                  <script>
+                                    document.getElementById("primer_scheme_dir").className = "input is-danger";
+                                  </script>
+                                  <p class="help is-danger"> {{ errors['primer_scheme_dir'] }} </p>
+                              {% endif %}
+                              {% if errors['char_error_primer_scheme_dir'] %}
+                                  <script>
+                                    document.getElementById("primer_scheme_dir").className = "input is-danger";
+                                  </script>
+                                  <p class="help is-danger"> {{ errors['char_error_primer_scheme_dir'] }} </p>
+                              {% endif %}
+                          {% endif %}
+                          <br>
+
+                          <!-- primer scheme name -->
+                          <label class="subtitle is-5" for="primer_scheme">Name of primer scheme: *</label><br>
+                          <small> e.g. nCoV-2019/V3 </small><br>
+                          <input class="input" type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br>
+                     </div>
+
+                    <div class="field">
+                      <div class="control">
+                        <!-- barcode type -->
+                        <br>
+                        <label class="subtitle is-5" for="barcode_type">Which library preparation method was used: *</label><br><br>
+                        <input type="radio" id="native" name="barcode_type" value="native" onclick="setParams()">
+                        <label for="native">Ligation library prep (eg SQK-LSK109)</label><br>
+                        <input type="radio" id="rapid" name="barcode_type" value="rapid" onclick="setParams()">
+                        <label for="rapid">Rapid library prep (eg SQK-RBK004)</label><br><br>
+                      </div>
+
+                    </div>
+
+                <label class="subtitle is-5" for="pipeline"> Select a pipeline to run: *</label>
+                    <div class="tooltip"> (info)
+                        <span class="tooltiptext">- The Nanopolish pipeline uses both .fastq and .fast5 files for variant calling<br><br>
+                                                  - The Medaka pipeline only uses .fastq files for variant calling<br><br>
+                                                  - Both will run each pipeline, one after the other</span>
+                    </div><br><br>
+                    <input type="radio" id="nanopolish" name="pipeline" value="nanopolish">
+                    <label for="nanopolish"> Nanopolish</label><br>
+                    <input type="radio" id="medaka" name="pipeline" value="medaka">
+                    <label for="medaka"> Medaka</label><br>
+                    <input type="radio" id="both" name="pipeline" value="both">
+                    <label for="both"> Both</label><br>
                 <br>
 
                 <div class="field">
@@ -361,72 +375,66 @@
                     <!-- Parameter selection -->
                     <!--when medaka is selected then the current parameters appear-->
                     <!-- threads - Medaka/ Nanopolish-->
-                    <center><h1 class="subtitle"><b>Select parameters</b></h1></center><br>
-                    <h1 class="subtitle is-5">Gather command: *</h1>
+                    <input type="button" class="button is-small" name="answer" value="Customise your parameters *for advanced users*" onclick="showDiv()" />
+                    <div id="paramDiv" style="display: none"><br>
+                      {% if errors %}
+                        <script>
+                          document.getElementById("paramDiv").style.display = "block";
+                        </script>
+                      {% endif%}
+                        <div class="field">
+                          <div class="control">
+                            <center><h1 class="subtitle"><b>Customise your parameters *for advanced users*</b></h1></center><br>
+                            <h1 class="subtitle is-5">Gather command: *</h1>
 
-                    <label for="min_length">Minimum Length: *</label>
-                    <input class="input" type="number" id="min_length" name="min_length" value="{{ min_length }}" required><br>
-                    <br><label for="max_length">Maximum Length: *</label>
-                    <input class="input" type="number" id="max_length" name="max_length" value="{{ max_length }}" required><br>
-                    {% if errors %}
-                        {% if errors['invalid_length'] %}
-                          <script>
-                            document.getElementById("min_length").className = "input is-danger";
-                            document.getElementById("max_length").className = "input is-danger";
-                          </script>
-                          <p class="help is-danger"> {{ errors['invalid_length'] }} </p>
-                        {% endif %}
-                        {% if errors['char_error_min_length'] %}
-                            <script>
-                              document.getElementById("min_length").className = "input is-danger";
-                            </script>
-                            <p class="help is-danger"> {{ errors['char_error_min_length'] }} </p>
-                        {% endif %}
-                        {% if errors['char_error_max_length'] %}
-                            <script>
-                              document.getElementById("max_length").className = "input is-danger";
-                            </script>
-                            <p class="help is-danger"> {{ errors['char_error_max_length'] }} </p>
-                        {% endif %}
-                    {% endif %}
-                    <br>
-                    <h1 class="subtitle is-5">Other parameters: *</h1>
-                    <label for="num_threads">CPU thread usage: *</label>
-                    <input class="input" type="number" id="num_threads" name="num_threads" value="4" required><br>
-                    <!-- normalise - Medaka/ Nanopolish-->
-                    <br>
-                    <label for="normalise">Normalise depth: *</label>
-                    <input class="input" type="number" id="normalise" name="normalise" value="200" required><br>
-                    <!--<br>
-                    <div id="nanoParams" style="display:none">
-                      <h1 class="title is-6">Nanopolish parameters:</h1>
-                      <br>
-                    </div>
-                    <div id="medakaParams" style="display:none">
-                      <h1 class="title is-6">Medaka parameters:</h1>
-                    </div> -->
+                            <label for="min_length">Minimum Length: *</label>
+                            <input class="input" type="number" id="min_length" name="min_length" value="{{ min_length }}" required><br>
+                            <br><label for="max_length">Maximum Length: *</label>
+                            <input class="input" type="number" id="max_length" name="max_length" value="{{ max_length }}" required><br>
+                            {% if errors %}
+                                {% if errors['invalid_length'] %}
+                                  <script>
+                                    document.getElementById("min_length").className = "input is-danger";
+                                    document.getElementById("max_length").className = "input is-danger";
+                                  </script>
+                                  <p class="help is-danger"> {{ errors['invalid_length'] }} </p>
+                                {% endif %}
+                                {% if errors['char_error_min_length'] %}
+                                    <script>
+                                      document.getElementById("min_length").className = "input is-danger";
+                                    </script>
+                                    <p class="help is-danger"> {{ errors['char_error_min_length'] }} </p>
+                                {% endif %}
+                                {% if errors['char_error_max_length'] %}
+                                    <script>
+                                      document.getElementById("max_length").className = "input is-danger";
+                                    </script>
+                                    <p class="help is-danger"> {{ errors['char_error_max_length'] }} </p>
+                                {% endif %}
+                            {% endif %}
+                            <br>
+                            <h1 class="subtitle is-5">Other parameters: *</h1>
+                            <label for="num_threads">CPU thread usage: *</label>
+                            <input class="input" type="number" id="num_threads" name="num_threads" value="4" required><br>
+                            <!-- normalise - Medaka/ Nanopolish-->
+                            <br>
+                            <label for="normalise">Normalise depth: *</label>
+                            <input class="input" type="number" id="normalise" name="normalise" value="200" required><br>
+                        </div>
+                      </div>
                   </div>
-                </div>
-
-                <div class="field">
-                  <div class="control">
-                    <!-- single or multiple samples -->
-                    <br>
-                    <h1 class="subtitle">This input contains: *</h1>
-                    <input type="radio" id="single" name="num_samples" value="single" required>
-                    <label for="single">A single sample</label><br>
-                    <input type="radio" id="multiple" name="num_samples" value="multiple">
-                    <label for="multiple">Multiple samples</label><br>
-                  </div>
-                </div>
-
-                <script>
-                    if ( {{ num_samples }}.id == "single") {
-                      document.getElementById("single").checked = true;
-                    } else if ( {{ num_samples }}.id == "multiple") {
-                       document.getElementById("multiple").checked = true;
-                    }
+                  <script>
+                      function showDiv() {
+                        if (document.getElementById('paramDiv').style.display == "block") {
+                          document.getElementById('paramDiv').style.display = "none";
+                        } else {
+                          document.getElementById('paramDiv').style.display = "block";
+                        }
+                      }
                   </script>
+                  </div>
+                </div>
+
 
                 <br>
                 <div class="field">
@@ -481,6 +489,7 @@
       </div>
       <!-- // -->
       </div>
+      </div>
 
       <script>
         //primers
@@ -507,6 +516,14 @@
           } else if (id == 'midnight') {
             primer_scheme_dir.value = schemesJson['midnight_scheme'];
             primer_scheme.value = schemesJson['midnight_scheme_name'];
+          } else if (id == 'none') {
+              // resets the fields so there isn't any hidden carry over
+              primer_scheme_dir.value = "";
+              primer_scheme.value = "";
+              document.getElementById("artic").checked = false
+              document.getElementById("eden").checked = false
+              document.getElementById("midnight").checked = false
+              document.getElementById("other").checked = false
           }
           setParams()
         }
