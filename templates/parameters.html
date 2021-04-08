@@ -260,7 +260,7 @@
                   <script>
                   function getReference(id) {
                     if (id == "SARS-CoV-2") {
-                        document.getElementById("SARS-CoV-2_virus").style.display = "block"
+                        document.getElementById("SARS-CoV-2_virus").style.display = "block";
                     } else {
                         document.getElementById("SARS-CoV-2_virus").style.display = "none";
                         setSchemes("none", "")
@@ -273,13 +273,14 @@
                     //     }
                     }
 
-                    function getOtherPrimer() {
-                        if (document.getElementById("other_primer").style.display == "block") {
-                          document.getElementById("other_primer").style.display = "none";
-                        } else {
-                          document.getElementById("other_primer").style.display = "block";
-                        }
-                        }
+                  function getOtherPrimer(id) {
+                    if (id == "other") {
+                        document.getElementById("other_primer").style.display = "block";
+                        setSchemes("none", "")
+                    } else {
+                        document.getElementById("other_primer").style.display = "none";
+                    }
+                    }
 
                   </script>
                   <div class="field">
@@ -303,20 +304,22 @@
                                                           - <b>eden:</b> 2500bp amplicon set used for gaining even coverage depth<br>
                                                           - <b>midnight:</b> 1200bp amplicon set used for striking a balance between above 2</span>
                             </div><br><br>
-                            <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}})">
+                            <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
                             <label for="artic"> Artic V3 (400bp)</label><br>
-                            <input type="radio" id="eden" name="primer_type" value="eden" onclick="setSchemes(this.id, {{schemes}})">
+                            <input type="radio" id="eden" name="primer_type" value="eden" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
                             <label for="eden"> Eden V1 (2500bp)</label><br>
-                            <input type="radio" id="midnight" name="primer_type" value="midnight" onclick="setSchemes(this.id, {{schemes}})">
+                            <input type="radio" id="midnight" name="primer_type" value="midnight" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
                             <label for="midnight"> Midnight V1 (1200bp)</label><br>
-                            <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer()">
+                            <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer(this.id)">
                             <label for="other">Other</label><br>
                        </div>
-
-                          <div id="other_primer" style="display:none">
-                            Please enter your custom primer here:
-                            <input class="input" type="text" id="other_primer_type" name="other_primer_type" value={{other_primer_type}}>
-                          </div><br>
+                   </div>
+                   <div class="field">
+                     <div class="control">
+                       <div id="other_primer" style="display:none">
+                           Please enter your custom primer here:
+                           <input class="input" type="text" id="other_primer_type" name="other_primer_type" value={{other_primer_type}}>
+                       </div><br>
 
                           <!-- primer scheme directory -->
                           <label class="subtitle is-5" for="primer_scheme">Primer scheme directory: *</label><br>
@@ -342,6 +345,7 @@
                           <small> e.g. nCoV-2019/V3 </small><br>
                           <input class="input" type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br>
                      </div>
+                 </div>
 
                     <div class="field">
                       <div class="control">
@@ -501,10 +505,10 @@
         var rapid = document.getElementById("rapid");
 
         function setSchemes(id, schemesJson) {
-          if (document.getElementById("other_primer").style.display == "block") {
-            document.getElementById("other_primer").style.display = "none";
-
-          }
+          // if (document.getElementById("other_primer").style.display == "block") {
+          //   document.getElementById("other_primer").style.display = "none";
+          //
+          // }
           var primer_scheme_dir = document.getElementById("primer_scheme_dir");
           var primer_scheme= document.getElementById("primer_scheme");
           if (id == 'artic') {
@@ -523,7 +527,7 @@
               document.getElementById("artic").checked = false
               document.getElementById("eden").checked = false
               document.getElementById("midnight").checked = false
-              document.getElementById("other").checked = false
+              // document.getElementById("other").checked = false
           }
           setParams()
         }
