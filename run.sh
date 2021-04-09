@@ -78,6 +78,10 @@ INTERARTIC_LOG=$LOG_LOCATION/interartic.log
 CELERY_LOG=$LOG_LOCATION/celery.log
 REALPATH=$(dirname $(readlink -f $0))
 
+export PYTHONNOUSERSITE=1
+unset PYTHONHOME
+unset PYTHONPATH
+
 cd $REALPATH
 echo "Starting redis server on port $REDIS_PORT. Log location: $REDIS_LOG"
 ( bin/redis-server --port $REDIS_PORT &> $REDIS_LOG || die "Launching redis server on port $REDIS_PORT failed. See $REDIS_LOG" ) &
