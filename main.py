@@ -505,7 +505,7 @@ def parameters():
         bwa = request.form.get('bwa')
         skip_nanopolish = request.form.get('skip_nanopolish')
         dry_run = request.form.get('dry_run')
-        num_samples = request.form.get('num_samples')
+        # num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
 
@@ -679,7 +679,7 @@ def error(job_name):
         bwa = request.form.get('bwa')
         skip_nanopolish = request.form.get('skip_nanopolish')
         dry_run = request.form.get('dry_run')
-        num_samples = request.form.get('num_samples')
+        # num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
 
