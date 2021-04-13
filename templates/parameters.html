@@ -199,6 +199,12 @@
                     <label for="single">A single sample</label><br>
                     <input type="radio" id="multiple" name="num_samples" value="multiple" onClick="getMultiSample(this.id)">
                     <label for="multiple">Multiple samples</label><br><br>
+                    {% if num_samples %}
+                    <script>
+                        document.getElementById("{{num_samples}}").checked = true
+                        // getMultiSample("{{num_samples}}")
+                    </script>
+                    {% endif %}
                   </div>
                     <div id="multi_sample" style="display:none">
                         <!-- select sample-csv -->
@@ -210,6 +216,20 @@
                                 {% for csv in csvs %}
                                   <option value="{{ csv }}">{{ csv }}</option>
                                 {% endfor %}
+                              {% endif %}
+                              {% if num_samples %}
+                              <script>
+                                  // document.getElementById("{{num_samples}}").checked = true
+                                  getMultiSample("{{num_samples}}")
+                              </script>
+                              {% endif %}
+                              {% if errors %}
+                                {% if errors['csv_file'] %}
+                                <script>
+                                  document.getElementById("csv_file").className = "input is-danger";
+                                </script>
+                                <p class="help is-danger"> {{ errors['csv_file'] }} </p>
+                                {% endif %}
                               {% endif %}
                             </datalist>
                        </div><br>

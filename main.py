@@ -304,8 +304,11 @@ def check_special_characters(func):
         check input args for special characters
         return error dic handled after call
         """
-        def _detect_special_characer(pass_string):
-            regex= re.compile('^[a-zA-Z0-9_/-]+$')
+        def _detect_special_characer(pass_string, filename=False):
+            if filename:
+                regex= re.compile('^[a-zA-Z0-9._/-]+$')
+            else:
+                regex= re.compile('^[a-zA-Z0-9_/-]+$')
             if(regex.search(pass_string) == None):
                 ret = True
             else:
@@ -322,6 +325,10 @@ def check_special_characters(func):
             if a:
                 # sys.stderr.write(str(a))
                 # sys.stderr.write("\n")
+                if arg == "csv_filepath":
+                    if _detect_special_characer(str(a), filename=True):
+                        errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use: a-Z, 0-9 . _ /".format(arg, str(a))
+                    continue
                 if _detect_special_characer(str(a)):
                     errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use: a-Z, 0-9, _, /".format(arg, str(a))
         if len(errors) != 0:
@@ -331,7 +338,7 @@ def check_special_characters(func):
     return wraper_check_char
 
 @check_special_characters
-def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input):
+def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input, csv_filepath):
     errors = {}
 
     #Check of jobname is used
@@ -341,6 +348,11 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     if not input_folder:
         errors['input_folder'] = "Input Directory does not exist"
         flash("Warning: Input folder does not exist, please check input and try again")
+        return errors, output_folder
+
+    if not os.path.isfile(csv_filepath):
+        errors['csv_file'] = "csv file does not exist"
+        flash("Warning: CSV file does not exist, please check input and try again")
         return errors, output_folder
 
     #give error if input folder path is empty
@@ -514,7 +526,7 @@ def parameters():
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
         virus = request.form.get('virus')
-        
+
         sys.stderr.write("VIRUS: {}\n".format(virus))
 
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
@@ -569,7 +581,9 @@ def parameters():
 
         # check errors
         errors = {}
-        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir,
+                                                    read_file, pipeline, override_data, min_length,
+                                                    max_length, job_name, output_input, csv_filepath)
 
         # if an output folder does not exist, make one
         # if not output_folder:
@@ -583,6 +597,10 @@ def parameters():
 
         # display errors if errors exist
         if len(errors) != 0:
+
+            k = ["{}: {}".format(key, errors[key]) for key in errors.keys()]
+            sys.stderr.write(",".join(k))
+            sys.stderr.write("\n")
             #Update displayed queue on home page
             queueList = []
 
@@ -757,7 +775,9 @@ def error(job_name):
 
         # check errors
         errors = {}
-        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input)
+        errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir,
+                                                    read_file, pipeline, override_data, min_length,
+                                                    max_length, job_name, output_input, csv_filepath)
 
         # if an output folder does not exist, make one
         # if not output_folder:
