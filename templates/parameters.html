@@ -130,7 +130,7 @@
           <div class="column">
               <!-- Start parameter input -->
               <center><h1 class="title is-4">Prepare your InterARTIC job</h1> <br></center>
-              <form method=POST>
+              <form autocomplete="off" method=POST>
                 <div class="field">
                   <div class="control">
                     <!-- Job name input -->
@@ -157,7 +157,7 @@
                   </div>
                 </div>
                 <label class="subtitle is-5">Select the input data directory for your experiment: *</label><br>
-                  <input class="input" list="search" name="input_folder" id="input_folder" placeholder="Search for input folder" value="{{input_name}}" required>
+                  <input class="input" list="search" name="input_folder" id="input_folder" placeholder="Search for input folder" value="{{input_name}}" autocomplete="off" required>
                     <datalist id="search">
                       {% if folders %}
                         {% for folder in folders %}
@@ -204,7 +204,7 @@
                         <!-- select sample-csv -->
                         <label class="subtitle is-5">Select the sample-barcode metadata file (CSV) for your experiment: </label><br>
                         <small>(Only needed if there are multiple samples)</small><br>
-                          <input class="input" list="csv_search" name="csv_file" id="csv_file" placeholder="Search for CSV file" value="{{csv_name}}">
+                          <input class="input" list="csv_search" name="csv_file" id="csv_file" placeholder="Search for CSV file" value="{{csv_name}}" autocomplete="off">
                             <datalist id="csv_search">
                               {% if csvs %}
                                 {% for csv in csvs %}
