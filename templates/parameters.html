@@ -267,16 +267,16 @@
                         document.getElementById("SARS-CoV-2_virus").style.display = "none";
                         setSchemes("none", "")
                         }
-                    // if (id == "ebola") {
-                    //     document.getElementById("ebola").style.display = "block"
-                    //     }
-                    // else {
-                    //     document.getElementById("ebola").style.display = "none";
-                    //     }
+                    if (id == "IturiEBOV") {
+                        document.getElementById("IturiEBOV_virus").style.display = "block";
+                        }
+                    else {
+                        document.getElementById("IturiEBOV_virus").style.display = "none";
+                        }
                     }
 
                   function getOtherPrimer(id) {
-                    if (id == "other") {
+                    if (id == "custom") {
                         document.getElementById("other_primer").style.display = "block";
                         setSchemes("none", "")
                     } else {
@@ -292,13 +292,13 @@
                       <h1 class="subtitle">Select the virus you want to analyse: *</h1>
                       <input type="radio" id="SARS-CoV-2" name="virus" value="SARS-CoV-2" onClick="getReference(this.id)" required>
                       <label for="SARS-CoV-2">SARS-CoV-2 (nCoV-2019)</label><br>
-                      <input type="radio" id="ebola" name="virus" value="ebola" onClick="getReference(this.id)">
-                      <label for="ebola">Ebola</label><br>
-                      <input type="radio" id="nipah" name="virus" value="nipah" onClick="getReference(this.id)">
-                      <label for="nipah">Nipah</label><br><br>
+                      <input type="radio" id="IturiEBOV" name="virus" value="IturiEBOV" onClick="getReference(this.id)">
+                      <label for="IturiEBOV">IturiEBOV</label><br>
+                      <input type="radio" id="custom" name="virus" value="custom" onClick="getReference(this.id), getOtherPrimer(this.id)">
+                      <label for="custom">Custom</label><br><br>
                     </div>
                       <div id="SARS-CoV-2_virus" style="display:none">
-                          <!-- nCoV-2019 prime schemes -->
+                          <!-- nCoV-2019 primer schemes -->
                             <label class="subtitle is-5" for="primer_type"> Select your primer scheme: *</label>
                             <div class="tooltip"> (info)
                                 <span class="tooltiptext">There are 3 default primer sets available with interArtic:<br>
@@ -306,14 +306,30 @@
                                                           - <b>eden:</b> 2500bp amplicon set used for gaining even coverage depth<br>
                                                           - <b>midnight:</b> 1200bp amplicon set used for striking a balance between above 2</span>
                             </div><br><br>
-                            <input type="radio" id="artic" name="primer_type" value="artic" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
-                            <label for="artic"> Artic V3 (400bp)</label><br>
-                            <input type="radio" id="eden" name="primer_type" value="eden" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
-                            <label for="eden"> Eden V1 (2500bp)</label><br>
-                            <input type="radio" id="midnight" name="primer_type" value="midnight" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
-                            <label for="midnight"> Midnight V1 (1200bp)</label><br>
-                            <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer(this.id)">
-                            <label for="other">Other</label><br>
+                            <input type="radio" id="nCoV_2019_artic_V1" name="primer_type" value="nCoV_2019_artic_V1" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
+                            <label for="nCoV_2019_artic_V1"> Artic V1 (400bp)</label><br>
+                            <input type="radio" id="nCoV_2019_artic_V2" name="primer_type" value="nCoV_2019_artic_V2" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
+                            <label for="nCoV_2019_artic_V2"> Artic V2 (400bp)</label><br>
+                            <input type="radio" id="nCoV_2019_artic_V3" name="primer_type" value="nCoV_2019_artic_V3" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
+                            <label for="nCoV_2019_artic_V3"> Artic V3 (400bp)</label><br>
+                            <input type="radio" id="nCoV_2019_eden_V1" name="primer_type" value="nCoV_2019_eden_V1" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
+                            <label for="nCoV_2019_eden_V1"> Eden V1 (2500bp)</label><br>
+                            <input type="radio" id="nCoV_2019_midnight_V1" name="primer_type" value="nCoV_2019_midnight_V1" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
+                            <label for="nCoV_2019_midnight_V1"> Midnight V1 (1200bp)</label><br>
+                            <!-- <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer(this.id)">
+                            <label for="other">Other</label><br> -->
+                       </div>
+                      <div id="IturiEBOV_virus" style="display:none">
+                          <!-- ebola_virus primer schemes -->
+                            <label class="subtitle is-5" for="primer_type"> Select your primer scheme: *</label>
+                            <!-- <div class="tooltip"> (info)
+                                <span class="tooltiptext"></span>
+                            </div> -->
+                            <br><br>
+                            <input type="radio" id="IturiEBOV_artic_V1" name="primer_type" value="IturiEBOV_artic_V1" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
+                            <label for="IturiEBOV_artic_V1"> Artic V1 (400bp)</label><br>
+                            <!-- <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer(this.id)">
+                            <label for="other">Other</label><br> -->
                        </div>
                    </div>
                    <div class="field">
@@ -499,9 +515,14 @@
 
       <script>
         //primers
-        var artic = document.getElementById("artic");
-        var eden = document.getElementById("eden");
-        var midnight = document.getElementById("midnight");
+        // nCoV-2019
+        var nCoV_2019_artic_V1 = document.getElementById("nCoV_2019_artic_V1");
+        var nCoV_2019_artic_V2 = document.getElementById("nCoV_2019_artic_V2");
+        var nCoV_2019_artic_V3 = document.getElementById("nCoV_2019_artic_V3");
+        var nCoV_2019_eden_V1 = document.getElementById("nCoV_2019_eden_V1");
+        var nCoV_2019_midnight_V1 = document.getElementById("nCoV_2019_midnight_V1");
+        // IturiEBOV Ebola
+        var IturiEBOV_artic_V1 = document.getElementById("IturiEBOV_artic_V1");
         //barcodes
         var native = document.getElementById("native");
         var rapid = document.getElementById("rapid");
@@ -513,46 +534,62 @@
           // }
           var primer_scheme_dir = document.getElementById("primer_scheme_dir");
           var primer_scheme= document.getElementById("primer_scheme");
-          if (id == 'artic') {
-            primer_scheme_dir.value = schemesJson['artic_scheme'];
-            primer_scheme.value = schemesJson['artic_scheme_name'];
-          } else if (id == 'eden') {
-            primer_scheme_dir.value = schemesJson['eden_scheme'];
-            primer_scheme.value = schemesJson['eden_scheme_name'];
-          } else if (id == 'midnight') {
-            primer_scheme_dir.value = schemesJson['midnight_scheme'];
-            primer_scheme.value = schemesJson['midnight_scheme_name'];
+          if (id == 'nCoV_2019_artic_V1') {
+            primer_scheme_dir.value = schemesJson['nCoV_2019_artic_V1_scheme'];
+            primer_scheme.value = schemesJson['nCoV_2019_artic_V1_scheme_name'];
+        } else if (id == 'nCoV_2019_artic_V2') {
+            primer_scheme_dir.value = schemesJson['nCoV_2019_artic_V2_scheme'];
+            primer_scheme.value = schemesJson['nCoV_2019_artic_V2_scheme_name'];
+        } else if (id == 'nCoV_2019_artic_V3') {
+            primer_scheme_dir.value = schemesJson['nCoV_2019_artic_V3_scheme'];
+            primer_scheme.value = schemesJson['nCoV_2019_artic_V3_scheme_name'];
+        } else if (id == 'nCoV_2019_eden_V1') {
+            primer_scheme_dir.value = schemesJson['nCoV_2019_eden_V1_scheme'];
+            primer_scheme.value = schemesJson['nCoV_2019_eden_V1_scheme_name'];
+        } else if (id == 'nCoV_2019_midnight_V1') {
+            primer_scheme_dir.value = schemesJson['nCoV_2019_midnight_V1_scheme'];
+            primer_scheme.value = schemesJson['nCoV_2019_midnight_V1_scheme_name'];
+        } else if (id == 'IturiEBOV_artic_V1') {
+            primer_scheme_dir.value = schemesJson['IturiEBOV_artic_V1_scheme'];
+            primer_scheme.value = schemesJson['IturiEBOV_artic_V1_scheme_name'];
           } else if (id == 'none') {
               // resets the fields so there isn't any hidden carry over
               primer_scheme_dir.value = "";
               primer_scheme.value = "";
-              document.getElementById("artic").checked = false
-              document.getElementById("eden").checked = false
-              document.getElementById("midnight").checked = false
+              document.getElementById("nCoV_2019_artic_V1").checked = false
+              document.getElementById("nCoV_2019_artic_V2").checked = false
+              document.getElementById("nCoV_2019_artic_V3").checked = false
+              document.getElementById("nCoV_2019_eden_V1").checked = false
+              document.getElementById("nCoV_2019_midnight_V1").checked = false
+              document.getElementById("IturiEBOV_artic_V1").checked = false
               // document.getElementById("other").checked = false
           }
           setParams()
         }
-
+        // TODO: Do this better, and push it into a config file somewhere
+        // Better, yet, calculate it based on amplicon lengths from primer bed scheme
         //max/min length
         function setParams() {
           var max_length = document.getElementById("max_length");
           var min_length = document.getElementById("min_length");
-          if(artic.checked && native.checked) {
+          if((nCoV_2019_artic_V1.checked || nCoV_2019_artic_V2.checked || nCoV_2019_artic_V3.checked) && native.checked) {
             max_length.value = '500';
             min_length.value = '300';
-          } else if (eden.checked && native.checked) {
+        } else if (nCoV_2019_eden_V1.checked && native.checked) {
             max_length.value = '2700';
             min_length.value = '2300';
-          } else if (eden.checked && rapid.checked) {
+        } else if (nCoV_2019_eden_V1.checked && rapid.checked) {
             max_length.value = '2700';
             min_length.value = '300';
-          } else if (midnight.checked && native.checked) {
+        } else if (nCoV_2019_midnight_V1.checked && native.checked) {
             max_length.value = '1400';
             min_length.value = '1000';
-          } else if (midnight.checked && rapid.checked) {
+        } else if (nCoV_2019_midnight_V1.checked && rapid.checked) {
             max_length.value = '1400';
             min_length.value = '300';
+        } else if (IturiEBOV_artic_V1.checked && native.checked) {
+            max_length.value = '800';
+            min_length.value = '400';
           } else {
             max_length.value = '';
             min_length.value = '';
