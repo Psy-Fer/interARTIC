@@ -417,6 +417,11 @@
                         <label for="native">Ligation library prep (eg SQK-LSK109)</label><br>
                         <input type="radio" id="rapid" name="barcode_type" value="rapid" onclick="setParams()">
                         <label for="rapid">Rapid library prep (eg SQK-RBK004)</label><br><br>
+                        {% if barcode_type %}
+                         <script>
+                             document.getElementById("{{barcode_type}}").checked = true
+                         </script>
+                        {% endif %}
                       </div>
 
                     </div>
