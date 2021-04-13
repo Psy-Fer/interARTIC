@@ -422,9 +422,7 @@
                              document.getElementById("{{barcode_type}}").checked = true
                          </script>
                         {% endif %}
-                      </div>
 
-                    </div>
 
                 <label class="subtitle is-5" for="pipeline"> Select a pipeline to run: *</label>
                     <div class="tooltip"> (info)
@@ -438,7 +436,15 @@
                     <label for="medaka"> Medaka</label><br>
                     <input type="radio" id="both" name="pipeline" value="both">
                     <label for="both"> Both</label><br>
+                    {% if pipeline %}
+                     <script>
+                         document.getElementById("{{pipeline}}").checked = true
+                     </script>
+                    {% endif %}
                 <br>
+                </div>
+
+              </div>
 
                 <div class="field">
                   <div class="control">

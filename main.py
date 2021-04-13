@@ -731,6 +731,8 @@ def error(job_name):
         # num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
+        virus = request.form.get('virus')
+        override_data = request.form.get('override_data')
 
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
         # primer_select is so that on reload, the correct radio button will be selected
@@ -795,14 +797,32 @@ def error(job_name):
             #Update displayed queue on home page
             queueList = []
             if qSys.queue.empty():
-                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
+                return render_template("parameters.html", job_name=job_name, queue=None,
+                                        input_name=input_name, input_folder=input_folder,
+                                        output_folder=output_folder, virus=virus,
+                                        pipeline=pipeline, min_length=min_length,
+                                        max_length=max_length, primer_scheme=primer_scheme,
+                                        primer_type=primer_type, num_samples=num_samples,
+                                        primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                        errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
+                                        other_primer_type=other_primer_type, primer_select=primer_select,
+                                        schemes=schemes, override_data=override_data)
             for item in qSys.queue.getItems():
                 queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
             queueDict = {'jobs': queueList}
             displayQueue = json.htmlsafe_dumps(queueDict)
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
+            return render_template("parameters.html", job_name=job_name, queue=None,
+                                    input_name=input_name, input_folder=input_folder,
+                                    output_folder=output_folder, virus=virus,
+                                    pipeline=pipeline, min_length=min_length,
+                                    max_length=max_length, primer_scheme=primer_scheme,
+                                    primer_type=primer_type, num_samples=num_samples,
+                                    primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                    errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
+                                    other_primer_type=other_primer_type, primer_select=primer_select,
+                                    schemes=schemes, override_data=override_data)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -841,14 +861,32 @@ def error(job_name):
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
-        return render_template("parameters.html", job_name=job_name, queue = None, pipeline=pipeline, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders, csvs=csvs, primer_select=primer_select, other_primer_type=primer_type)
+        return render_template("parameters.html", job_name=job_name, queue=None,
+                                input_name=input_name, input_folder=input_folder,
+                                output_folder=output_folder, virus=virus,
+                                pipeline=pipeline, min_length=min_length,
+                                max_length=max_length, primer_scheme=primer_scheme,
+                                primer_type=primer_type, num_samples=num_samples,
+                                primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
+                                other_primer_type=other_primer_type, primer_select=primer_select,
+                                schemes=schemes, override_data=override_data)
 
     for item in qSys.queue.getItems():
         queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", job_name=job_name, queue = displayQueue, pipeline=pipeline, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type, primer_scheme_dir=primer_scheme_dir, folders=folders, csvs=csvs, primer_select=primer_select,other_primer_type=primer_type)
+    return render_template("parameters.html", job_name=job_name, queue=None,
+                            input_name=input_name, input_folder=input_folder,
+                            output_folder=output_folder, virus=virus,
+                            pipeline=pipeline, min_length=min_length,
+                            max_length=max_length, primer_scheme=primer_scheme,
+                            primer_type=primer_type, num_samples=num_samples,
+                            primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                            errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
+                            other_primer_type=other_primer_type, primer_select=primer_select,
+                            schemes=schemes, override_data=override_data)
 
 # Progress page
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
