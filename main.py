@@ -576,9 +576,9 @@ def parameters():
             queueList = []
 
             if qSys.queue.empty():
-                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
+                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select, schemes=schemes)
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
+            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select, schemes=schemes)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
