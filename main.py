@@ -361,6 +361,9 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     if qSys.getJobByName(job_name) is not None:
         errors['job_name'] = "Job Name has already been used."
 
+    if not output_folder:
+        errors['input_folder'] = "Invalid input Directory"
+        return errors, output_folder
     #give error if input folder path is empty
     if len(os.listdir(input_folder)) == 0:
         errors['input_folder'] = "Directory is empty."
@@ -495,6 +498,7 @@ def parameters():
     global input_filepath
     global sample_csv
     global schemes
+    sys.stderr.write("Entering parameters\n")
     k = ["{}: {}".format(key, schemes[key]) for key in schemes.keys()]
     sys.stderr.write(", ".join(k))
     sys.stderr.write("\n")
@@ -505,6 +509,7 @@ def parameters():
 
     if request.method == "POST":
         # get curr queue
+        sys.stderr.write("POST parameters\n")
         queueList = []
         if not qSys.queue.empty():
             for item in qSys.queue.getItems():
@@ -559,22 +564,26 @@ def parameters():
         # else:
         #     if output_folder[0] != "/":
         #         output_folder = input_folder + output_folder
+        if not os.path.isdir(input_folder):
+            input_folder = ""
+            output_input = ""
 
-        output_input = input_folder
+        else:
+            output_input = input_folder
 
-        # get the correct input folder filepath from user input
-        # path = glob.glob(input_folder + '/*/*')[0]
-        # use fnmatch with walk to get fastq_pass, fastq_fail folders
-        # then split off the last bit to get the top folder for the gather command
-        tmp_folder_list = []
-        for dName, sdName, fList in os.walk(input_folder):
-            for fileName in sdName:
-                if fnmatch.fnmatch(fileName, "fastq*"):
-                    tmp_folder_list.append(os.path.join(dName, fileName))
-        tmp_path = tmp_folder_list[0].split("/")[:-1]
-        path = "/".join(tmp_path)
-        os.chdir(path)
-        input_folder = os.getcwd()
+            # get the correct input folder filepath from user input
+            # path = glob.glob(input_folder + '/*/*')[0]
+            # use fnmatch with walk to get fastq_pass, fastq_fail folders
+            # then split off the last bit to get the top folder for the gather command
+            tmp_folder_list = []
+            for dName, sdName, fList in os.walk(input_folder):
+                for fileName in sdName:
+                    if fnmatch.fnmatch(fileName, "fastq*"):
+                        tmp_folder_list.append(os.path.join(dName, fileName))
+            tmp_path = tmp_folder_list[0].split("/")[:-1]
+            path = "/".join(tmp_path)
+            os.chdir(path)
+            input_folder = os.getcwd()
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
@@ -600,11 +609,28 @@ def parameters():
         if len(errors) != 0:
             #Update displayed queue on home page
             queueList = []
+            sys.stderr.write("ERRORS found in parameters\n")
 
             if qSys.queue.empty():
-                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
+                return render_template("parameters.html", job_name=job_name, queue=None,
+                                        input_name=input_name, input_folder=input_folder,
+                                        output_folder=output_folder, read_file=read_file,
+                                        pipeline=pipeline, min_length=min_length, max_length=max_length,
+                                        primer_scheme=primer_scheme, primer_type=primer_type,
+                                        num_samples=num_samples,primer_scheme_dir=primer_scheme_dir,
+                                        barcode_type=barcode_type,errors=errors, folders=folders,csvs=csvs,
+                                        csv_name=csv_file, other_primer_type=other_primer_type,
+                                        primer_select=primer_select, schemes=schemes)
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select)
+            return render_template("parameters.html", job_name=job_name, queue=displayQueue,
+                                    input_name=input_name, input_folder=input_folder,
+                                    output_folder=output_folder, read_file=read_file,
+                                    pipeline=pipeline, min_length=min_length, max_length=max_length,
+                                    primer_scheme=primer_scheme, primer_type=primer_type,
+                                    num_samples=num_samples,primer_scheme_dir=primer_scheme_dir,
+                                    barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs,
+                                    csv_name=csv_file, other_primer_type=other_primer_type,
+                                    primer_select=primer_select, schemes=schemes)
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -641,6 +667,7 @@ def parameters():
         else:
             return redirect(url_for('progress', job_name=job_name))
 
+    sys.stderr.write("Hitting tail end of parameters\n")
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
