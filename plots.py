@@ -86,8 +86,10 @@ def main():
     # sub-module for coverage ploter
     cov = subcommand.add_parser('cov', help='plots coverage',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    cov.add_argument("-d", "--depth_file", nargs='+',
-                        help="full path to depth file")
+    cov.add_argument("-d1", "--depth_file_1",
+                        help="full path to depth file 1")
+    cov.add_argument("-d2", "--depth_file_2",
+                        help="full path to depth file 2")
 
 
     args = parser.parse_args()
@@ -164,7 +166,10 @@ def cov_pipeline(args):
     y-axis = depth
     each bar is a bin of read depth
     """
-    return
+
+
+
+
 
     # plt.hist(data, bins=range(-50, 50), align='right', color='green', alpha=0.6)
     # plt.title("Meth calls")
