@@ -171,6 +171,12 @@
                               </script>
                               <p class="help is-danger"> {{ errors['char_error_input_folder'] }} </p>
                           {% endif %}
+                          {% if errors['input_folder'] %}
+                              <script>
+                                document.getElementById("input_folder").className = "input is-danger";
+                              </script>
+                              <p class="help is-danger"> {{ errors['input_folder'] }} </p>
+                          {% endif %}
                       {% endif %}
                     </datalist>
                 <br>
@@ -265,7 +271,7 @@
                         document.getElementById("SARS-CoV-2_virus").style.display = "block";
                     } else {
                         document.getElementById("SARS-CoV-2_virus").style.display = "none";
-                        setSchemes("none", "")
+                        // setSchemes("none", "")
                         }
                     if (id == "IturiEBOV") {
                         document.getElementById("IturiEBOV_virus").style.display = "block";
@@ -278,7 +284,7 @@
                   function getOtherPrimer(id) {
                     if (id == "custom") {
                         document.getElementById("other_primer").style.display = "block";
-                        setSchemes("none", "")
+                        // setSchemes("none", "")
                     } else {
                         document.getElementById("other_primer").style.display = "none";
                     }
@@ -290,11 +296,11 @@
                       <!-- Which virus/reference -->
                       <br>
                       <h1 class="subtitle">Select the virus you want to analyse: *</h1>
-                      <input type="radio" id="SARS-CoV-2" name="virus" value="SARS-CoV-2" onClick="getReference(this.id)" required>
+                      <input type="radio" id="SARS-CoV-2" name="virus" value="SARS-CoV-2" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})" required>
                       <label for="SARS-CoV-2">SARS-CoV-2 (nCoV-2019)</label><br>
-                      <input type="radio" id="IturiEBOV" name="virus" value="IturiEBOV" onClick="getReference(this.id)">
+                      <input type="radio" id="IturiEBOV" name="virus" value="IturiEBOV" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})">
                       <label for="IturiEBOV">IturiEBOV</label><br>
-                      <input type="radio" id="custom" name="virus" value="custom" onClick="getReference(this.id), getOtherPrimer(this.id)">
+                      <input type="radio" id="custom" name="virus" value="custom" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})">
                       <label for="custom">Custom</label><br><br>
                     </div>
                       <div id="SARS-CoV-2_virus" style="display:none">
@@ -331,6 +337,17 @@
                             <!-- <input type="radio" id="other" name="primer_type" value="other" onClick="getOtherPrimer(this.id)">
                             <label for="other">Other</label><br> -->
                        </div>
+                       {% if virus %}
+                        <script>
+                           document.getElementById("{{virus}}").checked = true
+                           getReference("{{virus}}")
+                        </script>
+                       {% endif %}
+                       {% if primer_type %}
+                        <script>
+                            document.getElementById("{{primer_type}}").checked = true
+                        </script>
+                       {% endif %}
                    </div>
                    <div class="field">
                      <div class="control">
@@ -552,7 +569,7 @@
         } else if (id == 'IturiEBOV_artic_V1') {
             primer_scheme_dir.value = schemesJson['IturiEBOV_artic_V1_scheme'];
             primer_scheme.value = schemesJson['IturiEBOV_artic_V1_scheme_name'];
-          } else if (id == 'none') {
+        } else if (id == "SARS-CoV-2" || id == "IturiEBOV" || id == "custom") {
               // resets the fields so there isn't any hidden carry over
               primer_scheme_dir.value = "";
               primer_scheme.value = "";
@@ -562,6 +579,10 @@
               document.getElementById("nCoV_2019_eden_V1").checked = false
               document.getElementById("nCoV_2019_midnight_V1").checked = false
               document.getElementById("IturiEBOV_artic_V1").checked = false
+              if (id != "custom"){
+                  var other_primer_type = document.getElementById("other_primer_type")
+                  other_primer_type.value = ""
+              }
               // document.getElementById("other").checked = false
           }
           setParams()

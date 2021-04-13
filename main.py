@@ -338,6 +338,11 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     if qSys.getJobByName(job_name) is not None:
         errors['job_name'] = "Job Name has already been used."
 
+    if not input_folder:
+        errors['input_folder'] = "Input Directory does not exist"
+        flash("Warning: Input folder does not exist, please check input and try again")
+        return errors, output_folder
+
     #give error if input folder path is empty
     if len(os.listdir(input_folder)) == 0:
         errors['input_folder'] = "Directory is empty."
@@ -508,6 +513,9 @@ def parameters():
         # num_samples = request.form.get('num_samples')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
+        virus = request.form.get('virus')
+        
+        sys.stderr.write("VIRUS: {}\n".format(virus))
 
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
         # primer_select is so that on reload, the correct radio button will be selected
@@ -533,22 +541,25 @@ def parameters():
         # else:
         #     if output_folder[0] != "/":
         #         output_folder = input_folder + output_folder
+        if not os.path.isdir(input_folder):
+            input_folder = ""
+            output_input = ""
+        else:
+            output_input = input_folder
 
-        output_input = input_folder
-
-        # get the correct input folder filepath from user input
-        # path = glob.glob(input_folder + '/*/*')[0]
-        # use fnmatch with walk to get fastq_pass, fastq_fail folders
-        # then split off the last bit to get the top folder for the gather command
-        tmp_folder_list = []
-        for dName, sdName, fList in os.walk(input_folder):
-            for fileName in sdName:
-                if fnmatch.fnmatch(fileName, "fastq*"):
-                    tmp_folder_list.append(os.path.join(dName, fileName))
-        tmp_path = tmp_folder_list[0].split("/")[:-1]
-        path = "/".join(tmp_path)
-        os.chdir(path)
-        input_folder = os.getcwd()
+            # get the correct input folder filepath from user input
+            # path = glob.glob(input_folder + '/*/*')[0]
+            # use fnmatch with walk to get fastq_pass, fastq_fail folders
+            # then split off the last bit to get the top folder for the gather command
+            tmp_folder_list = []
+            for dName, sdName, fList in os.walk(input_folder):
+                for fileName in sdName:
+                    if fnmatch.fnmatch(fileName, "fastq*"):
+                        tmp_folder_list.append(os.path.join(dName, fileName))
+            tmp_path = tmp_folder_list[0].split("/")[:-1]
+            path = "/".join(tmp_path)
+            os.chdir(path)
+            input_folder = os.getcwd()
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
@@ -576,9 +587,28 @@ def parameters():
             queueList = []
 
             if qSys.queue.empty():
-                return render_template("parameters.html", job_name=job_name, queue = None, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors, folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select, schemes=schemes)
+                return render_template("parameters.html", job_name=job_name, queue=None,
+                                        input_name=input_name, input_folder=input_folder,
+                                        output_folder=output_folder, virus=virus,
+                                        pipeline=pipeline, min_length=min_length,
+                                        max_length=max_length, primer_scheme=primer_scheme,
+                                        primer_type=primer_type, num_samples=num_samples,
+                                        primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                        errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
+                                        other_primer_type=other_primer_type, primer_select=primer_select,
+                                        schemes=schemes)
 
-            return render_template("parameters.html", job_name=job_name, queue = displayQueue, input_name=input_name, input_folder=input_folder, output_folder=output_folder, read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme, primer_type=primer_type, num_samples=num_samples,primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,errors=errors,folders=folders, csvs=csvs, csv_name=csv_file, other_primer_type=other_primer_type, primer_select=primer_select, schemes=schemes)
+            return render_template("parameters.html", job_name=job_name, queue=displayQueue,
+                                    input_name=input_name, input_folder=input_folder,
+                                    output_folder=output_folder, virus=virus,
+                                    pipeline=pipeline, min_length=min_length,
+                                    max_length=max_length, primer_scheme=primer_scheme,
+                                    primer_type=primer_type, num_samples=num_samples,
+                                    primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                    errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
+                                    other_primer_type=other_primer_type, primer_select=primer_select,
+                                    schemes=schemes)
+
 
         #no spaces in the job name - messes up commands
         job_name = job_name.replace(" ", "_")
@@ -699,24 +729,25 @@ def error(job_name):
         # concat /data to input folder
         input_folder = input_filepath + '/' + input_folder
         filename = os.path.dirname(os.path.realpath(__file__))
+        if not os.path.isdir(input_folder):
+            input_folder = ""
+            output_input = ""
+        else:
+            output_input = input_folder
 
-        output_input = input_folder
-
-        # get the correct input folder filepath from user input
-        # path = glob.glob(input_folder + '/*/*')[0]
-        # use fnmatch with walk to get fastq_pass, fastq_fail folders
-        # then split off the last bit to get the top folder for the gather command
-        tmp_folder_list = []
-        for dName, sdName, fList in os.walk(input_folder):
-            for fileName in sdName:
-                if fnmatch.fnmatch(fileName, "fastq*"):
-                    tmp_folder_list.append(os.path.join(dName, fileName))
-        tmp_path = tmp_folder_list[0].split("/")[:-1]
-        path = "/".join(tmp_path)
-        os.chdir(path)
-        input_folder = os.getcwd()
-        os.chdir(path)
-        input_folder = os.getcwd()
+            # get the correct input folder filepath from user input
+            # path = glob.glob(input_folder + '/*/*')[0]
+            # use fnmatch with walk to get fastq_pass, fastq_fail folders
+            # then split off the last bit to get the top folder for the gather command
+            tmp_folder_list = []
+            for dName, sdName, fList in os.walk(input_folder):
+                for fileName in sdName:
+                    if fnmatch.fnmatch(fileName, "fastq*"):
+                        tmp_folder_list.append(os.path.join(dName, fileName))
+            tmp_path = tmp_folder_list[0].split("/")[:-1]
+            path = "/".join(tmp_path)
+            os.chdir(path)
+            input_folder = os.getcwd()
 
         #if user agrees output can override files with the same name in output folder
         if request.form.get('override_data'):
