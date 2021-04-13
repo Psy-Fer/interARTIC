@@ -261,12 +261,12 @@ def home():
         # get global variables
         search_input = request.form.get('file_path')
         search_csv = request.form.get('csv_folder')
-        eden_scheme = request.form.get('eden_folder')
-        eden_scheme_name = request.form.get('eden_name')
-        midnight_scheme = request.form.get('midnight_folder')
-        midnight_scheme_name = request.form.get('midnight_name')
-        artic_scheme = request.form.get('artic_folder')
-        artic_scheme_name = request.form.get('artic_name')
+        # eden_scheme = request.form.get('eden_folder')
+        # eden_scheme_name = request.form.get('eden_name')
+        # midnight_scheme = request.form.get('midnight_folder')
+        # midnight_scheme_name = request.form.get('midnight_name')
+        # artic_scheme = request.form.get('artic_folder')
+        # artic_scheme_name = request.form.get('artic_name')
 
         # error checking here
         if not os.path.isdir(search_input):
@@ -275,17 +275,18 @@ def home():
         if not os.path.isdir(search_csv):
             errors['invalid_csv_file_path'] = "File path entered is not valid"
 
-        if not os.path.isdir(eden_scheme):
-            errors['invalid_eden_path'] = "File path entered is not valid"
-
-        if not os.path.isdir(midnight_scheme):
-            errors['invalid_midnight_path'] = "File path entered is not valid"
-
-        if not os.path.isdir(artic_scheme):
-            errors['invalid_artic_path'] = "File path entered is not valid"
+        # if not os.path.isdir(eden_scheme):
+        #     errors['invalid_eden_path'] = "File path entered is not valid"
+        #
+        # if not os.path.isdir(midnight_scheme):
+        #     errors['invalid_midnight_path'] = "File path entered is not valid"
+        #
+        # if not os.path.isdir(artic_scheme):
+        #     errors['invalid_artic_path'] = "File path entered is not valid"
 
         if len(errors) != 0:
-            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, eden_folder=eden_scheme, midnight_folder=midnight_scheme, artic_folder=artic_scheme, eden_name=eden_scheme_name, midnight_name=midnight_scheme_name, artic_name=artic_scheme_name)
+            # return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, eden_folder=eden_scheme, midnight_folder=midnight_scheme, artic_folder=artic_scheme, eden_name=eden_scheme_name, midnight_name=midnight_scheme_name, artic_name=artic_scheme_name)
+            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv)
         else: # update global variables
             global input_filepath
             input_filepath = search_input
@@ -294,12 +295,16 @@ def home():
             sample_csv = search_csv
 
             global schemes
-            schemes['eden_scheme'] = eden_scheme
-            schemes['eden_scheme_name'] = eden_scheme_name
-            schemes['midnight_scheme'] = midnight_scheme
-            schemes['midnight_scheme_name'] = midnight_scheme_name
-            schemes['artic_scheme'] = artic_scheme
-            schemes['artic_scheme_name'] = artic_scheme_name
+            k = ["{}: {}".format(key, schemes[key]) for key in schemes.keys()]
+            sys.stderr.write(", ".join(k))
+            sys.stderr.write("\n")
+
+            # schemes['eden_scheme'] = eden_scheme
+            # schemes['eden_scheme_name'] = eden_scheme_name
+            # schemes['midnight_scheme'] = midnight_scheme
+            # schemes['midnight_scheme_name'] = midnight_scheme_name
+            # schemes['artic_scheme'] = artic_scheme
+            # schemes['artic_scheme_name'] = artic_scheme_name
 
             # Save config if paths all work
             with open(os.path.dirname(os.path.realpath(__file__))+"/config.init", 'w') as c:
@@ -308,7 +313,8 @@ def home():
                 c.write('\t"sample-barcode-csvs": "{}"'.format(search_csv))
                 c.write('}\n')
 
-    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, eden_folder=schemes['eden_scheme'], eden_name=schemes['eden_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
+    # return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, eden_folder=schemes['eden_scheme'], eden_name=schemes['eden_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
+    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv)
 
 @app.route("/about")
 def about():
@@ -489,6 +495,9 @@ def parameters():
     global input_filepath
     global sample_csv
     global schemes
+    k = ["{}: {}".format(key, schemes[key]) for key in schemes.keys()]
+    sys.stderr.write(", ".join(k))
+    sys.stderr.write("\n")
 
     # get a list of all the folders in the input and csv folders to be displayed to the user
     folders = getInputFolders(input_filepath)
