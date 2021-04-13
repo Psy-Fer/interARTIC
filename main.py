@@ -526,8 +526,9 @@ def parameters():
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
         virus = request.form.get('virus')
+        override_data = request.form.get('override_data')
 
-        sys.stderr.write("VIRUS: {}\n".format(virus))
+        sys.stderr.write("override_data: {}\n".format(override_data))
 
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
         # primer_select is so that on reload, the correct radio button will be selected
@@ -614,7 +615,7 @@ def parameters():
                                         primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
                                         errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
                                         other_primer_type=other_primer_type, primer_select=primer_select,
-                                        schemes=schemes)
+                                        schemes=schemes, override_data=override_data)
 
             return render_template("parameters.html", job_name=job_name, queue=displayQueue,
                                     input_name=input_name, input_folder=input_folder,
@@ -625,7 +626,7 @@ def parameters():
                                     primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
                                     errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
                                     other_primer_type=other_primer_type, primer_select=primer_select,
-                                    schemes=schemes)
+                                    schemes=schemes, override_data=override_data)
 
 
         #no spaces in the job name - messes up commands

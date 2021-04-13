@@ -183,7 +183,7 @@
                 <script>
                   function getMultiSample(id) {
                     if (id == "multiple") {
-                        document.getElementById("multi_sample").style.display = "block"
+                        document.getElementById("multi_sample").style.display = "block";
                         }
                     else {
                         document.getElementById("multi_sample").style.display = "none";
@@ -201,7 +201,7 @@
                     <label for="multiple">Multiple samples</label><br><br>
                     {% if num_samples %}
                     <script>
-                        document.getElementById("{{num_samples}}").checked = true
+                        document.getElementById("{{num_samples}}").checked = true;
                         // getMultiSample("{{num_samples}}")
                     </script>
                     {% endif %}
@@ -283,6 +283,12 @@
                   <!-- override output data?-->
                   <input type="checkbox" id="override_data" name="override_data">
                   <label for="override_data">Override existing data?</label><br>
+                  {% if override_data %}
+                    <script>
+                        document.getElementById("override_data").checked = true;
+                    </script>
+                  {% endif %}
+
                   </div>
                    <!-- refernce genome -->
                   <script>
