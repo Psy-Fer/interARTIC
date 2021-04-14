@@ -388,8 +388,13 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     #give error if primer schemes folder path is invalid or empty
     if not os.path.isdir(primer_scheme_dir):
         errors['primer_scheme_dir'] = "Invalid path."
+        flash("Warning: primer_scheme_dir does not exist, pleas check: {}".format(primer_scheme_dir))
+        return errors, output_folder
     elif len(os.listdir(primer_scheme_dir)) == 0:
         errors['primer_scheme_dir'] = "Directory is empty."
+        flash("Warning: Primer_scheme_dir is empty, pleas check: {}".format(primer_scheme_dir))
+        return errors, output_folder
+
 
     #if read file is specified by user
     if read_file:
@@ -403,7 +408,8 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     if pipeline == "both":
         # TODO: check all os.system() calls
         if override_data is True and os.path.exists(output_folder):
-            remove = "rm -r " + output_folder + "/all_cmds_log.txt"
+            # remove = "rm -r " + output_folder + "/all_cmds_log.txt"
+            remove = "rm -r " + output_folder
             os.system(remove)
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder + "/medaka"):
