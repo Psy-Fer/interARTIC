@@ -624,6 +624,32 @@ def parameters():
                 for fileName in sdName:
                     if fnmatch.fnmatch(fileName, "fastq*"):
                         tmp_folder_list.append(os.path.join(dName, fileName))
+            if len(tmp_folder_list) == 0:
+                queueList = []
+                flash("Warning: No fastq files found in {}".format(input_folder))
+                errors = {}
+                if qSys.queue.empty():
+                    return render_template("parameters.html", job_name=job_name, queue=None,
+                                            input_name=input_name, input_folder=input_folder,
+                                            output_folder=output_folder, virus=virus,
+                                            pipeline=pipeline, min_length=min_length,
+                                            max_length=max_length, primer_scheme=primer_scheme,
+                                            primer_type=primer_type, num_samples=num_samples,
+                                            primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                            errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
+                                            other_primer_type=other_primer_type, primer_select=primer_select,
+                                            schemes=schemes, override_data=override_data)
+
+                return render_template("parameters.html", job_name=job_name, queue=displayQueue,
+                                        input_name=input_name, input_folder=input_folder,
+                                        output_folder=output_folder, virus=virus,
+                                        pipeline=pipeline, min_length=min_length,
+                                        max_length=max_length, primer_scheme=primer_scheme,
+                                        primer_type=primer_type, num_samples=num_samples,
+                                        primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                        errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
+                                        other_primer_type=other_primer_type, primer_select=primer_select,
+                                        schemes=schemes, override_data=override_data)
             tmp_path = tmp_folder_list[0].split("/")[:-1]
             path = "/".join(tmp_path)
             os.chdir(path)
