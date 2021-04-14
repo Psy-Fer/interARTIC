@@ -326,7 +326,7 @@
                       <label for="SARS-CoV-2">SARS-CoV-2 (nCoV-2019)</label><br>
                       <input type="radio" id="IturiEBOV" name="virus" value="IturiEBOV" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})">
                       <label for="IturiEBOV">IturiEBOV</label><br>
-                      <input type="radio" id="custom" name="virus" value="custom" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})">
+                      <input type="radio" id="custom" name="virus" value="custom" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}}), showDiv1()">
                       <label for="custom">Custom</label><br><br>
                     </div>
                       <div id="SARS-CoV-2_virus" style="display:none">
@@ -451,7 +451,7 @@
                     <!-- Parameter selection -->
                     <!--when medaka is selected then the current parameters appear-->
                     <!-- threads - Medaka/ Nanopolish-->
-                    <input type="button" class="button is-small" name="answer" value="Customise your parameters *for advanced users*" onclick="showDiv()" />
+                    <input type="button" class="button is-small" name="answer" value="Customise your parameters *for advanced users*" onclick="showDiv2()" />
                     <div id="paramDiv" style="display: none"><br>
                       {% if errors %}
                         <script>
@@ -500,13 +500,14 @@
                       </div>
                   </div>
                   <script>
-                      function showDiv() {
+                    function showDiv2() {
                         if (document.getElementById('paramDiv').style.display == "block") {
                           document.getElementById('paramDiv').style.display = "none";
                         } else {
                           document.getElementById('paramDiv').style.display = "block";
                         }
-                      }
+                    }
+
                   </script>
                   </div>
                 </div>
@@ -657,6 +658,13 @@
           var message = document.getElementById("flash");
           message.style.display = "none";
         }
+        function showDiv1() {
+            var paramDiv = document.getElementById('paramDiv');
+            if (paramDiv.style.display === 'none') {
+                paramDiv.style.display = 'block';
+            }
+          }
+
 
         // Displaying the Queue
         const jobsQueue = document.getElementById("jobsQueue");
