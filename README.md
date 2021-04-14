@@ -59,16 +59,16 @@ Now click *Submit job(s)* and you should see the pipeline running :)
 
 # interARTIC usage
 
-For detailed information on using interARTIC visit [here](https://tthnguyen11.github.io/interARTIC/usage/).
+For detailed information on using interARTIC visit [here](https://psy-fer.github.io/interARTIC/usage/).
 
 # Troubleshooting
 
-See [here](https://tthnguyen11.github.io/interARTIC/troubleshooting/) for troubleshooting common issues.
+See [here](https://psy-fer.github.io/interARTIC/troubleshooting/) for troubleshooting common issues.
 
 
 # Building from source
 
-Building from source is not the easiest to do due to the dependency hell of Python versions. Step by step instructions for building from source are given [here](https://tthnguyen11.github.io/interARTIC/installation/).
+Building from source is not the easiest to do due to the dependency hell of Python versions. Step by step instructions for building from source are given [here](https://psy-fer.github.io/interARTIC/installation/).
 
 
 # Acknowledgement
