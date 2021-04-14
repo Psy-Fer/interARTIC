@@ -344,6 +344,8 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     #Check of jobname is used
     if qSys.getJobByName(job_name) is not None:
         errors['job_name'] = "Job Name has already been used."
+        flash("Warning: Job Name has already been used.")
+        return errors, output_folder
 
     if not input_folder:
         errors['input_folder'] = "Input Directory does not exist"
@@ -358,10 +360,13 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     #give error if input folder path is empty
     if len(os.listdir(input_folder)) == 0:
         errors['input_folder'] = "Directory is empty."
+        flash("Warning: Input folder contains no data, please check input and try again")
+        return errors, output_folder
 
     #if no output folder entered, creates one inside of input folder
     if not output_folder and not os.path.isdir(output_input):
         errors['input_output_folder'] = "Input and output don't exist"
+        flash("Warning: Input and output don't exist!")
         return errors, output_folder
     elif not output_folder and os.path.isdir(output_input):
         output_folder = output_input + "/output"
@@ -407,63 +412,107 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
     #both pipelines running
     if pipeline == "both":
         # TODO: check all os.system() calls
+        if not os.path.exists(output_folder):
+            make_dir = 'mkdir ' + output_folder
+            if os.system(make_dir) != 0:
+                errors['mkdir'] = "Failed to create output directory, please check parent path exists and has write permission"
+                flash("Warning: Failed to create output directory, please check parent path exists and has write permission")
+                return errors, output_folder
         if override_data is True and os.path.exists(output_folder):
             # remove = "rm -r " + output_folder + "/all_cmds_log.txt"
             remove = "rm -r " + output_folder
-            os.system(remove)
+            if os.system(remove) !=0:
+                errors['remove_folder'] = "Could not detele output_directory"
+                flash("Warning: Could not delete {}".format(output_folder))
+                return errors, output_folder
+            make_dir = 'mkdir ' + output_folder
+            if os.system(make_dir) != 0:
+                errors['mkdir'] = "Failed to create output directory, please check parent path exists and has write permission"
+                flash("Warning: Failed to create output directory, please check parent path exists and has write permission")
+                return errors, output_folder
+        elif check_override(output_folder, override_data) and os.path.exists(output_input):
+            errors['override'] = True
+            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+            return errors, output_folder
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder + "/medaka"):
-            make_dir = 'mkdir "' + output_folder + '"'
-            if os.system(make_dir) != 0:
-                errors['mkdir_m1'] = "Failed to create output directory, please check parent path exists and has write permission"
-            make_dir_m = 'mkdir "' + output_folder + '/medaka"'
+            # make_dir = 'mkdir ' + output_folder
+            # if os.system(make_dir) != 0:
+            #     errors['mkdir_m1'] = "Failed to create output directory, please check parent path exists and has write permission"
+            #     flash("Warning: Could not mkdir {}".format(output_folder))
+            #     return errors, output_folder
+            make_dir_m = 'mkdir ' + output_folder + '/medaka'
             if os.system(make_dir_m) != 0:
-                errors['mkdir_m2'] = "Failed to create output directory, please check parent path exists and has write permission"
+                errors['mkdir_m2'] = "Failed to create medaka directory, please check parent path exists and has write permission"
+                flash("Warning: Could not mkdir {}/medaka".format(output_folder))
+                return errors, output_folder
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder + "/nanopolish"):
-            make_dir = 'mkdir "' + output_folder + '"'
-            os.system(make_dir)
-            if os.system(make_dir) != 0:
-                errors['mkdir_n1'] = "Failed to create output directory, please check parent path exists and has write permission"
-            make_dir_n = 'mkdir "' + output_folder + '/nanopolish"'
+            # make_dir = 'mkdir ' + output_folder
+            # # os.system(make_dir)
+            # if os.system(make_dir) != 0:
+            #     errors['mkdir_n1'] = "Failed to create output directory, please check parent path exists and has write permission"
+            #     flash("Warning: Could not mkdir {}".format(output_folder))
+            #     return errors, output_folder
+            make_dir_n = 'mkdir ' + output_folder + '/nanopolish'
             if os.system(make_dir_n) != 0:
-                errors['mkdir_n2'] = "Failed to create output directory, please check parent path exists and has write permission"
+                errors['mkdir_n2'] = "Failed to create nanopolish directory, please check parent path exists and has write permission"
+                flash("Warning: Could not mkdir {}/nanopolish".format(output_folder))
+                return errors, output_folder
 
         if check_override(output_folder + "/medaka", override_data) and os.path.exists(output_input):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
+            return errors, output_folder
 
         if check_override(output_folder + "/nanopolish", override_data) and os.path.exists(output_input):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
+            return errors, output_folder
 
         # Make empty log file for initial progress rendering
         make_log_m = 'touch \"' + output_folder + '\"/medaka/all_cmds_log.txt'
         make_log_n = 'touch \"' + output_folder + '\"/nanopolish/all_cmds_log.txt'
         if os.system(make_log_m) != 0:
             errors['touch_m'] = "Failed to write to output directory, please check path exists and has write permission"
+            flash("Warning: Failed to write to output directory, please check path exists and has write permission")
+            return errors, output_folder
         if os.system(make_log_n) != 0:
             errors['touch_n'] = "Failed to write to output directory, please check path exists and has write permission"
+            flash("Warning: Failed to write to output directory, please check path exists and has write permission")
+            return errors, output_folder
     else:
         #TODO: if not "both" still make the folders medaka | nanopolish based on selection
         #if the output folder does not exist, it is created
         if not os.path.exists(output_folder):
-            make_dir = 'mkdir "' + output_folder + '"'
+            make_dir = 'mkdir ' + output_folder
             if os.system(make_dir) != 0:
                 errors['mkdir'] = "Failed to create output directory, please check parent path exists and has write permission"
-                flash("Warning: Failes to create output directory, please check parent path exists and has write permission")
+                flash("Warning: Failed to create output directory, please check parent path exists and has write permission")
+                return errors, output_folder
 
         if override_data is True:
-            remove = "rm -r " + output_folder + "/all_cmds_log.txt"
-            os.system(remove)
+            # remove = "rm -r " + output_folder + "/all_cmds_log.txt"
+            remove = "rm -r " + output_folder
+            if os.system(remove) !=0:
+                errors['remove_folder'] = "Could not detele output_directory"
+                flash("Warning: Could not delete {}".format(output_folder))
+                return errors, output_folder
+            make_dir = 'mkdir ' + output_folder
+            if os.system(make_dir) != 0:
+                errors['mkdir'] = "Failed to create output directory, please check parent path exists and has write permission"
+                flash("Warning: Failed to create output directory, please check parent path exists and has write permission")
+                return errors, output_folder
         elif check_override(output_folder, override_data) and os.path.exists(output_input):
-            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
+            flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
+            return errors, output_folder
         # Make empty log file for initial progress rendering
         make_log = 'touch \"' + output_folder + '\"/all_cmds_log.txt'
         if os.system(make_log) != 0:
             errors['touch'] = "Failed to write to output directory, please check path exists and has write permission"
-            flash("Warning: Failes to write to output directory, please check parent path exists and has write permission")
+            flash("Warning: Failed to create log file, please check parent path exists and has write permission")
+            return errors, output_folder
 
 
 
