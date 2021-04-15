@@ -1,9 +1,11 @@
 import os
+import sys
 #from .tasks import executeJob
 from flask import jsonify, url_for
 import subprocess
 from celery.app.control import Inspect
 import celery
+import fnmatch
 
 import csv, subprocess, time
 
@@ -34,6 +36,7 @@ class Job:
         self._gather_cmd = self.__generateGatherCmd()
         self._demult_cmd = self.__generateDemultCmd()
         self._min_cmd = self.__generateMinionCmd()
+        self._plot_cmd = self.__generatePlotCmd()
         self._task_id = None
         self._primer_select = primer_select
         self._input_name = input_name
@@ -125,6 +128,10 @@ class Job:
     @property
     def min_cmd(self):
         return self._min_cmd
+
+    @property
+    def plot_cmd(self):
+        return self._plot_cmd
 
     @property
     def task_id(self):
@@ -242,10 +249,101 @@ class Job:
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + sample_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 
-        minion_cmd = minion_cmd + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+        # minion_cmd = minion_cmd + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
         #change directory into output folder at the start
         minion_cmd = "cd " + self._output_folder + "; " + minion_cmd
         return minion_cmd
+
+    def __generatePlotCmd(self):
+        plot_cmd = "echo '*****MINION COMMAND COMPLETE!*****\n*****RUNNING PLOT COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+        if self._num_samples == "single":
+            sys.stderr.write("SINGLE FILE\n")
+            primer_path = self._primer_scheme_dir + "/" + "/".join(self._primer_scheme.split("_"))
+            sys.stderr.write("primer_path: ")
+            sys.stderr.write(primer_path)
+            sys.stderr.write("\n")
+            dir_path = self._output_folder + "/" + self._primer_type + "_sample1_" + self._run_name + "_" + self._job_name + "_single_" + self._pipeline
+            for dName, sdName, fList in os.walk(primer_path):
+                for fileName in fList:
+                    sys.stderr.write(fileName)
+                    sys.stderr.write("\n")
+                    if fnmatch.fnmatch(fileName, "*.scheme.bed"):
+                        sys.stderr.write("MATCH!!!!")
+                        sys.stderr.write("\n")
+                        bed_file = os.path.join(dName, fileName)
+            sys.stderr.write("bed_file: ")
+            sys.stderr.write(bed_file)
+            sys.stderr.write("\n")
+
+            with open(bed_file, 'r') as b:
+                for l in b:
+                    l = l.strip("\n")
+                    l = l.strip("\t")
+                    l = l.split("\t")
+                    virus = l[-1][:-2]
+                    break
+            sys.stderr.write("virus: ")
+            sys.stderr.write(virus)
+            sys.stderr.write("\n")
+
+            file_start = self._job_name
+            depth1 = "{}/{}.coverage_mask.txt.{}_1.depths".format(dir_path, file_start, virus)
+            depth2 = "{}/{}.coverage_mask.txt.{}_2.depths".format(dir_path, file_start, virus)
+            vcf_file = "{}/{}.pass.vcf.gz".format(dir_path, file_start)
+
+            plot_cmd = plot_cmd + "; plots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
+            # "python3 plots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file)
+
+        if self._num_samples == "multiple":
+            sys.stderr.write("MULTIPLE FILES\n")
+            primer_path = self._primer_scheme_dir + "/" + "/".join(self._primer_scheme.split("_"))
+            sys.stderr.write("primer_path: ")
+            sys.stderr.write(primer_path)
+            sys.stderr.write("\n")
+            for dName, sdName, fList in os.walk(primer_path):
+                for fileName in fList:
+                    sys.stderr.write(fileName)
+                    sys.stderr.write("\n")
+                    if fnmatch.fnmatch(fileName, "*.scheme.bed"):
+                        sys.stderr.write("MATCH!!!!")
+                        sys.stderr.write("\n")
+                        bed_file = os.path.join(dName, fileName)
+
+            sys.stderr.write("bed_file: ")
+            sys.stderr.write(bed_file)
+            sys.stderr.write("\n")
+            with open(bed_file, 'r') as b:
+                for l in b:
+                    l = l.strip("\n")
+                    l = l.strip("\t")
+                    l = l.split("\t")
+                    virus = l[-1][:-2]
+                    break
+            sys.stderr.write("virus: ")
+            sys.stderr.write(virus)
+            sys.stderr.write("\n")
+
+            with open(self._csv_file,'rt')as f:
+                data = csv.reader(f)
+                for row in data:
+                    sample_name = row[0]
+                    barcode = row[1]
+                    #create directory for barcode with naming system
+                    dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + self._job_name + "_" + barcode + "_" + self._pipeline
+                    file_start = self._job_name + "_" + sample_name + "_" + barcode
+                    depth1 = "{}/{}.coverage_mask.txt.{}_1.depths".format(dir_path, file_start, virus)
+                    depth2 = "{}/{}.coverage_mask.txt.{}_2.depths".format(dir_path, file_start, virus)
+                    vcf_file = "{}/{}.pass.vcf.gz".format(dir_path, file_start)
+
+                    plot_cmd = plot_cmd + "; plots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
+
+        #change directory into output folder
+        plot_cmd = plot_cmd + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+        plot_cmd = "cd " + self._output_folder + "; " + plot_cmd
+        sys.stderr.write("plot_cmd: ")
+        sys.stderr.write(plot_cmd)
+        sys.stderr.write("\n")
+        return plot_cmd
 
     def disableSave(self):
         self._save_graphs = False

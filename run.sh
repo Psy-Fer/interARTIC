@@ -81,6 +81,7 @@ REALPATH=$(dirname $(readlink -f $0))
 export PYTHONNOUSERSITE=1
 unset PYTHONHOME
 unset PYTHONPATH
+export PATH=`pwd`:$PATH
 
 cd $REALPATH
 echo "Starting redis server on port $REDIS_PORT. Log location: $REDIS_LOG"

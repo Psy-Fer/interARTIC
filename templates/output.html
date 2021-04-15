@@ -1,5 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+<style>
+/* includes alternating gray and white with on-hover color */
+
+.mystyle {
+    font-size: 15pt;
+    font-family: Arial;
+    border-collapse: collapse;
+    border: 1px solid silver;
+
+}
+
+.mystyle td, th {
+    padding: 20px;
+}
+
+.mystyle tr:nth-child(even) {
+    background: #E0E0E0;
+}
+
+</style>
   <head>
     <meta charset="utf-8">
     <link rel="icon" type="image/png" href="/static/icon.png" sizes="400x400">
@@ -10,18 +30,60 @@
     {% block content %}
     <div class="hero-body">
       <div class="container is-widescreen">
+      <div class="columns">
+          <!-- <div class="column is-one-quarter">
+          </div> -->
+         <div class="column">
+        <center>
         <h1 class="title is-4"> Output </h1>
-        <div class="container is-widescreen">
-          <div class="columns">
-            <div class="column">
+        <label class="subtitle is-5">Select sample</label><br><br>
+        <form autocomplete="off" method=POST>
+        <!-- <div class="tooltip"> (info)
+            <span class="tooltiptext">This will typically be the directory containing your nanopore runs.</span>
+        </div><br> -->
+
+          <input class="input" list="search" name="sample_folder" id="sample_folder" placeholder="Search for sample folder" value="" autocomplete="off" required>
+            <datalist id="search">
+              {% if sample_folders %}
+                {% for folder in sample_folders %}
+                  <option value="{{ folder }}">{{ folder }}</option>
+                {% endfor %}
+              {% endif %}
+            </datalist>
+            <br><br>
+            <input class="button is-small" type="submit" name="select_sample" id="select_sample" value="View">
+        </form>
+        </center>
+        </div>
+        </div>
+        <center>
+          <!-- <div class="columns"> -->
+            <!-- <div class="column">
               <h1 class="title is-4"> Files produced </h1>
               <text> These are the files produced from "</text><text style="color:#0066cc">{{ job_name }}</text><text>".</text>
               <text> They have been saved into the selected folder "</text><text style="color:#0066cc">{{ output_folder }}</text><text>".</text><br>
               <text id="files"> {{output_files}} </text>
-            </div>
-            <div class="column">
-              <h1 class="title is-4"> Data Visualisation </h1>
-              {% if vcf_found %}
+            </div> -->
+          <h1 class="title is-4"> Data Visualisation </h1>
+          <div>
+          {% if plots_found %}
+            <img src="{{plot}}" alt="plot for sample", style="width:1473px;height:853px;">
+          {% endif %}
+          </div>
+
+          <br><br>
+          <div>
+           {% if vcf_found %}
+            {{vcf_table|safe}}
+           {% endif %}
+          </div>
+      </center>
+      <br><br>
+
+
+              <!-- style="height:1000px;width:1000px" -->
+
+              <!-- {% if vcf_found %}
               {% if create_vcfs == "Enabled" %}
               <h1 class="title is-6"> Variants found </h1>
               <div id="vcf">
@@ -66,7 +128,7 @@
                     {% endif %}
                 </div>
                 <br><input class="button is-small" type="submit" name="submit_button" value="Preview">
-                <!--input class="button is-small" type="submit" name="submit_button" value="Download"-->
+
                 </form>
                 {% endif %}
                 <br>
@@ -83,115 +145,79 @@
               {% else %}
               <b> Plots cannot be previewed: No plots were found in the output folder. </b><br>
               {% endif %}
-            </div>
-          </div>
-            <input class="button is-small" type="submit" name="submit_button" id="direct_to_progress" value="Go to progress"><br>
-        </div>
+            </div> -->
+
+            <input class="button is-small" type="submit" name="submit_button" id="direct_to_progress" value="Go back to progress"><br>
+        <!-- </div> -->
+
+
     </div>
     </div>
 
     <script type="text/javascript">
+
       document.getElementById("direct_to_progress").onclick = function () {
         location.href = "/progress/{{ job_name }}";
       };
-      function produceGraphs(variant_graphs, job_name){
-        var vcfs = document.getElementById("vcf");
-        var button = document.getElementById("produce_graphs");
-        button.style.display = "none";
-        for (i = 0, len = variant_graphs.length, text = ""; i < len; i++){
-          name = variant_graphs[i][0];
-          min_pos = variant_graphs[i][1][1];
-          max_pos = variant_graphs[i][variant_graphs[i].length-2][1];
-          span = max_pos - min_pos;
-          max_depth = variant_graphs[i][variant_graphs[i].length-1];
-          x_increment = 1000/span;
-          var canvas = document.createElement("CANVAS");
-          canvas.id = i;
-          canvas.width = 1020;
-          canvas.height = max_depth + 125;
-          canvas.style.border="0.5px solid"
-          var ctx = canvas.getContext("2d");
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(1020, max_depth + 90);
-          ctx.lineTo(0, max_depth + 90);
-          ctx.closePath();
-          ctx.stroke();
-          ctx.font = '15px Verdana'
-          ctx.textAlign = 'center'
-          ctx.fillText("Graph of "+name, canvas.width/2, 40, 1000);
-          ctx.font = '10px sans-serif'
-          ctx.textAlign = 'left'
-          for(j = 1, leng = variant_graphs[i].length-1, text = ""; j < leng; j++){
-            snp = variant_graphs[i][j][2] + "->" + variant_graphs[i][j][3];
-            ctx.save();
-            ctx.translate(0, canvas.height)
-            ctx.rotate(-Math.PI/2);
-            ctx.fillText(snp, variant_graphs[i][j][4]+40, (variant_graphs[i][j][1]-min_pos)*x_increment+10);
-            ctx.fillText(variant_graphs[i][j][1], 5, (variant_graphs[i][j][1]-min_pos)*x_increment+10);
-            ctx.restore();
-            ctx.lineWidth = 0.3;
-            ctx.beginPath();
-            ctx.moveTo((variant_graphs[i][j][1]-min_pos)*x_increment+10, max_depth + 90);
-            ctx.lineTo((variant_graphs[i][j][1]-min_pos)*x_increment+10, max_depth + 90 -variant_graphs[i][j][4]);
-            ctx.closePath();
-            ctx.stroke();
-          }
-          var dataURL = canvas.toDataURL();
-          var vcf_graph = document.createElement("img");
-          vcf_graph.src = dataURL;
-          var dl = document.createElement('a');
-          dl.href = dataURL;
-          dl.setAttribute('download', "graph of "+name+".png");
-          var small = document.createElement("small");
-          dl.innerHTML = "Download";
-          vcfs.appendChild(vcf_graph);
-          small.appendChild(dl);
-          vcfs.appendChild(small);
-          var table = document.createElement("table");
-          var row = table.insertRow(0)
-          var chrom = row.insertCell(0)
-          var pos = row.insertCell(1)
-          var ref = row.insertCell(2)
-          var alt = row.insertCell(3)
-          var depth = row.insertCell(4)
-          var qual = row.insertCell(5)
-          chrom.innerHTML = "CHROM"
-          pos.innerHTML = "POS"
-          ref.innerHTML = "REF"
-          alt.innerHTML = "ALT"
-          depth.innerHTML = "DEPTH"
-          qual.innerHTML = "QUAL"
-          chrom.style.padding = '5px'
-          pos.style.padding = '5px'
-          ref.style.padding = '5px'
-          alt.style.padding = '5px'
-          depth.style.padding = '5px'
-          qual.style.padding = '5px'
-          for(j = 1, leng = variant_graphs[i].length-1, text = ""; j < leng; j++){
-            row = table.insertRow(j)
-            chrom = row.insertCell(0)
-            pos = row.insertCell(1)
-            ref = row.insertCell(2)
-            alt = row.insertCell(3)
-            depth = row.insertCell(4)
-            qual = row.insertCell(5)
-            chrom.innerHTML = variant_graphs[i][j][0]
-            pos.innerHTML = variant_graphs[i][j][1]
-            ref.innerHTML = variant_graphs[i][j][2]
-            alt.innerHTML = variant_graphs[i][j][3]
-            depth.innerHTML = variant_graphs[i][j][4]
-            qual.innerHTML = variant_graphs[i][j][5]
-            chrom.style.padding = '5px'
-            pos.style.padding = '5px'
-            ref.style.padding = '5px'
-            alt.style.padding = '5px'
-            depth.style.padding = '5px'
-            qual.style.padding = '5px'
-          }
-          vcfs.appendChild(table);
-        }
-      }
+
+        // function produceGraphs(vcf_table){
+        //     var vcfs = document.getElementById("vcf");
+        //     // var dataURL = canvas.toDataURL();
+        //     // var vcf_graph = document.createElement("img");
+        //     // vcf_graph.src = dataURL;
+        //     var dl = document.createElement('a');
+        //     // dl.href = dataURL;
+        //     // dl.setAttribute('download', "vcf"+sample+".png");
+        //     var small = document.createElement("small");
+        //     // dl.innerHTML = "Download";
+        //     // vcfs.appendChild(vcf_graph);
+        //     // small.appendChild(dl);
+        //     // vcfs.appendChild(small);
+        //     var table = document.createElement("table");
+        //     var row = table.insertRow(0)
+        //     var chrom = row.insertCell(0)
+        //     var pos = row.insertCell(1)
+        //     var ref = row.insertCell(2)
+        //     var alt = row.insertCell(3)
+        //     var depth = row.insertCell(4)
+        //     var qual = row.insertCell(5)
+        //     chrom.innerHTML = "CHROM"
+        //     pos.innerHTML = "POS"
+        //     ref.innerHTML = "REF"
+        //     alt.innerHTML = "ALT"
+        //     depth.innerHTML = "DEPTH"
+        //     qual.innerHTML = "QUAL"
+        //     chrom.style.padding = '5px'
+        //     pos.style.padding = '5px'
+        //     ref.style.padding = '5px'
+        //     alt.style.padding = '5px'
+        //     depth.style.padding = '5px'
+        //     qual.style.padding = '5px'
+        //     for(j = 1, leng = variant_graphs.length-1, text = ""; j < leng; j++){
+        //       row = table.insertRow(j)
+        //       chrom = row.insertCell(0)
+        //       pos = row.insertCell(1)
+        //       ref = row.insertCell(2)
+        //       alt = row.insertCell(3)
+        //       depth = row.insertCell(4)
+        //       qual = row.insertCell(5)
+        //       chrom.innerHTML = variant_graphs[j][0]
+        //       pos.innerHTML = variant_graphs[j][1]
+        //       ref.innerHTML = variant_graphs[j][2]
+        //       alt.innerHTML = variant_graphs[j][3]
+        //       depth.innerHTML = variant_graphs[j][4]
+        //       qual.innerHTML = variant_graphs[j][5]
+        //       chrom.style.padding = '5px'
+        //       pos.style.padding = '5px'
+        //       ref.style.padding = '5px'
+        //       alt.style.padding = '5px'
+        //       depth.style.padding = '5px'
+        //       qual.style.padding = '5px'
+        //     }
+        //     vcfs.appendChild(table);
+        //   }
+        // }
+
 
     </script>
 

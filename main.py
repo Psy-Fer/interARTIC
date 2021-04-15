@@ -23,6 +23,10 @@ import redis
 import traceback
 import functools
 import inspect
+import pandas as pd
+
+pd.set_option('display.width', 1000)
+pd.set_option('colheader_justify', 'center')
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
@@ -70,6 +74,7 @@ if fnmatch.fnmatch(sys.argv[0], "*celery"):
 
 #Global variable for base filepath
 #initialised as /user/data
+# plot_file = os.path.dirname(os.path.realpath(__file__))+'/plots.py'
 config_file = os.path.dirname(os.path.realpath(__file__))+'/config.init'
 primer_folder = os.path.dirname(os.path.realpath(__file__))+'/primer-schemes'
 with open(config_file) as f:
@@ -127,24 +132,34 @@ def checkTasks():
     return json.htmlsafe_dumps({'changed': changed, 'queue': queueDict, 'completed': completedDict})
 
 
-def check_override(output_folder, override_data):
+def check_override(output_folder, override_data, skip):
     print("Checking output folder:::", output_folder)
     if(not os.path.exists(output_folder)):
+        if skip > 0:
+            return False
         return True
     dir_files = os.listdir(output_folder)
     if len(dir_files) > 1 and override_data is False:
+        if skip > 0:
+            return False
         return True
     elif len(dir_files) == 1 and dir_files[0] == "all_cmds_log.txt":
         print("checking files:::",dir_files)
         if os.path.getsize(output_folder+"/all_cmds_log.txt") > 0:
+            if skip > 0:
+                return False
             return True
     return False
 
 
 @celery.task(bind=True)
-def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd):
+def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd, plot_cmd, step):
     logger.info("In celery task, executing job...")
     logger.info("executing job_name: {}".format(job_name))
+    logger.info("Starting from step: {}".format(step))
+    # Step is a debug command to start at 0, 1, 2, 3 in the commands list with
+    # an existing job_name, as it should build all the commands as usual
+    # but not execute them, so if I just want to do plots, I can use skip=3
 
     # group ID to kill children
     # {"job_name": #####}
@@ -152,8 +167,8 @@ def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd):
 
     self.update_state(state='PROGRESS', meta={'current':10, 'status':'Beginning execution'})
 
-    commands = [gather_cmd, demult_cmd, min_cmd]
-    for i, cmd in enumerate(commands):
+    commands = [gather_cmd, demult_cmd, min_cmd, plot_cmd]
+    for i, cmd in enumerate(commands[step:]):
         po = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -338,7 +353,7 @@ def check_special_characters(func):
     return wraper_check_char
 
 @check_special_characters
-def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input, csv_filepath):
+def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input, csv_filepath, skip):
     errors = {}
 
     #Check of jobname is used
@@ -430,7 +445,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
                 errors['mkdir'] = "Failed to create output directory, please check parent path exists and has write permission"
                 flash("Warning: Failed to create output directory, please check parent path exists and has write permission")
                 return errors, output_folder
-        elif check_override(output_folder, override_data) and os.path.exists(output_input):
+        elif check_override(output_folder, override_data, skip) and os.path.exists(output_input):
             errors['override'] = True
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             return errors, output_folder
@@ -460,12 +475,12 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
                 flash("Warning: Could not mkdir {}/nanopolish".format(output_folder))
                 return errors, output_folder
 
-        if check_override(output_folder + "/medaka", override_data) and os.path.exists(output_input):
+        if check_override(output_folder + "/medaka", override_data, skip) and os.path.exists(output_input):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
             return errors, output_folder
 
-        if check_override(output_folder + "/nanopolish", override_data) and os.path.exists(output_input):
+        if check_override(output_folder + "/nanopolish", override_data, skip) and os.path.exists(output_input):
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             errors['override'] = True
             return errors, output_folder
@@ -503,7 +518,7 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
                 errors['mkdir'] = "Failed to create output directory, please check parent path exists and has write permission"
                 flash("Warning: Failed to create output directory, please check parent path exists and has write permission")
                 return errors, output_folder
-        elif check_override(output_folder, override_data) and os.path.exists(output_input):
+        elif check_override(output_folder, override_data, skip) and os.path.exists(output_input):
             errors['override'] = True
             flash("Warning: Output folder is NOT empty. Please choose another folder or delete/move files in it.")
             return errors, output_folder
@@ -582,6 +597,8 @@ def parameters():
         csv_file = request.form.get('csv_file')
         virus = request.form.get('virus')
         override_data = request.form.get('override_data')
+        # DEBUG
+        step = int(request.form.get('step'))
 
         sys.stderr.write("override_data: {}\n".format(override_data))
 
@@ -665,7 +682,7 @@ def parameters():
         errors = {}
         errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir,
                                                     read_file, pipeline, override_data, min_length,
-                                                    max_length, job_name, output_input, csv_filepath)
+                                                    max_length, job_name, output_input, csv_filepath, step)
 
         # if an output folder does not exist, make one
         # if not output_folder:
@@ -721,7 +738,7 @@ def parameters():
             #Add job to queue
             qSys.addJob(new_job)
             print("qSys has jobs: ", qSys.printQueue())
-            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.demult_cmd, new_job.min_cmd])
+            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.demult_cmd, new_job.min_cmd, new_job.plot_cmd, step])
             new_job.task_id = new_task.id
         #if both pipelines
         else:
@@ -732,11 +749,11 @@ def parameters():
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
-            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.demult_cmd, new_job_m.min_cmd])
+            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.demult_cmd, new_job_m.min_cmd, new_job_m.plot_cmd, step])
             new_job_m.task_id = task_m.id
             #Add nanopolish job to queue
             qSys.addJob(new_job_n)
-            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd])
+            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd, new_job_n.plot_cmd, step])
             new_job_n.task_id = task_n.id
 
         # redirect to the progress page
@@ -814,6 +831,7 @@ def error(job_name):
         csv_file = request.form.get('csv_file')
         virus = request.form.get('virus')
         override_data = request.form.get('override_data')
+        step = int(request.form.get('step'))
 
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
         # primer_select is so that on reload, the correct radio button will be selected
@@ -861,7 +879,7 @@ def error(job_name):
         errors = {}
         errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir,
                                                     read_file, pipeline, override_data, min_length,
-                                                    max_length, job_name, output_input, csv_filepath)
+                                                    max_length, job_name, output_input, csv_filepath, step)
 
         # if an output folder does not exist, make one
         # if not output_folder:
@@ -916,7 +934,7 @@ def error(job_name):
             #Add job to queue
             qSys.addJob(new_job)
             print("qSys has jobs: ", qSys.printQueue())
-            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.demult_cmd, new_job.min_cmd])
+            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.demult_cmd, new_job.min_cmd, new_job.plot_cmd, step])
             new_job.task_id = new_task.id
 
         #if both pipelines
@@ -928,11 +946,11 @@ def error(job_name):
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
-            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.demult_cmd, new_job_m.min_cmd])
+            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.demult_cmd, new_job_m.min_cmd, new_job_m.plot_cmd, step])
             new_job_m.task_id = task_m.id
             #Add nanopolish job to queue
             qSys.addJob(new_job_n)
-            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd])
+            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd, new_job_n.plot_cmd, step])
             new_job_n.task_id = task_n.id
         if pipeline == "both":
             return redirect(url_for('progress', job_name=job_name+"_medaka"))
@@ -1040,7 +1058,7 @@ def abort_delete(job_name):
 
 @app.route("/delete/<job_name>", methods = ["GET", "POST"])
 def delete(job_name):
-    images = os.path.dirname(os.path.realpath(__file__)) + '/static/' + job_name
+    images = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_plots/' + job_name
     print(images)
     os.system('rm -r ' + images + '*' )
     qSys.removeCompletedJob(job_name)
@@ -1050,141 +1068,111 @@ def delete(job_name):
 def output(job_name):
     job = qSys.getJobByName(job_name)
     output_folder = job.output_folder
-    #checks current state of save for graphs and saves it in a variable
-    save_graphs = job.save_graphs
-    save_able = 'Disabled'
-    if(save_graphs):
-        save_able = 'Enabled'
-    #checks current state of create for vcf graphs and saves it in a variable
-    create_vcfs = job.create_vcfs
-    create_able = 'Disabled'
-    if(create_vcfs):
-        create_able = 'Enabled'
-    output_files = []
-    barplots = []
-    boxplots = []
+
+    # debugging
+    # output_folder = "/home/jamfer/data/SARS-CoV-2/test_interARTIC/FLFL031920/dfsdfsdfsdf"
+
+    sample_folders = []
+    plots = {}
+    vcfs = {}
     plots_found = False
     vcf_found = False
-    vcfs = []
-    variant_graphs = []
-    static = os.path.dirname(os.path.realpath(__file__))+'/static/'
+    sample = ""
 
     if output_folder:
+        sys.stderr.write("output_folder found\n")
         if os.path.exists(output_folder):
             #Finds all files in the output folder
             for (dirpath, dirnames, filenames) in os.walk(output_folder):
+                for i in dirnames:
+                    if "_medaka" in i:
+                        sample_folders.append(i)
+                    elif "_nanopolish" in i:
+                        sample_folders.append(i)
                 for name in filenames:
                     #finds barplot pngs
-                    if fnmatch.fnmatch(name, '*barplot.png'):
-                        barplots.append('../static/'+name)
+                    if fnmatch.fnmatch(name, '*CoVarPlot.png'):
+                        sample_name = dirpath.split("/")[-1]
+                        plots[sample_name] = os.path.join(dirpath,name)
                         plots_found = True
-                        #if save graphs is enabled, the png is copied into the static folder to enable preview
-                        if save_graphs:
-                            os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
-                    #finds barplot pngs
-                    if fnmatch.fnmatch(name, '*boxplot.png'):
-                        boxplots.append('../static/'+name)
-                        plots_found = True
-                        #if save graphs is enabled, the png is copied into the static folder to enable preview
-                        if save_graphs:
-                            os.system('cp '+ os.path.join(dirpath,name) + ' ' + static)
                     #finds vcf files
                     if fnmatch.fnmatch(name, '*.pass.vcf.gz'):
+                        sample_name = dirpath.split("/")[-1]
+                        vcfs[sample_name] = (os.path.join(dirpath,name))
                         vcf_found = True
-                        vcfs.append(os.path.join(dirpath,name))
-                output_files.extend(filenames)
+        sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
 
-        if create_vcfs:
-            for vcf in vcfs:
-                #collects required data from vcf files
-                with gzip.open(vcf, "rt") as f:
-                    graph = []
-                    max_DP = 0
-                    graph.append(vcf)
-                    for line in f:
-                        point = []
-                        if re.match("^[A-Z]", line):
-                            m = re.split("\\t", line)
-                            if m:
-                                point.append(m[0]) #chromosome
-                                point.append(int(m[1]))  #position of variant
-                                point.append(m[3])  #original/reference value
-                                point.append(m[4])  #alternate value
-                                depth = re.sub(r';.*', "", m[7]) #initialises depth
-                                if job.pipeline == "medaka":   #removes excess information
-                                    depth = int(re.sub("DP=","",depth))
-                                elif job.pipeline == "nanopolish":
-                                    depth = int(re.sub("TotalReads=","",depth))
-                                if depth > max_DP:
-                                    max_DP = depth
-                                point.append(depth)  #read depth value
-                                point.append(m[5]) #quality value
-                                graph.append(point)
-                    graph.append(max_DP)
-                variant_graphs.append(graph)
+    if request.method == "POST":
+        sample = request.form.get('sample_folder')
+        sys.stderr.write("sample:{}\n".format(sample))
+        if vcf_found:
+            if sample in vcfs.keys():
+                sys.stderr.write("vcf found and building\n")
+                # try:
+                header = []
+                vcf_table = []
+                with gzip.open(vcfs[sample], "rt") as f:
+                    for l in f:
+                        if l[:2] == "##":
+                            continue
+                        if l[0] == "#":
+                            l = l[1:].strip('\n')
+                            sys.stderr.write("header = {}\n".format(l))
+                            l = l.split('\t')
+                            header = l
+                            vcf_table.append(["CHROM", "POS", "REF", "ALT", "QUAL", "FILTER", "DEPTH"])
+                            continue
+                        l = l.strip('\n')
+                        l = l.split('\t')
+                        row = dict(zip(header, l))
+                        k = ["{}: {}".format(key, row[key]) for key in row.keys()]
+                        sys.stderr.write(",".join(k))
+                        sys.stderr.write("\n")
+                        depth = int(row["INFO"].split(";")[0].split("=")[1])
+                        vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
+                vcf_table
+                df = pd.DataFrame(vcf_table[1:], columns=vcf_table[0])
+                vcf_table_html = df.to_html(classes='mystyle')
 
-        if request.method == "POST":
-            plot = request.form.get('plot')
-            save = request.form.get('save')
-            if request.form['submit_button'] == 'Confirm':
-                #updates sava enable/disable status
-                if save == 'enable':
-                    job.enableSave()
-                    save_able = 'Enabled'
-                if save == 'disable':
-                    for plot in barplots:
-                        os.system('rm '+ plot[3:])
-                    for plot in boxplots:
-                        os.system('rm '+ plot[3:])
-                    job.disableSave()
-                    save_able = 'Disabled'
-                if save == 'enable_vcf':
-                    #if enabling vcf after disable, the data needs to be collected again
-                    job.enableVCF()
-                    create_able = 'Enabled'
-                    if not variant_graphs:
-                        for vcf in vcfs:
-                            #collects required data from vcf files
-                            with gzip.open(vcf, "rt") as f:
-                                graph = []
-                                max_DP = 0
-                                graph.append(vcf)
-                                for line in f:
-                                    point = []
-                                    if re.match("^[A-Z]", line):
-                                        m = re.split("\\t", line)
-                                        if m:
-                                            point.append(m[0]) #chromosome
-                                            point.append(int(m[1]))  #position of variant
-                                            point.append(m[3])  #original/reference value
-                                            point.append(m[4])  #alternate value
-                                            depth = re.sub(r';.*', "", m[7]) #initialises depth
-                                            if job.pipeline == "medaka":   #removes excess information
-                                                depth = int(re.sub("DP=","",depth))
-                                            elif job.pipeline == "nanopolish":
-                                                depth = int(re.sub("TotalReads=","",depth))
-                                            if depth > max_DP:
-                                                max_DP = depth
-                                            point.append(depth)  #read depth value
-                                            point.append(m[5]) #quality value
-                                            graph.append(point)
-                                graph.append(max_DP)
-                            variant_graphs.append(graph)
-                if save == 'disable_vcf':
-                    job.disableVCF()
-                    create_able = 'Disabled'
-                return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
+                sys.stderr.write("vcf built\n")
+                # except:
+                #     flash("Warning: vcf table creation failed for {}".format(sample))
+                #     sys.stderr.write("vcf failed to build\n")
+                #     vcf_table = False
             else:
-                if save_graphs:
-                    if request.form['submit_button'] == 'Preview':
-                        if plot == 'barplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
-                        if plot == 'boxplot':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
-                        if plot == 'both':
-                            return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, barplots=barplots, boxplots=boxplots, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
+                flash("Warning: No vcf files found in {}".format(output_folder))
+                sys.stderr.write("no vcf for sample found\n")
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, sample_folder=sample)
+        else:
+            flash("Warning: No vcf files found in {}".format(output_folder))
+            sys.stderr.write("no vcfs found\n")
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, sample_folder=sample)
+        if plots_found:
+            if sample in plots.keys():
+                plot = plots[sample]
+                plot_file = plot.split("/")[-1]
+                plot_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_plots/' + job_name
+                mkdir = "mkdir " + plot_path
+                os.system(mkdir)
+                cp_plot = "cp " + plot + " " + plot_path
+                os.system(cp_plot)
+                html_plot = "/static/tmp_plots/" + job_name+ "/" + plot_file
+                sys.stderr.write("plots found: {}\n".format("/static/tmp_plots/"+job_name+ "/" + plot_file))
+            else:
+                plot = False
+                sys.stderr.write("plot for sample not found in plots\n")
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, sample_folder=sample)
+        else:
+            plot = False
+            sys.stderr.write("plots not found\n")
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, sample_folder=sample)
 
-    return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, variant_graphs=variant_graphs, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
+        sys.stderr.write("running plot return\n")
+        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, plots_found=plots_found, vcf_found=vcf_found, sample_folders=sample_folders, sample_folder=sample)
+    sys.stderr.write("running regular return\n")
+    return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample)
+
+    # return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, vcf_table=vcf_table, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
 
 
 if __name__ == "__main__":
