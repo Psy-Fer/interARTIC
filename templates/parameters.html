@@ -137,7 +137,7 @@
                     <b> * = required </b><br><br>
                     <label class="subtitle is-5" for="job_name">Job name: *</label>
                     <div class="tooltip"> (info)
-                        <span class="tooltiptext">Must be unique for each job.</span>
+                        <span class="tooltiptext">You must chose a unique name for each new job.</span>
                     </div><br>
                     <input class="input" id="job_name" name="job_name" type="text" placeholder="Job Name" value="{{ job_name }}" required>
                     {% if errors %}
@@ -156,7 +156,10 @@
                     {% endif %}
                   </div>
                 </div>
-                <label class="subtitle is-5">Select the input data directory for your experiment: *</label><br>
+                <label class="subtitle is-5">Select the input data directory for your experiment: *</label>
+                <div class="tooltip"> (info)
+                    <span class="tooltiptext">This will typically be the directory containing your nanopore runs.</span>
+                </div><br>
                   <input class="input" list="search" name="input_folder" id="input_folder" placeholder="Search for input folder" value="{{input_name}}" autocomplete="off" required>
                     <datalist id="search">
                       {% if folders %}
@@ -262,7 +265,8 @@
                   <!-- output folder file path - Medaka/ Nanopolish-->
                   <label class="subtitle is-5" for="output_folder">Output folder (optional): </label>
                   <div class="tooltip"> (info)
-                      <span class="tooltiptext">- Must be absolute file path, starting with "/" or single folder name to be created in input folder</span>
+                      <span class="tooltiptext">A single output folder with this name will be created inside the input folder.<br><br>
+                                                If you wish to use an alternative destination for the output folder, please provide an absolute filepath starting with "/"</span>
                   </div><br>
                   <small>(if no output folder is provided, one will be created inside the input folder)</small><br>
                   <input class="input" type="text" id="output_folder" name="output_folder" size="80" value="{{output_folder}}"><br>
@@ -321,7 +325,13 @@
                     <div class="control">
                       <!-- Which virus/reference -->
                       <br>
-                      <h1 class="subtitle">Select the virus you want to analyse: *</h1>
+                      <label class="subtitle is-5" for="output_folder">Select the virus you want to analyse: *</label>
+                      <!-- <h1 class="subtitle">Select the virus you want to analyse: *</h1> -->
+                      <div class="tooltip"> (info)
+                          <span class="tooltiptext">If your virus and/or primer scheme is not in this list, please select "custom" and provide custom files.<br><br>
+                                                    If you wish to add a new virus or primer scheme to this menue, please let us know at:<br><br>
+                                                    https://github.com/Psy-Fer/interARTIC/issues</span>
+                      </div><br><br>
                       <input type="radio" id="SARS-CoV-2" name="virus" value="SARS-CoV-2" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})" required>
                       <label for="SARS-CoV-2">SARS-CoV-2 (nCoV-2019)</label><br>
                       <input type="radio" id="IturiEBOV" name="virus" value="IturiEBOV" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})">
