@@ -233,6 +233,12 @@
                                 </script>
                                 <p class="help is-danger"> {{ errors['csv_file'] }} </p>
                                 {% endif %}
+                                {% if errors['csv_malformed'] %}
+                                <script>
+                                  document.getElementById("csv_file").className = "input is-danger";
+                                </script>
+                                <p class="help is-danger"> {{ errors['csv_malformed'] }} </p>
+                                {% endif %}
                               {% endif %}
                             </datalist>
                        </div><br>

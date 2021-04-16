@@ -702,6 +702,43 @@ def parameters():
 
         output_folder = output_folder_checked
 
+        # validate csv contents.
+        # No special characters -
+        # comma separated -
+        # 2 columns -
+        # 2nd column should have NB or RB -
+        def _detect_special(pass_string):
+            regex= re.compile('^[a-zA-Z0-9,_-]+$')
+            if(regex.search(pass_string) == None):
+                ret = True
+            else:
+                ret = False
+            return ret
+        sys.stderr.write("checking CSV file: {}\n".format(csv_filepath))
+        if os.path.isfile(csv_filepath):
+            sys.stderr.write("csv file exists\n")
+            with open(csv_filepath, 'r') as c:
+                for l in c:
+                    l = l.strip("\n")
+                    if _detect_special(l):
+                        flash("Warning: csv file malformed: special characters detected ")
+                        errors['csv_malformed'] = "csv is malformed, special characters detected a-zA-Z0-9,_- only"
+                        break
+                    l = l.split(",")
+                    if len(l) != 2:
+                        errors['csv_malformed'] = "csv is malformed, more or less than 2 columns"
+                        flash("Warning: csv file malformed: more or less than 2 columns")
+                        break
+                    else:
+                        if l[1][:2] not in ["NB", "RB"]:
+                            errors['csv_malformed'] = "csv is malformed, not NB or RB for barcode"
+                            flash("Warning: csv file malformed: not NB or RB for barcode")
+                            break
+
+        sys.stderr.write("printing errors:\n")
+        k = ["{}: {}".format(key, errors[key]) for key in errors.keys()]
+        sys.stderr.write(",".join(k))
+        sys.stderr.write("\n")
         # if queue is full, add an error to the list
         if qSys.queue.full():
             errors['full_queue'] = "Job queue is full."
