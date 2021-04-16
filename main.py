@@ -23,7 +23,6 @@ import redis
 import traceback
 import functools
 import inspect
-import pandas as pd
 
 pd.set_option('display.width', 1000)
 pd.set_option('colheader_justify', 'center')
