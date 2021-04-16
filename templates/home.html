@@ -130,6 +130,16 @@
     {% extends "page_template.html" %}
     {% block content %}
     <div class="hero-body">
+        {% with messages = get_flashed_messages() %}
+               {% if messages %}
+                   {% for message in messages %}
+                   <div class="notification is-danger is-light" id="flash">
+                       <button class="delete" onclick="hide()"></button>
+                       {{ message }}
+                   </div>
+                   {% endfor %}
+               {% endif %}
+           {% endwith %}
       <div class="container is-widescreen ">
         <h1 class="title is-4">Viral Whole Genome Nanopore Sequencing Analysis</h1>
         <div class="content">
@@ -263,7 +273,7 @@
               </div> -->
             </div>
           </div>
-        </form>
+        <!-- </form> -->
       </div>
       <script>
           function showDiv() {
@@ -297,8 +307,11 @@
                 <tbody id=jobsQueue>
                 </tbody>
             </table>
-
-            <a class="button" href="/parameters">Add Job</a><br>
+            <!-- <form> -->
+            <!-- <a class="button" href="/parameters">Add Job</a><br> -->
+            <!-- <input class="button is-medium" type="submit" name="search_input" id="search_input" value="Confirm"><br><br> -->
+            <input class="button" type="submit" name="add_job" id="add_job" value="Add Job"><br>
+            </form>
 
           </div>
           <div class="column">
@@ -371,6 +384,11 @@
     <script>
         var jobsQueue = document.getElementById("jobsQueue")
         var completedJobs = document.getElementById("completedJobs")
+
+        function hide() {
+          var message = document.getElementById("flash");
+          message.style.display = "none";
+        }
 
 
         $.ajax({

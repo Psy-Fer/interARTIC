@@ -279,7 +279,6 @@ def home():
         search_input = request.form.get('file_path')
         search_csv = request.form.get('csv_folder')
 
-
         # error checking here
         if not os.path.isdir(search_input):
             errors['invalid_input_file_path'] = "File path entered is not valid"
@@ -287,11 +286,16 @@ def home():
         if not os.path.isdir(search_csv):
             errors['invalid_csv_file_path'] = "File path entered is not valid"
 
+        # sys.stderr.write("errors:\n")
+        # k = ["{}: {}".format(key, errors[key]) for key in errors.keys()]
+        # sys.stderr.write(",".join(k))
+        # sys.stderr.write("\n")
+        # sys.stderr.write("search_input: {}\n".format(request.form.get('search_input')))
+        # sys.stderr.write("add_job: {}\n".format(request.form.get('add_job')))
 
-        if len(errors) != 0:
-            # return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, eden_folder=eden_scheme, midnight_folder=midnight_scheme, artic_folder=artic_scheme, eden_name=eden_scheme_name, midnight_name=midnight_scheme_name, artic_name=artic_scheme_name)
-            return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv)
-        else: # update global variables
+        if request.form.get('search_input') == 'Confirm':
+            if len(errors) != 0:
+                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv)
             global input_filepath
             input_filepath = search_input
 
@@ -304,6 +308,12 @@ def home():
                 c.write('\t"data-folder": "{}",\n'.format(search_input))
                 c.write('\t"sample-barcode-csvs": "{}"'.format(search_csv))
                 c.write('}\n')
+        if request.form.get('add_job') == "Add Job":
+            if len(errors) != 0:
+                flash("WARNING:File paths entered are not valid")
+                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv)
+            else:
+                return redirect(url_for('parameters'))
 
     # return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, eden_folder=schemes['eden_scheme'], eden_name=schemes['eden_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
     return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv)
@@ -549,6 +559,7 @@ def getInputFolders(filepath):
     print("check folders command")
     print(checkFoldersCmd)
 
+
     folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
 
     return folders
@@ -561,6 +572,7 @@ def parameters():
     global schemes
 
     # get a list of all the folders in the input and csv folders to be displayed to the user
+
     folders = getInputFolders(input_filepath)
     csvs = getInputFolders(sample_csv)
 
@@ -697,9 +709,9 @@ def parameters():
         # display errors if errors exist
         if len(errors) != 0:
 
-            k = ["{}: {}".format(key, errors[key]) for key in errors.keys()]
-            sys.stderr.write(",".join(k))
-            sys.stderr.write("\n")
+            # k = ["{}: {}".format(key, errors[key]) for key in errors.keys()]
+            # sys.stderr.write(",".join(k))
+            # sys.stderr.write("\n")
             #Update displayed queue on home page
             queueList = []
 
@@ -1080,7 +1092,7 @@ def output(job_name):
     sample = ""
 
     if output_folder:
-        sys.stderr.write("output_folder found\n")
+        # sys.stderr.write("output_folder found\n")
         if os.path.exists(output_folder):
             #Finds all files in the output folder
             for (dirpath, dirnames, filenames) in os.walk(output_folder):
@@ -1104,10 +1116,10 @@ def output(job_name):
 
     if request.method == "POST":
         sample = request.form.get('sample_folder')
-        sys.stderr.write("sample:{}\n".format(sample))
+        # sys.stderr.write("sample:{}\n".format(sample))
         if vcf_found:
             if sample in vcfs.keys():
-                sys.stderr.write("vcf found and building\n")
+                # sys.stderr.write("vcf found and building\n")
                 # try:
                 header = []
                 vcf_table = []
@@ -1117,7 +1129,7 @@ def output(job_name):
                             continue
                         if l[0] == "#":
                             l = l[1:].strip('\n')
-                            sys.stderr.write("header = {}\n".format(l))
+                            # sys.stderr.write("header = {}\n".format(l))
                             l = l.split('\t')
                             header = l
                             vcf_table.append(["CHROM", "POS", "REF", "ALT", "QUAL", "FILTER", "DEPTH"])
@@ -1126,15 +1138,15 @@ def output(job_name):
                         l = l.split('\t')
                         row = dict(zip(header, l))
                         k = ["{}: {}".format(key, row[key]) for key in row.keys()]
-                        sys.stderr.write(",".join(k))
-                        sys.stderr.write("\n")
+                        # sys.stderr.write(",".join(k))
+                        # sys.stderr.write("\n")
                         depth = int(row["INFO"].split(";")[0].split("=")[1])
                         vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
                 vcf_table
                 df = pd.DataFrame(vcf_table[1:], columns=vcf_table[0])
                 vcf_table_html = df.to_html(classes='mystyle')
 
-                sys.stderr.write("vcf built\n")
+                # sys.stderr.write("vcf built\n")
                 # except:
                 #     flash("Warning: vcf table creation failed for {}".format(sample))
                 #     sys.stderr.write("vcf failed to build\n")
@@ -1157,7 +1169,7 @@ def output(job_name):
                 cp_plot = "cp " + plot + " " + plot_path
                 os.system(cp_plot)
                 html_plot = "/static/tmp_plots/" + job_name+ "/" + plot_file
-                sys.stderr.write("plots found: {}\n".format("/static/tmp_plots/"+job_name+ "/" + plot_file))
+                # sys.stderr.write("plots found: {}\n".format("/static/tmp_plots/"+job_name+ "/" + plot_file))
             else:
                 plot = False
                 sys.stderr.write("plot for sample not found in plots\n")
@@ -1167,9 +1179,9 @@ def output(job_name):
             sys.stderr.write("plots not found\n")
             return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, sample_folder=sample)
 
-        sys.stderr.write("running plot return\n")
+        # sys.stderr.write("running plot return\n")
         return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, plots_found=plots_found, vcf_found=vcf_found, sample_folders=sample_folders, sample_folder=sample)
-    sys.stderr.write("running regular return\n")
+    # sys.stderr.write("running regular return\n")
     return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample)
 
     # return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, vcf_table=vcf_table, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)

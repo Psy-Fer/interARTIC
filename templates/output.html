@@ -29,6 +29,16 @@
     {% extends "page_template.html" %}
     {% block content %}
     <div class="hero-body">
+        {% with messages = get_flashed_messages() %}
+               {% if messages %}
+                   {% for message in messages %}
+                   <div class="notification is-danger is-light" id="flash">
+                       <button class="delete" onclick="hide()"></button>
+                       {{ message }}
+                   </div>
+                   {% endfor %}
+               {% endif %}
+           {% endwith %}
       <div class="container is-widescreen">
       <div class="columns">
           <!-- <div class="column is-one-quarter">
@@ -217,6 +227,10 @@
         //     vcfs.appendChild(table);
         //   }
         // }
+        function hide() {
+          var message = document.getElementById("flash");
+          message.style.display = "none";
+        }
 
 
     </script>
