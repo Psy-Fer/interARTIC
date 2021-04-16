@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 import os
 import sys
 import argparse
@@ -251,9 +251,9 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
         save_path = "/".join(args.vcf_file.split("/")[:-1])
         sample_name = args.vcf_file.split("/")[-1].split(".")[0]
         if vcfx_snv is not None:
-            plt.vlines(vcfx_snv, 0, vcfy_snv, colors='red')
+            plt.vlines(vcfx_snv, 0, vcfy_snv, colors='darkorange')
         if vcfx_id is not None:
-            plt.vlines(vcfx_id, 0, vcfy_id, colors='green')
+            plt.vlines(vcfx_id, 0, vcfy_id, colors='darkblue')
             plt.suptitle("Variants", y=0.95, fontsize=20)
     elif args.depth_file_1 and args.depth_file_2 and not args.vcf_file:
         save_path = "/".join(args.depth_file_1.split("/")[:-1])
@@ -266,19 +266,23 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
         save_path = "/".join(args.vcf_file.split("/")[:-1])
         sample_name = args.vcf_file.split("/")[-1].split(".")[0]
         if vcfx_snv is not None:
-            plt.vlines(vcfx_snv, 0, vcfy_snv, colors='red')
+            plt.vlines(vcfx_snv, 0, vcfy_snv, colors='darkorange', label="SNV")
         if vcfx_id is not None:
-            plt.vlines(vcfx_id, 0, vcfy_id, colors='green')
+            plt.vlines(vcfx_id, 0, vcfy_id, colors='darkblue', label="InDel")
         if covx is not None:
-            plt.fill_between(covx, covy, color="skyblue", alpha=0.6)
+            plt.fill_between(covx, covy, color="skyblue", alpha=0.6, label="coverage")
             # TODO: Make suptitle and title actually line up
-            plt.suptitle("      Variants and Coverage", y=0.95, fontsize=20)
+            plt.suptitle("Variants and Coverage", y=0.95, fontsize=20)
     else:
         sys.stderr.write("this really shouldn't error. args: {}".format(args))
 
 
     print(bed_1)
-    for i, j in bed_1:
+    # add amplicon to legend only once
+    for i, j in bed_1[:1]:
+        ax.add_patch(plt.Rectangle((i,-20),j-i, 15,facecolor='silver',
+                              clip_on=False,linewidth = 1, label="amplicon"))
+    for i, j in bed_1[1:]:
         ax.add_patch(plt.Rectangle((i,-20),j-i, 15,facecolor='silver',
                               clip_on=False,linewidth = 1))
 
@@ -286,20 +290,25 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
         ax.add_patch(plt.Rectangle((i,-40),j-i, 15,facecolor='silver',
                               clip_on=False, linewidth = 1))
 
-    plt.axhline(y=20, color='grey', linestyle='--')
+    plt.axhline(y=20, color='grey', linestyle='--', label="20x coverage min")
 
     plt.xlabel("Genome position", fontsize=20)
     plt.ylabel("Depth", fontsize=20)
     plt.tick_params(labelsize=10)
     plt.title(sample_name, fontsize=15)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
 
+    wi, hi = fig.get_size_inches()
+    w = 1200
+    h = 600
+    fig.set_size_inches(hi*(w/h), hi)
 
     plt.tight_layout()
     if args.show:
         plt.show()
     else:
         save_file = save_path + "/" + sample_name + ".CoVarPlot.png"
-        plt.savefig(save_file)
+        plt.savefig(save_file, dpi=1000/hi)
 
 
 if __name__ == '__main__':

@@ -1202,8 +1202,9 @@ def output(job_name):
                 plot = plots[sample]
                 plot_file = plot.split("/")[-1]
                 plot_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_plots/' + job_name
-                mkdir = "mkdir " + plot_path
-                os.system(mkdir)
+                if not os.path.isdir(plot_path):
+                    mkdir = "mkdir " + plot_path
+                    os.system(mkdir)
                 cp_plot = "cp " + plot + " " + plot_path
                 os.system(cp_plot)
                 html_plot = "/static/tmp_plots/" + job_name+ "/" + plot_file
