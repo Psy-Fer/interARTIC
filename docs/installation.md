@@ -71,10 +71,10 @@ pip install --upgrade pip
 
 ## Installing Python packages for Redis, Celery and Flask
 
-To install the Python packages for Redis, Celery and Flask, enter the following into your command prompt (make sure you have activated the interARTIC-venv virtual environment created above):
+To install the Python packages for Redis, Celery, Flask and Pandas enter the following into your command prompt (make sure you have activated the interARTIC-venv virtual environment created above):
 
 ```
-pip install celery==4.4.6 redis==3.5.3 flask==1.1.2
+pip install celery==4.4.6 redis==3.5.3 flask==1.1.2 pandas==1.2.4
 ```
 
 ## Installing the ARTIC pipeline environment
