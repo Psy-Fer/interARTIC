@@ -77,6 +77,8 @@
           <h1 class="title is-4"> Data Visualisation </h1>
           <div>
           {% if plots_found %}
+            <label class="subtitle is-5">{{sample_folder}}</label><br><br>
+            <br>
             <img src="{{plot}}" alt="plot for sample", style="width:640px;height:480px;">
           {% endif %}
           </div>

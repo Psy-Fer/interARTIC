@@ -84,6 +84,9 @@ def main():
     parser.add_argument("-b", "--bed",
                         help="full path to scheme bed file")
 
+    parser.add_argument("--show", action="store_true",
+                        help="Show plot rather than saving it")
+
 
     args = parser.parse_args()
     print_verbose("arg list: {}".format(args))
@@ -251,13 +254,13 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
             plt.vlines(vcfx_snv, 0, vcfy_snv, colors='red')
         if vcfx_id is not None:
             plt.vlines(vcfx_id, 0, vcfy_id, colors='green')
-            plt.title("Variants", fontsize=20)
+            plt.suptitle("Variants", y=0.95, fontsize=20)
     elif args.depth_file_1 and args.depth_file_2 and not args.vcf_file:
         save_path = "/".join(args.depth_file_1.split("/")[:-1])
         sample_name = args.depth_file_1.split("/")[-1].split(".")[0]
         if covx is not None:
             plt.fill_between(covx, covy, color="skyblue", alpha=0.6)
-            plt.title("Coverage", fontsize=20)
+            plt.suptitle("Coverage", y=0.95, fontsize=20)
     elif args.vcf_file and args.depth_file_1 and args.depth_file_2:
         # ax.stem(vcfx, vcfy, markerfmt= ' ')
         save_path = "/".join(args.vcf_file.split("/")[:-1])
@@ -268,7 +271,8 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
             plt.vlines(vcfx_id, 0, vcfy_id, colors='green')
         if covx is not None:
             plt.fill_between(covx, covy, color="skyblue", alpha=0.6)
-        plt.title("Variants and Coverage", fontsize=20)
+            # TODO: Make suptitle and title actually line up
+            plt.suptitle("      Variants and Coverage", y=0.95, fontsize=20)
     else:
         sys.stderr.write("this really shouldn't error. args: {}".format(args))
 
@@ -287,12 +291,15 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
     plt.xlabel("Genome position", fontsize=20)
     plt.ylabel("Depth", fontsize=20)
     plt.tick_params(labelsize=10)
+    plt.title(sample_name, fontsize=15)
 
 
     plt.tight_layout()
-    # plt.show()
-    save_file = save_path + "/" + sample_name + ".CoVarPlot.png"
-    plt.savefig(save_file)
+    if args.show:
+        plt.show()
+    else:
+        save_file = save_path + "/" + sample_name + ".CoVarPlot.png"
+        plt.savefig(save_file)
 
 
 if __name__ == '__main__':
