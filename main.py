@@ -1205,7 +1205,7 @@ def output(job_name):
                 plot_file = plot.split("/")[-1]
                 plot_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_plots/' + job_name
                 if not os.path.isdir(plot_path):
-                    mkdir = "mkdir -p" + plot_path
+                    mkdir = "mkdir -p " + plot_path
                     os.system(mkdir)
                 cp_plot = "cp " + plot + " " + plot_path
                 os.system(cp_plot)
