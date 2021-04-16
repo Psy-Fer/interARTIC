@@ -291,7 +291,7 @@ class Job:
             depth2 = "{}/{}.coverage_mask.txt.{}_2.depths".format(dir_path, file_start, virus)
             vcf_file = "{}/{}.pass.vcf.gz".format(dir_path, file_start)
 
-            plot_cmd = plot_cmd + "; plots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
+            plot_cmd = plot_cmd + "; covarPlots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
             # "python3 plots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file)
 
         if self._num_samples == "multiple":
@@ -335,7 +335,7 @@ class Job:
                     depth2 = "{}/{}.coverage_mask.txt.{}_2.depths".format(dir_path, file_start, virus)
                     vcf_file = "{}/{}.pass.vcf.gz".format(dir_path, file_start)
 
-                    plot_cmd = plot_cmd + "; plots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
+                    plot_cmd = plot_cmd + "; covarPlots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
 
         #change directory into output folder
         plot_cmd = plot_cmd + "; \necho 'Job: " + self._job_name + " is finished running :D'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
