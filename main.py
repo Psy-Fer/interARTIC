@@ -24,8 +24,6 @@ import traceback
 import functools
 import inspect
 
-pd.set_option('display.width', 1000)
-pd.set_option('colheader_justify', 'center')
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
@@ -59,6 +57,10 @@ max_queue_size = 10
 qSys = System(max_queue_size)
 
 if fnmatch.fnmatch(sys.argv[0], "*celery"):
+    import pandas as pd
+
+    pd.set_option('display.width', 1000)
+    pd.set_option('colheader_justify', 'center')
     test_arg = False
     for a in sys.argv:
         if a == "-b":
