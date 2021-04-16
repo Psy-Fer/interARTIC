@@ -1054,11 +1054,13 @@ def progress(job_name):
 
     # find the status of the current job
     if re.findall(r':D', outputLog):
-        frac = "3"
-    elif len(re.findall(r'STARTING', outputLog)) == 2:
+        frac = "4"
+    elif len(re.findall(r'COMPLETE', outputLog)) == 1:
         frac = "1"
-    elif len(re.findall(r'STARTING', outputLog)) > 2:
+    elif len(re.findall(r'COMPLETE', outputLog)) == 2:
         frac = "2"
+    elif len(re.findall(r'COMPLETE', outputLog)) > 2:
+        frac = "3"
     else:
         frac = "0"
 
@@ -1203,7 +1205,7 @@ def output(job_name):
                 plot_file = plot.split("/")[-1]
                 plot_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_plots/' + job_name
                 if not os.path.isdir(plot_path):
-                    mkdir = "mkdir " + plot_path
+                    mkdir = "mkdir -p" + plot_path
                     os.system(mkdir)
                 cp_plot = "cp " + plot + " " + plot_path
                 os.system(cp_plot)

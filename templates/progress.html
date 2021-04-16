@@ -68,7 +68,7 @@
 
 				<h1 id='status'> <h1><br>
 				<label for="file">Pipeline progress:</label><br>
-				<p id="frac">{{ frac }}/3 steps complete</p>
+				<p id="frac">{{ frac }}/4 steps complete</p>
 				<br>
 				<div id="progress-bar">
 
@@ -294,7 +294,7 @@
 		function updateButton() {
 			var frac = document.getElementById('frac').innerText.trim();
 			console.log("inside function");
-			if (frac === "3/3 steps complete") {
+			if (frac === "4/4 steps complete") {
 				console.log(frac);
 				document.getElementById('abort').style.display = "none";
 				document.getElementById('direct_to_output').style.display = "block";
