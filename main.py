@@ -23,6 +23,10 @@ import redis
 import traceback
 import functools
 import inspect
+import pandas as pd
+
+pd.set_option('display.width', 1000)
+pd.set_option('colheader_justify', 'center')
 
 
 class MyParser(argparse.ArgumentParser):
@@ -57,10 +61,6 @@ max_queue_size = 10
 qSys = System(max_queue_size)
 
 if fnmatch.fnmatch(sys.argv[0], "*celery"):
-    import pandas as pd
-
-    pd.set_option('display.width', 1000)
-    pd.set_option('colheader_justify', 'center')
     test_arg = False
     for a in sys.argv:
         if a == "-b":
@@ -1180,7 +1180,7 @@ def output(job_name):
                         # sys.stderr.write("\n")
                         depth = int(row["INFO"].split(";")[0].split("=")[1])
                         vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
-                vcf_table
+
                 df = pd.DataFrame(vcf_table[1:], columns=vcf_table[0])
                 vcf_table_html = df.to_html(classes='mystyle')
 
