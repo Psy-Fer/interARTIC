@@ -7,9 +7,9 @@ InterARTIC is a web application designed to ease the use of the convoluted [ARTI
 
 ## Step 1: Installing interARTIC
 
-We provide a binary release for common Linux distributions. The binary releases is tested to work well on Ubuntu 14, 16, 18 and 20 distributions (on Windows Subsystem for Linux as well). The binary release should work on other distributions as long as GLIBC 2.17 (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
+We provide a binary release for common Linux distributions on x86_64 architecture. The binary release is tested to work well on Ubuntu 14, 16, 18 and 20 distributions (on Windows Subsystem for Linux as well). The binary release should work on other distributions as long as GLIBC 2.17 (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
 
-First, download the latest release and run the provided `run.sh` script:
+First, download the latest release, extract the tar ball and run the provided `run.sh` script:
 
 ```bash
 wget https://cloudstor.aarnet.edu.au/plus/s/jtIWKun0E6SmpMj/download -O interartic_bin.tar.gz
@@ -17,6 +17,8 @@ tar xf interartic_bin.tar.gz
 cd interartic_bin
 ./run.sh
 ```
+
+**IMPORTANT: Make sure the interARTIC binaries reside at a location with no white characters and non-ASCII charcaters in directory names**
 
 To launch the interARTIC web interface, visit [http://127.0.0.1:5000](http://127.0.0.1:5000) on your browser. Make sure you keep the terminal open to keep interARTIC running.
 
