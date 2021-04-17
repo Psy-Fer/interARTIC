@@ -12,7 +12,7 @@ We provide a binary release for common Linux distributions on x86_64 architectur
 First, download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest), extract the tar ball and run the provided `run.sh` script:
 
 ```bash
-wget https://cloudstor.aarnet.edu.au/plus/s/jtIWKun0E6SmpMj/download -O interartic_bin.tar.gz
+wget https://cloudstor.aarnet.edu.au/plus/s/OysmkiekO1tCuSU/download -O interartic_bin.tar.gz
 tar xf interartic_bin.tar.gz
 cd interartic_bin
 ./run.sh
