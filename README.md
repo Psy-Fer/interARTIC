@@ -9,7 +9,7 @@ InterARTIC is a web application designed to ease the use of the convoluted [ARTI
 
 We provide a binary release for common Linux distributions on x86_64 architecture. The binary release is tested to work well on Ubuntu 14, 16, 18 and 20 distributions (on Windows Subsystem for Linux as well). The binary release should work on other distributions as long as GLIBC 2.17 (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
 
-First, download the latest release, extract the tar ball and run the provided `run.sh` script:
+First, download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest), extract the tar ball and run the provided `run.sh` script:
 
 ```bash
 wget https://cloudstor.aarnet.edu.au/plus/s/jtIWKun0E6SmpMj/download -O interartic_bin.tar.gz
@@ -24,7 +24,7 @@ To launch the interARTIC web interface, visit [http://127.0.0.1:5000](http://127
 
 ## Step 2: Downloading test dataset
 
-Now take a new terminal to download and extract the example test dataset. Enter the commands below that downloads and extracts the dataset to `/data`, assuming you have write permission to `/data`.
+Now take a new terminal to download and extract the [example test dataset](https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/). Enter the commands below that downloads and extracts the dataset to `/data`, assuming you have write permission to `/data`.
 
 ```bash
 cd /data
