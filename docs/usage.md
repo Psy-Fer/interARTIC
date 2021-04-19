@@ -19,9 +19,8 @@ Configuring interARTIC should be done only at the first time. It will save the c
 
 ## Adding a job
 
-To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. 
+To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. Now it will go to the paramers page.
 
-## Parameters
 
 Input the necessary parameters (see Parameter Descriptions below). Parameters required for any type of job run are denoted with an asterix (*).
 
