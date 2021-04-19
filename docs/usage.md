@@ -2,14 +2,18 @@
 
 [TOC]
 
-
 ## Configuring interARTIC
 
-1. On the interARTIC web interface, click on `Edit Input and Sample .csv Directories`.
+Configuring interARTIC should be done only at the first time. It will save the coniguration details for the future. 
 
-2. Fill the first two fields (1. location of your input data, and 2. where your sample barcode .csv files are located). 
+- On the interARTIC web interface, click on `Edit Input and Sample .csv Directories`.
 
-3. Click `confirm` to save the settings.
+- Fill the first two fields 
+   1. location of your input data. This should be an absolute path of a directory. This should usually be where Minknow outputs the data. On the GridION this is `/data`. If you use a MinION on a laptop by default it is `/var/lib/minknow/data/`. You can also set this to a custom directory location if you wish to manually copy the sequencing data.
+   
+   2. location of your sample-barcode .csv files. This should be an absolute path of a directory. We expect you to put the sample-barcode .csv files here directly, not inside any sub directories.
+
+- Click `confirm` to save the settings.
 
 
 
