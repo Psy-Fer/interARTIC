@@ -17,16 +17,15 @@ For the file path inputs, please enter absolute paths. See below for help.
 By default, the data input folder should be set up as:
 
 ```
-~user/
-    data/
-        input_folder1/                               
-            name/
-                uuid/
-                    # input files here
-        input_folder2/
-            name/
-                uuid/
-                    # input files here
+/data/
+    input_folder1/                               
+        name/
+            uuid/
+                # input files here
+    input_folder2/
+        name/
+            uuid/
+                # input files here
                     
 ```
 
@@ -34,12 +33,9 @@ When prompted to select an input folder, click the drop down menu or type in the
 
 #### Input directory file structure
 
-* You must rename each folder/ file in the input folder to: fast5_pass, fast5_fail, fastq_pass, fastq_fail, sequencing_summary.txt, sample-barcode.csv
-* If a single sample is being run through the pipeline:
-    * If available, the file path for a read file should be inputted. 
-    * If unavailable, the artic gather/demultiplex command will generate one.
+* You must rename each file in the input folder to: fast5_pass, fast5_fail, fastq_pass, fastq_fail, sequencing_summary.txt
 * If multiple samples are being run through the pipeline:
-    * A CSV file containing the data's sample names and barcodes should be placed in the input folder and named ‘sample-barcode.csv’. 
+    * A CSV file containing the data's sample names and barcodes should be placed in the sample-barcodes folder and named ‘sample-barcode.csv’. 
     * A sample CSV file is below:
 
 ```
@@ -65,20 +61,7 @@ input_folder/
     fastq_fail/
         B_10.fastq
         B_11.fastq
-    sample-barcode.csv
     sequencing_summary.txt
-    readfile.fastq                        #optional file
-primer-schemes/
-    nCoV-2019/
-        V1/
-            nCoV-2019.log
-            nCoV-2019.pdf
-            nCoV-2019.pickle
-            nCoV-2019.reference.fasta
-            nCoV-2019.reference.fasta.fai
-            nCoV-2019.scheme.bed
-            nCoV-2019.svg
-            nCoV-2019.tsv
 ```
 
 ### Parameter Descriptions
@@ -86,27 +69,26 @@ primer-schemes/
 You can customize the parameters by typing into the respective text box. 
 
 * **Job name:** A unique name for your job, so you may identify your output files with it.
-* **Pipeline:** Select the pipeline within ARTIC that you wish to run your data files through.
 * **Input folder:** Your main data folder. 
     * This folder contains folders such as fast5_pass, fastq_pass, etc.
-* **Read file:** If you are inputting data files for a single sample run where you have a file ending in “.fastq” already made, input the file path for this read file. 
-    * You may get this error in your output, but this can be ignored: Include screenshot of harmless error that might occur
+* **Single or Multiple samples:** Select the appropriate option.
 * **Output folder:** If your chosen output folder is already created, enter the file path for this folder. 
-    * Otherwise, you may enter a file path to a folder that doesn’t exist yet. If you do this, ensure that the parent directory exists. 
+    * Otherwise, you may enter a file path to a folder that doesn’t exist yet. Can be a reltive directory name or an absolute path. If you do this, ensure that the parent directory exists. 
         * For example, if you are inputting this file path as your output folder: path/to/file/hello/world, the folder “hello” must already exist for the “world” folder to be created.
     * If this is not inputted, an output folder will be generated within the input folder.
-* **Primer scheme folder:** Enter the file path to your primer schemes. 
+
+* **Primer scheme directory:** Enter the file path to your primer schemes. 
     * This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
 * **Primer scheme name:** Enter the primer scheme name used for your nanopore sequencing run.
     * Following a similar example to the previous parameter description, here you will enter a path such as nCoV-2019/V1.
 * **Primer/Barcode type:** Enter the type of primer/barcode used. 
     * Either select from the options available or enter the name of the primer/barcode in the text box. 
     * This is only used for folder-naming purposes.
+* **Pipeline:** Select the pipeline within ARTIC that you wish to run your data files through.
 * **Minimum/Maximum length:** If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. 
     * If not, set this to the minimum/maximum length of your primers.
 * **Thread usage/Normalise:** Change the prefilled values if you wish.
     * Please note that changing the threads/normalise values, they are changed globally for all commands.
-* **Single or Multiple samples:** Select the appropriate option.
 
 When you are confident that your parameter selections are correct, click on the “Submit Job(s)” button. You will be redirected to the progress page after clicking this button.
 
@@ -145,7 +127,7 @@ When a job is completed, a ‘Go to Output’ button will appear at the top of t
 
 ## Output Page
 
-The Output Page has two main sections, one for the files produced during the run, and the other for data visualisation to enable a fast quality check of the sample. At the bottom of the page, there is a 'Go to Progress' button which will redirect you to the progress page of the job if you click on it.
+The Output Page is for data visualisation to enable a fast quality check of the sample. At the bottom of the page, there is a 'Go to Progress' button which will redirect you to the progress page of the job if you click on it.
 
 ### Files Produced
 
@@ -155,25 +137,15 @@ This section contains a list of the files produced from the job, along with the 
 
 The “Data Visualisation” section comprises two main parts.
 
-* Variants found
 * Plots produced from pipeline
-
-#### Variants Found
-
-This section produces a simple graph/s from the data inside the ```<sample_name>.pass.vcf.gz``` file/s produced by the pipeline. If multiple samples are selected, multiple files will be produced (assuming all runs are successful).
-
-The 'Produce Graphs' button creates the graph/s. The vertical lines on the graph represent a variant, with the specific numerical position of the variant on the bottom axis. The mutation that occurred is labelled REF -> ALT, meaning that the nucleotide/s in the reference genome are on the left of the arrow, and the variant is on the right of the arrow. The height of the vertical line indicates the read depth of the specific variant. To download the graph, click on the 'Download' hyperlink in the lower-left corner of the graph of interest.
-
-These graphs, as mentioned, require interARTIC to read the ```<sample_name>.pass.vcf.gz``` file/s from the output folder. If there are no such files found, then no graphs will be produced. If you would not like the web app to access this, please click the “Disable” option under “Enable VCF graphs to be generated?” and click the 'Confirm' button. When you are no longer given the option to produce the graphs, and the status of the “Enable VCF graphs to be generated?” section is “Disabled” this is complete. If you would like to re-enable the graphs to be produced, just select “Enable” and once again confirm. The functionality should be restored.
-
-If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important. 
-
-Beneath each of the graphs, a summarised version of the ```<sample_name>.pass.vcf.gz``` file is displayed in the form of a table. Each row corresponds to a different variant found and they are ordered in increasing numerical order based on their position on the chromosome.
+* Variants found
 
 #### Plots Produced From Pipeline
 
-This section enables you to preview the mean amplicon read depth plots produced from the pipeline. The bar plot shows the mean amplicon read depth over the amplicons, while the box plot shows the mean amplicon read depth over the read groups.
+This section enables you to preview the mean amplicon read depth plots produced from the pipeline and simple graph/s from the data inside the ```<sample_name>.pass.vcf.gz``` file/s produced by the pipeline.  To download the graph, click on the 'Download' hyperlink in the lower-left corner of the graph of interest. If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important. 
 
-These plots are accessed from the output folder, and require a copy of them to be saved into the interARTIC web app’s folder to enable previewing. If you would not like this to happen, please disable the feature by selecting the “Disable” option under the “Would you like the plots to be previewed?” section, and clicking the 'Confirm' button. The status should be updated to say “Disabled” and the plots will be automatically removed from the interARTIC web app's folder. To re-enable previewing, select “Enable” and press the 'Confirm' button again, and the option to preview graphs should be restored. 
+#### Variants Found
 
-If no barplot.png or boxplot.png files are found in the output folder, the message “Plots cannot be previewed: No plots were found in the output folder.” will be displayed. As no files in suitable format have been found, these graph/s cannot be previewed. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important.
+Beneath each of the graphs, a summarised version of the ```<sample_name>.pass.vcf.gz``` file is displayed in the form of a table. Each row corresponds to a different variant found and they are ordered in increasing numerical order based on their position on the chromosome.
+
+
