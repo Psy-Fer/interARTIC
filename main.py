@@ -364,7 +364,7 @@ def check_special_characters(func):
     return wraper_check_char
 
 @check_special_characters
-def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input, csv_filepath, skip):
+def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipeline, override_data, min_length, max_length, job_name, output_input, csv_filepath, skip, num_samples):
     errors = {}
 
     #Check of jobname is used
@@ -378,10 +378,11 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         flash("Warning: Input folder does not exist, please check input and try again")
         return errors, output_folder
 
-    if not os.path.isfile(csv_filepath):
-        errors['csv_file'] = "csv file does not exist"
-        flash("Warning: CSV file does not exist, please check input and try again")
-        return errors, output_folder
+    if num_samples == "multiple":
+        if not os.path.isfile(csv_filepath):
+            errors['csv_file'] = "csv file does not exist"
+            flash("Warning: CSV file does not exist, please check input and try again")
+            return errors, output_folder
 
     #give error if input folder path is empty
     if len(os.listdir(input_folder)) == 0:
@@ -695,7 +696,7 @@ def parameters():
         errors = {}
         errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir,
                                                     read_file, pipeline, override_data, min_length,
-                                                    max_length, job_name, output_input, csv_filepath, step)
+                                                    max_length, job_name, output_input, csv_filepath, step, num_samples)
 
         # if an output folder does not exist, make one
         # if not output_folder:
@@ -929,7 +930,7 @@ def error(job_name):
         errors = {}
         errors, output_folder_checked = checkInputs(input_folder, output_folder, primer_scheme_dir,
                                                     read_file, pipeline, override_data, min_length,
-                                                    max_length, job_name, output_input, csv_filepath, step)
+                                                    max_length, job_name, output_input, csv_filepath, step, num_samples)
 
         # if an output folder does not exist, make one
         # if not output_folder:
