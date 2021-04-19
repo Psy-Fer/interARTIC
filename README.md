@@ -61,7 +61,7 @@ Click `Add Job` on the interARTIC web interface. Then fill the fields as given i
 
 Now click *Submit job(s)* and you should see the pipeline running :)
 
-![parameters page](docs/params.JPG)
+![parameters page](docs/params.jpg)
 
 # interARTIC usage
 
