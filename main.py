@@ -707,7 +707,7 @@ def parameters():
         # No special characters -
         # comma separated -
         # 2 columns -
-        # 2nd column should have NB or RB -
+        # 2nd column should have NB or RB or BC-
         def _detect_special(pass_string):
             regex= re.compile('^[a-zA-Z0-9,_-]+$')
             if(regex.search(pass_string) == None):
@@ -731,9 +731,9 @@ def parameters():
                         flash("Warning: csv file malformed: more or less than 2 columns")
                         break
                     else:
-                        if l[1][:2] not in ["NB", "RB"]:
-                            errors['csv_malformed'] = "csv is malformed, not NB or RB for barcode"
-                            flash("Warning: csv file malformed: not NB or RB for barcode")
+                        if l[1][:2] not in ["NB", "RB", "BC"]:
+                            errors['csv_malformed'] = "csv is malformed, not NB or RB or BC for barcode"
+                            flash("Warning: csv file malformed: not NB or RB or BC for barcode")
                             break
 
         sys.stderr.write("printing errors:\n")
