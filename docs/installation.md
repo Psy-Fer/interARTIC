@@ -180,13 +180,7 @@ If you wish to **turn concurrency on** and run multiple jobs at a time, then ple
 Navigate to your browser and follow [this link](http://127.0.0.1:5000) to access interARTIC.
 
 
-## Configuring interARTIC
 
-1. On the interARTIC web interface, click on `Edit Input and Sample .csv Directories`.
-
-2. Fill the first two fields (1. location of your input data, and 2. where your sample barcode .csv files are located). 
-
-3. Click `confirm` to save the settings.
 
 
 <!--
