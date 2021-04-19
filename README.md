@@ -19,7 +19,7 @@ cd interartic_bin
 ./run.sh
 ```
 
-**IMPORTANT: Make sure the interARTIC binaries reside at a location with no white characters and non-ASCII charcaters in directory names**
+**IMPORTANT: Make sure the interARTIC binaries reside at a location with no white characters and non-ASCII characters in directory names.**
 
 The `run.sh` script has now launched a new interactive interARTIC session. To see your session, visit [http://127.0.0.1:5000](http://127.0.0.1:5000) on your web browser. Here, you can configure and run your next job via the graphical interface. Make sure you keep the terminal open to keep your interARTIC session running.
 
@@ -37,6 +37,8 @@ rm FLFL031920_sample_data.tar.gz
 Once extracted, you should see two directories: 
 1. *FLFL031920* containing a subset of a GridION sequencing run (with live base-calling enabled) of 10 multiplexed COVID-19 samples. The *fast5* files, *fastq* files and the sequencing summary file are amongst the extracted data. This example dataset follows the same directory structure of a nanopore sequencing run (with live base-calling enabled).
 2. *sample-barcodes* containing a .csv manifest file that matches sample names to sample barcodes.
+
+**IMPORTANT: Make sure the the data directory and file names do not contain white space and non-ASCII characters.**
 
 ## Step 3: Configuring interARTIC
 
