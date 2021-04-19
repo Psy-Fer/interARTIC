@@ -1,6 +1,6 @@
 # InterARTIC
 
-InterARTIC is a web application designed to ease the use of the convoluted [ARTIC pipeline](https://github.com/artic-network/artic-ncov2019). InterARTIC supports both Nanopolish and Medaka pipelines.
+InterARTIC is an interactive web application designed to simplify the use of the biofinformatics pipelines from [ARTIC](https://github.com/artic-network/artic-ncov2019) for viral whole genome nanopore sequencing analysis. InterARTIC was initally designed and tested for analysis of SARS-CoV-2, but is suitable for analysis of any virus and/or amplicon scheme. InterARTIC spports both the Nanopolish and Medaka pipelines from ARTIC and allows full parameter customisation via a simple fraphical interface.
 
 
 # Quick start
