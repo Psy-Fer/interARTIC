@@ -1,6 +1,7 @@
 # InterARTIC
 
 InterARTIC is an interactive web application designed to simplify the use of the [ARTIC bioinformatics pipelines](https://github.com/artic-network/artic-ncov2019) for nanopore sequencing analysis on viral genomes. InterARTIC was initally designed and tested for analysis of SARS-CoV-2, but is suitable for analysis of any virus and/or amplicon scheme, including a user's own custom amplicons. InterARTIC spports both the Nanopolish and Medaka pipeline alternatives from ARTIC, with full parameter customisation enabled through a simple graphical interface.
+
 ![home page](docs/homepage.JPG)
 
 # Quick start
@@ -52,7 +53,7 @@ Click `Add Job` on the interARTIC web interface. Then fill the fields as given i
 | **Job name**                  | *test*    | whatever name that you like for the run (only alpha numeric characters and underscore are allowed)  |
 | **input data directory**    | *FLFL031920*  | this is the directory containing the nanopore data  |
 | **This input contains**       | *Multiple samples*    | our example test dataset contains 10 multiplexed samples |
-| **Select a CSV file**         | *sample-barcode.csv*  | .csv manifest file that matches sample names to sample barcodes  |
+| **Select a CSV file**         | *FLFL031920-barcodes.csv*  | .csv manifest file that matches sample names to sample barcodes  |
 | **virus**       | *SARS-CoV-2 (nCoV-2019)*    |  |
 | **Select your primer scheme**      | *Eden V1 (2500bp)*    | our example test dataset used Eden V1 primers |
 | **library preparation method**     | *Ligation library prep (eg SQK-LSK109)*              | our example test dataset used ligation barcodes |
@@ -60,6 +61,7 @@ Click `Add Job` on the interARTIC web interface. Then fill the fields as given i
 
 Now click *Submit job(s)* and you should see the pipeline running :)
 
+![parameters page](docs/params.JPG)
 
 # interARTIC usage
 
