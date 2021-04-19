@@ -2,6 +2,17 @@
 
 [TOC]
 
+
+## Configuring interARTIC
+
+1. On the interARTIC web interface, click on `Edit Input and Sample .csv Directories`.
+
+2. Fill the first two fields (1. location of your input data, and 2. where your sample barcode .csv files are located). 
+
+3. Click `confirm` to save the settings.
+
+
+
 ## Adding a job
 
 To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. 
