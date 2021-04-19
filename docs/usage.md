@@ -10,8 +10,6 @@ To begin the process of adding a job, click the 'Add Job' button located underne
 
 Input the necessary parameters (see Parameter Descriptions below). Parameters required for any type of job run are denoted with an asterix (*).
 
-For the file path inputs, please enter absolute paths. See below for help.
-
 ### Input Folders
 
 By default, the data input folder should be set up as:
