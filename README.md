@@ -10,7 +10,7 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 We provide a pre-compiled binary release for common Linux distributions on x86_64 architecture. The binary release is tested to work well on Ubuntu 14, 16, 18 and 20 distributions (on Windows Subsystem for Linux as well). The binary release should work on other distributions as long as GLIBC 2.17 (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
 
-First, open a bash terminal and run the following commands to download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest), extract the tar ball and run the provided `run.sh` script:
+First, open an Ubuntu terminal and run the following commands to download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest), extract the tar ball and run the provided `run.sh` script:
 
 ```bash
 wget https://cloudstor.aarnet.edu.au/plus/s/OysmkiekO1tCuSU/download -O interartic_bin.tar.gz
