@@ -60,8 +60,7 @@ Note that this how MinKnow produces data when live basecalling is enabled. If no
 
 If you have some custom data, you can create directories to adhere to the structure discussed above and place the files accordingly. For medaka pipieline, fast5 files and the sequencing summary file are not required. You can simply place one or more fastq files under *fastq_pass*. For nanopolish pipeline, you can place fastq file/s in  *fastq_pass*, the corresponding fast5 files under *fast5_pass* and the sequencing_summary file.
 
-
-If particular experiment contains multiplexed samples, a CSV file containing the data's sample names and barcodes should be placed in the sample-barcodes directory specified during the configuration step above.
+If a particular experiment contains multiplexed samples, a CSV file containing the data's sample names and barcodes should be placed in the sample-barcodes directory specified during the configuration step above.
 
 A sample CSV file for a dataset with four multiplexed samples using native barcodes is below:
 
@@ -80,35 +79,53 @@ For rapid barcodes, this should be RBXX.
 
 To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. Now it will go to the paramers page.
 
-
 Input the necessary parameters (see Parameter Descriptions below). Parameters required for any type of job run are denoted with an asterix (*).
 
 
-### Parameter Descriptions
+## Parameter Descriptions
 
-You can customize the parameters by typing into the respective text box. 
+You can customise the parameters by typing into the respective text box. Only alpha numeric characters and underscore allowed, except forward slash is allowed for fileds that represents paths.
+
+### Basic Parameters
 
 * **Job name:** A unique name for your job, so you may identify your output files with it.
-* **Input folder:** Your main data folder. 
-    * This folder contains folders such as fast5_pass, fastq_pass, etc.
+* **Input directory:** Your main nanopore experiment directory. 
+    * When you click on the field (double click on certain browsers) a list will appear that lists the contents inside `/data` directory you set during the configuration.
+    * You can select the experiemnt directory from this list.
 * **Single or Multiple samples:** Select the appropriate option.
-* **Output folder:** If your chosen output folder is already created, enter the file path for this folder. 
-    * Otherwise, you may enter a file path to a folder that doesn’t exist yet. Can be a reltive directory name or an absolute path. If you do this, ensure that the parent directory exists. 
+* **Sample-barcode metadata file:** This is applicable only if you selected multiple samples as the previous option.
+   *  When you click on the field (double click on certain browsers) a list will appear that lists the contents inside the sample-barcode directory  you set during the configuration.
+   *  You can select the correct .csv file for your experiment.
+* **Output folder:** This is an optional field. 
+    * If left empty, an output directory called `output` will be created inside the experiment_id directory.
+    * If you provide a name, a directory under that name will be created inside the experiment_id directory.
+    * You can also provide an absolute path. If you do this, ensure that the parent directory exists. 
         * For example, if you are inputting this file path as your output folder: path/to/file/hello/world, the folder “hello” must already exist for the “world” folder to be created.
-    * If this is not inputted, an output folder will be generated within the input folder.
 
-* **Primer scheme directory:** Enter the file path to your primer schemes. 
-    * This is the folder containing, for example, the folder nCoV-2019 which contains the V1, V2, etc folders.
-* **Primer scheme name:** Enter the primer scheme name used for your nanopore sequencing run.
+* **Override existing data:** Select this if your output directory already contains files in it.
+   *   WARNING: things inside the output directory will be wiped. Please be careful.
+* **Virus:**. Select the preset viruses (corona virus and Ebola at the moment) or custom for analysing your own virus.
+* **Primer scheme:** If a preset virus is selected in the previous step, the preset primer schemes for that virus will appear which you can select based on what you used for your nanopore sequencing run.
+* **Primer scheme directory:** Autofilled if you selected a preset scheme. If you are analysing a custom virus or using a custom primer scheme, enter the directory path to your 
+* **Primer scheme name:**
     * Following a similar example to the previous parameter description, here you will enter a path such as nCoV-2019/V1.
-* **Primer/Barcode type:** Enter the type of primer/barcode used. 
-    * Either select from the options available or enter the name of the primer/barcode in the text box. 
+
+* **Library preparation method:** Enter what you used for sample preparation. 
     * This is only used for folder-naming purposes.
-* **Pipeline:** Select the pipeline within ARTIC that you wish to run your data files through.
-* **Minimum/Maximum length:** If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. 
+* **Pipeline:** Select the pipeline within ARTIC that you wish to run your data files through (nanopolish or medaka currently).
+
+
+#### Advanced Parameters
+
+* **Minimum length:** If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. 
     * If not, set this to the minimum/maximum length of your primers.
-* **Thread usage/Normalise:** Change the prefilled values if you wish.
+* **Maximum length:** If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. 
+    * If not, set this to the minimum/maximum length of your primers.
+* **Thread usage/:** Change the prefilled values if you wish.
     * Please note that changing the threads/normalise values, they are changed globally for all commands.
+* **Normalise depth:** If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. 
+    * If not, set this to the minimum/maximum length of your primers.
+
 
 When you are confident that your parameter selections are correct, click on the “Submit Job(s)” button. You will be redirected to the progress page after clicking this button.
 
