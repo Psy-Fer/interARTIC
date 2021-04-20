@@ -4,7 +4,7 @@
 
 ## Configuring interARTIC
 
-Configuring interARTIC should be done only at the first time. It will save the coniguration details for the future. 
+Configuring interARTIC should be done only at the first time. It will save the configuration details for the future. 
 
 - On the interARTIC web interface, click on `Edit Input and Sample .csv Directories`.
 
@@ -17,50 +17,30 @@ Configuring interARTIC should be done only at the first time. It will save the c
 
 
 
-## Adding a job
+### Structure of input data
 
-To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. Now it will go to the paramers page.
+For interARTIC to work smoothly, the directory structure of the nanopore sample data as well as the file structure of sample-barcode .csv files are very important.
 
-
-Input the necessary parameters (see Parameter Descriptions below). Parameters required for any type of job run are denoted with an asterix (*).
-
-### Input Folders
-
-By default, the data input folder should be set up as:
+Assuming the input data directory mentioned above is set to `/data` and we have data from two nanopore sequencing under `/data` the directory structure should look like below:
 
 ```
 /data/
-    input_folder1/                               
-        name/
-            uuid/
-                # input files here
-    input_folder2/
-        name/
-            uuid/
-                # input files here
+    experiment_group_1/                               
+        sample_id_1/
+            uuid_1/
+                # nanopore data here
+    experiment_group_1/
+        sample_id_2/
+            uuid_2/
+                # nanopore data here
                     
 ```
+Note that these experiment_group, sample_id and the uuid (currently  {start_time}_{device_ID}_{flow_cell_id}_{short_protocol_run_id} for this uuid) are what MinKnow produces.
 
-When prompted to select an input folder, click the drop down menu or type in the name of the input folder as in the data folder in the file tree above. For example, if you want to run the pipeline on ```input_folder1```, type ```input_folder1``` into the search bar or select it in the drop down menu.
-
-#### Input directory file structure
-
-* You must rename each file in the input folder to: fast5_pass, fast5_fail, fastq_pass, fastq_fail, sequencing_summary.txt
-* If multiple samples are being run through the pipeline:
-    * A CSV file containing the data's sample names and barcodes should be placed in the sample-barcodes folder and named ‘sample-barcode.csv’. 
-    * A sample CSV file is below:
+Inside the uuid directory, the fastq files, fast5 files and the seqiencing summary file should be present as in the example below:
 
 ```
-sample3,NB03
-sample4,NB04
-sample5,NB05
-sample6,NB06
-```
-
-A sample file structure is as below:
-
-```
-input_folder/
+uuid/
     fast5_pass/
         A_10.fast5
         A_11.fast5
@@ -75,6 +55,34 @@ input_folder/
         B_11.fastq
     sequencing_summary.txt
 ```
+
+Note that this how MinKnow produces data when live basecalling is enabled. If not rename rename directories/files in the input folder to: fast5_pass, fast5_fail, fastq_pass, fastq_fail, sequencing_summary.txt.
+
+If you have some custom data, you can create directories to adhere to the structure discussed above and place the files accordingly. For medaka pipieline, fast5 files and the sequencing summary file are not required. You can simply place one or more fastq files under *fastq_pass*. For nanopolish pipeline, you can place fastq file/s in  *fastq_pass*, the corresponding fast5 files under *fast5_pass* and the sequencing_summary file.
+
+
+If particular experiment contains multiplexed samples, a CSV file containing the data's sample names and barcodes should be placed in the sample-barcodes directory specified during the configuration step above.
+
+A sample CSV file for a dataset with four multiplexed samples using native barcodes is below:
+
+```
+sample1,NB03
+sample2,NB04
+sample3,NB05
+sample4,NB06
+```
+
+For rapid barcodes, this should be RBXX.
+
+
+
+## Adding a job
+
+To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. Now it will go to the paramers page.
+
+
+Input the necessary parameters (see Parameter Descriptions below). Parameters required for any type of job run are denoted with an asterix (*).
+
 
 ### Parameter Descriptions
 
