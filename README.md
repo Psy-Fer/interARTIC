@@ -22,11 +22,12 @@ cd interartic_bin
 
 **IMPORTANT: Make sure the interARTIC binaries reside at a location with no white characters and non-ASCII characters in directory names.**
 
-The `run.sh` script has now launched a new interactive interARTIC session. To see your session, visit [http://127.0.0.1:5000](http://127.0.0.1:5000) on your web browser. Here, you can configure and run your next job via the graphical interface. Make sure you keep the terminal open to keep your interARTIC session running.
+The `run.sh` script has now launched a new interactive interARTIC session. To see your session, visit [http://127.0.0.1:5000](http://127.0.0.1:5000) on your web browser. Here, you can configure and run your next job using the graphical interface. Make sure you keep the terminal open to keep your interARTIC session running.
+
 
 ## Step 2: Downloading test dataset
 
-Open a new terminal to download and extract the [example test dataset](https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download). The commands below will extract the dataset to `/data`, assuming `/data` exists on your computer and you have write permission to `/data`. You can use a custom location such as `/home/username/data` if you wish.
+Open a new terminal to download and extract the [example test dataset](https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download). The commands below will extract the dataset to `/data`, assuming `/data` exists on the computer and you have write permission to `/data`. The `/data` folder is the default location for sequencing outputs on an ONT GridION or PromethION device, but on your own machine you may use a custom location such as `/home/username/data` if you wish.
 
 ```bash
 cd /data
@@ -36,16 +37,20 @@ rm FLFL031920_sample_data.tar.gz
 ```
 
 Once extracted, you should see two directories: 
-1. *FLFL031920* containing a subset of a GridION sequencing run (with live base-calling enabled) of 10 multiplexed COVID-19 samples. The *fast5* files, *fastq* files and the sequencing summary file are amongst the extracted data. This example dataset follows the same directory structure of a nanopore sequencing run (with live base-calling enabled).
+1. *FLFL031920* containing a data from a nanopore sequencing run of 10 multiplexed SARS-CoV-2 isolates, performed on an ONT GridION. The *fast5* files, *fastq* files and the sequencing summary file are amongst the extracted data. This example dataset follows the same directory structure of a nanopore sequencing run with live base-calling enabled.
 2. *sample-barcodes* containing a .csv manifest file that matches sample names to sample barcodes.
 
+For detailed information on the input data structure and .csv manifest file, please visit the InterARTIC usage guide [here](https://psy-fer.github.io/interARTIC/usage/).
+
 **IMPORTANT: Make sure the the data directory and file names do not contain white space and non-ASCII characters.**
+
 
 ## Step 3: Configuring interARTIC
 
 Configuration is only required if you downloaded the dataset to a custom location instead of `/data`.
-In your interARTIC web interface, click *Set locations of input data*. Fill first two fields (1. location of your input data, and 2. location of your sample-barcode .csv files are located). If you used `/home/username/data` the fileds should be `/home/username/data` and `/home/username/data/sample-barcodes`, respectively.
-Click `confirm` to save the settings.
+In your interARTIC web interface, click *Set locations of input data*. Fill the first two fields (1. location of your input data, and 2. location of your sample-barcode .csv files are located). For example, if you used `/home/username/data` the fields should be `/home/username/data` and `/home/username/data/sample-barcodes`, respectively.
+Click `confirm` to save the settings, which will be used for all future runs.
+
 
 ## Step 4: Running InterARTIC on the test dataset
 
@@ -54,7 +59,7 @@ Click `Add Job` on the interARTIC web interface. Then fill the fields as given i
 | field  | value  | description  |
 |---|---|---|
 | **Job name**                  | *test*    | whatever name that you like for the run (only alpha numeric characters and underscore are allowed)  |
-| **input data directory**    | *FLFL031920*  | this is the directory containing the nanopore data  |
+| **input data directory**    | *FLFL031920*  | this is the directory containing the nanopore sequencing data  |
 | **This input contains**       | *Multiple samples*    | our example test dataset contains 10 multiplexed samples |
 | **Select a CSV file**         | *FLFL031920-barcodes.csv*  | .csv manifest file that matches sample names to sample barcodes  |
 | **virus**       | *SARS-CoV-2 (nCoV-2019)*    |  |
@@ -77,7 +82,7 @@ See [here](https://psy-fer.github.io/interARTIC/troubleshooting/) for troublesho
 
 # Building from source
 
-Building from source is not the easiest to do due to the dependency hell of Python versions (this was one of the motivations for developing interARTIC). Step by step instructions for building from source are given [here](https://psy-fer.github.io/interARTIC/installation/).
+Building from source is not straightforward, due to the dependency hell of Python versions (circumventing this hell was one of the motivations for developing interARTIC). Step-by-step instructions for building from source are given [here](https://psy-fer.github.io/interARTIC/installation/).
 
 
 # Acknowledgement
