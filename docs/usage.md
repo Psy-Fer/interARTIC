@@ -4,14 +4,14 @@
 
 ## Configuring interARTIC
 
-Configuring interARTIC should be done only at the first time. It will save the configuration details for the future. 
+Configuring interARTIC should be done only at the first time use. The configuration details are saved for the future runs.
 
 - On the interARTIC web interface, click on `Edit Input and Sample .csv Directories`.
 
-- Fill the first two fields 
-   1. location of your input data. This should be an absolute path of a directory. This should usually be where Minknow outputs the data. On the GridION this is `/data`. If you use a MinION on a laptop by default it is `/var/lib/minknow/data/`. You can also set this to a custom directory location if you wish to manually copy the sequencing data.
-   
-   2. location of your sample-barcode .csv files. This should be an absolute path of a directory. We expect you to put the sample-barcode .csv files here directly, not inside any sub directories.
+- Fill the first two fields
+   1. location of your input data. This should be an absolute path of a directory. Usually, this is where MinKNOW outputs the sequencing data. On the GridION this is `/data`. If you use a MinION on a laptop, by default this  `/var/lib/minknow/data/`. You can also set this this field to a custom directory location if you wish to manually copy the sequencing data.
+
+   2. location of your sample-barcode .csv files. This should be an absolute path of a directory. We expect you to put the sample-barcode .csv files directly inside this directly (not inside any sub directories).
 
 - Click `confirm` to save the settings.
 
@@ -19,25 +19,25 @@ Configuring interARTIC should be done only at the first time. It will save the c
 
 ### Structure of input data
 
-For interARTIC to work smoothly, the directory structure of the nanopore sample data as well as the file structure of sample-barcode .csv files are very important.
+For interARTIC to work smoothly, the directory structure of the nanopore sequencing data as well as the file structure of sample-barcode .csv files are very important.
 
-Assuming the input data directory mentioned above is set to `/data` and we have data from two nanopore sequencing under `/data` the directory structure should look like below:
+Assuming the input data directory mentioned above is set to `/data` and there are two nanopore sequencing experiments under `/data`, the directory structure should look like below:
 
 ```
 /data/
-    experiment_group_1/                               
+    experiment_group_1/
         sample_id_1/
             uuid_1/
-                # nanopore data here
+                # nanopore sequencing data here
     experiment_group_1/
         sample_id_2/
             uuid_2/
-                # nanopore data here
-                    
-```
-Note that these experiment_group, sample_id and the uuid (currently  {start_time}_{device_ID}_{flow_cell_id}_{short_protocol_run_id} for this uuid) are what MinKnow produces.
+                # nanopore sequencing data here
 
-Inside the uuid directory, the fastq files, fast5 files and the seqiencing summary file should be present as in the example below:
+```
+Note that, this directory structure that includes the *experiment_group*, *sample_id* and the *uuid* (currently  {start_time}_{device_ID}_{flow_cell_id}_{short_protocol_run_id} for this *uuid*) are produced by MinKNOW.
+
+Inside the *uuid* directory, the .fastq files, .fast5 files and the sequencing summary file should be available as in the example below:
 
 ```
 uuid/
@@ -56,13 +56,14 @@ uuid/
     sequencing_summary.txt
 ```
 
-Note that this how MinKnow produces data when live basecalling is enabled. If not rename rename directories/files in the input folder to: fast5_pass, fast5_fail, fastq_pass, fastq_fail, sequencing_summary.txt.
+Note that, this how MinKNOW currently produces data when live basecalling is enabled. If they are different, please rename the corresponding directories/files to: `fast5_pass`, `fast5_fail`, `fastq_pass`, `fastq_fail`, sequencing_summary.txt.
 
-If you have some custom data, you can create directories to adhere to the structure discussed above and place the files accordingly. For medaka pipieline, fast5 files and the sequencing summary file are not required. You can simply place one or more fastq files under *fastq_pass*. For nanopolish pipeline, you can place fastq file/s in  *fastq_pass*, the corresponding fast5 files under *fast5_pass* and the sequencing_summary file.
+If you have some nanopore custom data, you can create a directory structure that adhere to the structure discussed above (give alpha-numeric names of your choice for `experiment_group`, `sample_id` and the `uid`) and place the files accordingly. For *medaka* pipeline, only the *.fastq* files are required. You can simply place one or more *.fastq* files under a subdirectory named *fastq_pass*. For nanopolish pipeline,have to place *.fastq* file/s in  *fastq_pass*, the corresponding fast5 file/s under `fast5_pass` and the sequencing_summary file under the name sequencing_summary.txt.
 
-If a particular experiment contains multiplexed samples, a CSV file containing the data's sample names and barcodes should be placed in the sample-barcodes directory specified during the configuration step above.
 
-A sample CSV file for a dataset with four multiplexed samples using native barcodes is below:
+If a particular experiment contains multiplexed samples, a .csv file that matches the sample names to the barcodes should be placed in the sample-barcodes directory specified during the configuration step above.
+
+An example sample .csv file for a dataset with four multiplexed samples using native barcodes is below:
 
 ```
 sample1,NB03
@@ -71,67 +72,62 @@ sample3,NB05
 sample4,NB06
 ```
 
-For rapid barcodes, this should be RBXX.
-
+For rapid barcodes, this typically RBXX instead of NBXX.
 
 
 ## Adding a job
 
-To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. Now it will go to the paramers page.
+To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. Now it will go to the parameters page.
 
 Input the necessary parameters (see Parameter Descriptions below). Parameters required for any type of job run are denoted with an asterix (*).
 
 
 ## Parameter Descriptions
 
-You can customise the parameters by typing into the respective text box. Only alpha numeric characters and underscore allowed, except forward slash is allowed for fileds that represents paths.
+You can customise the parameters by filling the respective text boxes, radio buttons or check boxes. FOr text boxes, only alpha-numeric characters and underscore are allowed, except that forward slashes are allowed for fields representing paths.
 
 ### Basic Parameters
 
 * **Job name:** A unique name for your job, so you may identify your output files with it.
-* **Input directory:** Your main nanopore experiment directory. 
-    * When you click on the field (double click on certain browsers) a list will appear that lists the contents inside `/data` directory you set during the configuration.
-    * You can select the experiemnt directory from this list.
-* **Single or Multiple samples:** Select the appropriate option.
+* **Input directory:** Your nanopore experiment directory.
+    * When you click on the text box (need to double click on certain browsers), a list will appear that lists the contents inside `/data` directory you set during the configuration.
+    * You can select the experiment directory from this list.
+* **Single or Multiple samples:** Select the appropriate option for your experiment.
 * **Sample-barcode metadata file:** This is applicable only if you selected multiple samples as the previous option.
    *  When you click on the field (double click on certain browsers) a list will appear that lists the contents inside the sample-barcode directory  you set during the configuration.
    *  You can select the correct .csv file for your experiment.
-* **Output folder:** This is an optional field. 
-    * If left empty, an output directory called `output` will be created inside the experiment_id directory.
-    * If you provide a name, a directory under that name will be created inside the experiment_id directory.
-    * You can also provide an absolute path. If you do this, ensure that the parent directory exists. 
-        * For example, if you are inputting this file path as your output folder: path/to/file/hello/world, the folder “hello” must already exist for the “world” folder to be created.
+* **Output folder:** This is an optional field.
+    * If left empty, an output directory called `output` will be created inside the `experiment_group` directory.
+    * If you provide a name, a directory under that name will be created inside the `experiment_group` directory.
+    * You can also provide an absolute path for a custom location (for instance, if you do not have write access to the `experiment_group` directory). If you do this, ensure that the parent directory exists.
+        * For example, if you are inputting this directory path `/path/to/file/hello/world` as the output directory path, the folder “hello” must already exist for the “world” folder to be created.
 
-* **Override existing data:** Select this if your output directory already contains files in it.
-   *   WARNING: things inside the output directory will be wiped. Please be careful.
-* **Virus:**. Select the preset viruses (corona virus and Ebola at the moment) or custom for analysing your own virus.
-* **Primer scheme:** If a preset virus is selected in the previous step, the preset primer schemes for that virus will appear which you can select based on what you used for your nanopore sequencing run.
-* **Primer scheme directory:** Autofilled if you selected a preset scheme. If you are analysing a custom virus or using a custom primer scheme, enter the directory path to your 
-* **Primer scheme name:**
-    * Following a similar example to the previous parameter description, here you will enter a path such as nCoV-2019/V1.
+* **Override existing data:** Select this if your output directory already contains files in it that must be overwritten
+   *   WARNING: all files inside the output directory will be deleted. Please be careful.
+* **Virus:**. Select the pre-set viruses (corona virus and Ebola at the moment) that are bundled with interARTIC or *custom* for analysing your own virus.
+* **Primer scheme:** If a pre-set virus is selected in the previous step, the pre-set primer schemes bundled with interARTIC for that virus will appear, which you can select based on what you used for your nanopore sequencing run.
+* **Primer scheme directory:** This is auto  filled if you selected a pre-set virus and a primer scheme. If you are analysing a custom virus or using a custom primer scheme, enter the directory path to where your custom primer schemes are located.
+* **Primer scheme name:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise give the primer scheme name that adheres to the format virus_name/version (e.g.,nCoV-2019/V1)..
+    * Inside the directory location pointed by primer_scheme_directory/primer_scheme_name, the corresponding reference (.fasta file) and the primer .bed files should exist. See the examples at https://github.com/Psy-Fer/interARTIC/tree/master/primer-schemes/artic
 
-* **Library preparation method:** Enter what you used for sample preparation. 
+* **Library preparation method:** Enter what you used for sample preparation.
     * This is only used for folder-naming purposes.
 * **Pipeline:** Select the pipeline within ARTIC that you wish to run your data files through (nanopolish or medaka currently).
 
 
 #### Advanced Parameters
 
-* **Minimum length:** If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. 
-    * If not, set this to the minimum/maximum length of your primers.
-* **Maximum length:** If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. 
-    * If not, set this to the minimum/maximum length of your primers.
-* **Thread usage/:** Change the prefilled values if you wish.
-    * Please note that changing the threads/normalise values, they are changed globally for all commands.
-* **Normalise depth:** If you selected from the available options in the primer/barcode type section, you may find the minimum and maximum length already filled out. 
-    * If not, set this to the minimum/maximum length of your primers.
+* **Minimum length:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise set this to the minimum read length that should be used for the analysis, based on your primer lengths.
+* **Maximum length:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise set this to the maximum read length that should be used for the analysis, based on your primer lengths.
+* **Thread usage/:** Change the pre-filled values if you wish, based on the number of cores in your system you want to utilise. Note that not all tools inside the ARTIC pipeline are multi-threaded and thread efficient.
+* **Normalise depth:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise, select the read depth (coverage) that you to which your data should be normalised.
 
 
-When you are confident that your parameter selections are correct, click on the “Submit Job(s)” button. You will be redirected to the progress page after clicking this button.
+After filling in the parameters carefully, click on the “Submit Job(s)” button. You will be redirected to the progress page after clicking this button.
 
 ## Progress Page
 
-The progress page displays the stream of standard output being produced by your job run. Here you can see which commands are currently running and any errors that occur. Each job run has its own progress page which can be accessed via the home page or parameters page by clicking on the job name in the jobs queue.
+The progress page displays the stream of standard error output being produced by your job run. Here you can see which commands are currently running and any errors that occur. Each job run has its own progress page which can be accessed via the home page or parameters page by clicking on the job name in the jobs queue.
 
 For each job, the progress page will display:
 
@@ -142,21 +138,15 @@ For each job, the progress page will display:
 * A 'View Job Parameters here' button
 * The current standard output obtained from the job
 
-The 'View Job Parameters here' button, when clicked, will display the job's parameters that have been entered by the user.
+The 'View Job Parameters here' button, when clicked, will display the job's basic parameters that have been entered by the user.
 
 The 'Abort Job' button can be used to terminate the job. A confirmation window will appear when you click on the abort button. If you continue, you will then be asked to confirm whether you wish to delete the files created by the job. After this, you will then be directed back to the home page.
 
 ### What happens if an error occurs during the run?
 
-If an **error** occurs during a run, a **red** notification will appear. You can either let the job continue to run, or click the ‘Re-run’ button. Harmless errors sometimes occur in the ARTIC pipeline, so it may be worth waiting for the run to finish and then assessing your output.
+If an **error** occurs during a run, a **red** notification will appear. You can either let the job continue to run, or click the ‘Re-run’ button. Harmless errors sometimes occur in the ARTIC pipeline, so it may be worth waiting for the run to finish and then assessing your output. Clicking the ‘Re-run’ button will allow you to abort the currently running job and re-run the job with edited parameters.
 
-Clicking the ‘Re-run’ button will allow you to abort the currently running job and re-run the job with editted parameters.
-
-A confirmation window will appear when you click on the ‘Re-run’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job. 
-
-You will then be redirected to the parameters page where the information from the job in question will be automatically filled in. 
-
-You can make any changes necessary, and the new job will be added to the end of the queue following submission. 
+A confirmation window will appear when you click on the ‘Re-run’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job.  You will then be redirected to the parameters page where the information from the job in question will be automatically filled in. You can make any changes necessary, and the new job will be added to the end of the queue following submission.
 
 ### What happens when a job is completed?
 
@@ -164,25 +154,20 @@ When a job is completed, a ‘Go to Output’ button will appear at the top of t
 
 ## Output Page
 
-The Output Page is for data visualisation to enable a fast quality check of the sample. At the bottom of the page, there is a 'Go to Progress' button which will redirect you to the progress page of the job if you click on it.
+The Output Page is for data visualisation to enable a fast quality check of the sample and to see the called variants. At the bottom of the page, there is a 'Go to Progress' button which will redirect you to the progress page of the job if you click on it.
 
-### Files Produced
 
-This section contains a list of the files produced from the job, along with the location in which they were saved. This location should be the output folder that you inputted on the parameters page, or if you did not input one, it will be a folder named “output” created inside your input folder.
+#### Data visualisation
 
-### Data Visualisation
 
-The “Data Visualisation” section comprises two main parts.
-
-* Plots produced from pipeline
-* Variants found
-
-#### Plots Produced From Pipeline
-
-This section enables you to preview the mean amplicon read depth plots produced from the pipeline and simple graph/s from the data inside the ```<sample_name>.pass.vcf.gz``` file/s produced by the pipeline.  To download the graph, click on the 'Download' hyperlink in the lower-left corner of the graph of interest. If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important. 
+This section enables you to preview the mean amplicon read depth plots produced from the pipeline and simple graph/s from the data inside the ```<sample_name>.pass.vcf.gz``` file/s produced by the pipeline.  To download the graph, click on the 'Download' hyperlink in the lower-left corner of the graph of interest. If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important.
 
 #### Variants Found
 
 Beneath each of the graphs, a summarised version of the ```<sample_name>.pass.vcf.gz``` file is displayed in the form of a table. Each row corresponds to a different variant found and they are ordered in increasing numerical order based on their position on the chromosome.
 
 
+
+### Files Produced
+
+To manually inspect the produced vcf files, consensus sequence or any intermediate data, open a file browser and traverse to the output directory. This is the directory called `output` in the experiment directory by default, or whatever you set during the parameter setting up step above.
