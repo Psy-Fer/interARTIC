@@ -102,12 +102,15 @@ def main():
         vcfx_snv, vcfy_snv, vcfx_id, vcfy_id = vcf_pipeline(args)
         plot(args, bed_1, bed_2, vcfx_snv=vcfx_snv, vcfy_snv=vcfy_snv, vcfx_id=vcfx_id, vcfy_id=vcfy_id)
     elif args.depth_file_1 and args.depth_file_2 and not args.vcf_file:
-        covx, covy = cov_pipeline(args)
-        plot(args, bed_1, bed_2, covx=covx, covy=covy)
+        both_covx, both_covy, cov1x, cov1y, cov2x, cov2y = cov_pipeline(args)
+        plot(args, bed_1, bed_2, both_covx=both_covx, both_covy=both_covy,
+        cov1x=cov1x, cov1y=cov1y, cov2x=cov2x, cov2y=cov2y)
     elif args.vcf_file and args.depth_file_1 and args.depth_file_2:
         vcfx_snv, vcfy_snv, vcfx_id, vcfy_id = vcf_pipeline(args)
-        covx, covy = cov_pipeline(args)
-        plot(args, bed_1, bed_2, vcfx_snv=vcfx_snv, vcfy_snv=vcfy_snv, vcfx_id=vcfx_id, vcfy_id=vcfy_id, covx=covx, covy=covy)
+        both_covx, both_covy, cov1x, cov1y, cov2x, cov2y = cov_pipeline(args)
+        plot(args, bed_1, bed_2, vcfx_snv=vcfx_snv, vcfy_snv=vcfy_snv,
+        vcfx_id=vcfx_id, vcfy_id=vcfy_id, both_covx=both_covx, both_covy=both_covy,
+        cov1x=cov1x, cov1y=cov1y, cov2x=cov2x, cov2y=cov2y)
     else:
         sys.stderr.write("Command unknown: {}".format(args.command))
         parser.print_help(sys.stderr)
@@ -210,6 +213,7 @@ def cov_pipeline(args):
     """
     dp1x = []
     dp1y = []
+    dp2x = []
     dp2y = []
     bothy = []
 
@@ -224,6 +228,7 @@ def cov_pipeline(args):
         for l in f:
             l = l.strip("\n")
             l = l.split("\t")
+            dp2x.append(int(l[2]))
             dp2y.append(int(l[3]))
 
     for i in range(len(dp1y)):
@@ -231,15 +236,15 @@ def cov_pipeline(args):
         bothy.append(k)
 
     bothy_trimmed = np.array([i for i in bothy])
-    dp1x_trimmed = np.array([i for i in dp1x])
+    bothx_trimmed = np.array([i for i in dp1x])
 
-    return dp1x_trimmed, bothy_trimmed
+    return np.array(bothx_trimmed), np.array(bothy_trimmed), np.array(dp1x), np.array(dp1y), np.array(dp2x), np.array(dp2y)
 
     # plt.fill_between(dp1x_trimmed, bothy_trimmed, color="skyblue", alpha=0.4)
     # plt.show()
 
 
-def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id=None, covx=None, covy=None):
+def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id=None, both_covx=None, both_covy=None, cov1x=None, cov1y=None, cov2x=None, cov2y=None):
     """
     Plot everything separate or at one
     """
@@ -258,8 +263,10 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
     elif args.depth_file_1 and args.depth_file_2 and not args.vcf_file:
         save_path = "/".join(args.depth_file_1.split("/")[:-1])
         sample_name = args.depth_file_1.split("/")[-1].split(".")[0]
-        if covx is not None:
-            plt.fill_between(covx, covy, color="skyblue", alpha=0.6)
+        if both_covx is not None:
+            plt.fill_between(cov1x, cov1y, color="skyblue", alpha=0.6 , label="pool 1 coverage")
+            plt.fill_between(cov2x, cov2y, color="violet", alpha=0.6, label="pool 2 coverage")
+            plt.plot(both_covx, both_covy, color="darkgrey", alpha=0.6, linestyle="dotted", label="Combined coverage")
             plt.suptitle("Coverage", y=0.95, fontsize=20)
     elif args.vcf_file and args.depth_file_1 and args.depth_file_2:
         # ax.stem(vcfx, vcfy, markerfmt= ' ')
@@ -269,8 +276,10 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
             plt.vlines(vcfx_snv, 0, vcfy_snv, colors='darkorange', label="SNV")
         if vcfx_id is not None:
             plt.vlines(vcfx_id, 0, vcfy_id, colors='darkblue', label="InDel")
-        if covx is not None:
-            plt.fill_between(covx, covy, color="skyblue", alpha=0.6, label="coverage")
+        if both_covx is not None:
+            plt.fill_between(cov1x, cov1y, color="skyblue", alpha=0.6, label="pool 1 coverage")
+            plt.fill_between(cov2x, cov2y, color="violet", alpha=0.6, label="pool 2 coverage")
+            plt.plot(both_covx, both_covy, color="darkgrey", alpha=0.6, linestyle="dotted", label="Combined coverage")
             # TODO: Make suptitle and title actually line up
             plt.suptitle("Variants and Coverage", y=0.95, fontsize=20)
     else:
