@@ -73,6 +73,8 @@ Now click *Submit job(s)* and you should see the pipeline running :)
 
 Another example dataset containing ebola virus samples that you can use to directly test interARTIC can be downloaded from [here](https://cloudstor.aarnet.edu.au/plus/s/9afW5kgWy1w8ZpQ/download). The relavent options for this data set are *Multiple samples*, *ebola-barcodes.csv*, *IturiEBOV*, *Artic V1* and *Ligation library prep (eg SQK-LSK109)*.
 
+Output data generated from interARTIC (version 0.2-beta) for the above two example data set can be downloaded for your reference from [here](https://cloudstor.aarnet.edu.au/plus/s/SxayJLoxhQrMqil/download).
+
 # interARTIC usage
 
 Before running interARTIC on your own nanopore samples, please refer to the detailed guide [here](https://psy-fer.github.io/interARTIC/usage/).
