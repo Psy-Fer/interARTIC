@@ -2,6 +2,8 @@
 
 [TOC]
 
+This page has the instructions to build interARTIC from the source, which is tedious. If your system is a common Linux distribution (including Windows Subsystem for Linux), follow steps [here](https://github.com/Psy-Fer/interARTIC#quick-start) to easily install interARTIC using pre-compiled binaries.
+
 ## Dependencies
 
 * Python 3.7 or above
