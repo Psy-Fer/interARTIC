@@ -71,6 +71,8 @@ Now click *Submit job(s)* and you should see the pipeline running :)
 
 ![parameters page](docs/params.svg)
 
+Another example dataset containing ebola virus samples that you can use to directly test interARTIC can be downloaded from [here](https://cloudstor.aarnet.edu.au/plus/s/9afW5kgWy1w8ZpQ/download).
+
 # interARTIC usage
 
 Before running interARTIC on your own nanopore samples, please refer to the detailed guide [here](https://psy-fer.github.io/interARTIC/usage/).
