@@ -10,7 +10,7 @@ You only need to configure InterARTIC the first time you use it. The configurati
 
 - Fill the first two fields:
 
-   **1. Location of your input data.** This should be an absolute path of a directory. Usually, this should simply be the location where MinKNOW writes data from sequencing runs on your machine. On a GridION/PromethION the default location is the `/data` folder. If you use a MinION on a laptop, the current default location is  `/var/lib/minknow/data/` (although this may change for future versions on MinKNOW). Alternatively, you can provide a path to a custom directory where you have chosen to copy your sequencing data.
+   **1. Location of your input data.** This should be an absolute path of a directory. Usually, this should simply be the location where MinKNOW writes data from sequencing runs on your machine. On a GridION/PromethION the default location is the `/data` folder. If you use a MinION on a laptop, the current default location is  `/var/lib/minknow/data/` (although this may change for future versions of MinKNOW). Alternatively, you can provide a path to a custom directory where you have chosen to copy your sequencing data.
 
    **2. Location of your sample-barcode .csv files.** This should be an absolute path of a directory. We expect you to put the sample-barcode .csv manifest files directly inside this directory (not inside any sub directories).
 
