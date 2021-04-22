@@ -27,7 +27,7 @@ The `run.sh` script has now launched a new interactive interARTIC session. To se
 
 ## Step 2: Downloading test dataset
 
-Open a new terminal to download and extract the [example test dataset](https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download). The commands below will extract the dataset to `/data`, assuming `/data` exists on the computer and you have write permission to `/data`. The `/data` folder is the default location for sequencing outputs on an ONT GridION or PromethION device, but on your own machine you may use a custom location such as `/home/username/data` if you wish.
+Open a new terminal to download and extract the [example test dataset](https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download). The commands below will extract the dataset to `/data`, assuming `/data` exists on the computer (`sudo mkdir /data` if not) and you have write permission to `/data` (`sudo chmod 777 /data` if not). The `/data` folder is the default location for sequencing outputs on an ONT GridION or PromethION device, but on your own machine you may use a custom location such as `/home/username/data` if you wish.
 
 ```bash
 cd /data
@@ -54,7 +54,7 @@ Click `confirm` to save the settings, which will be used for all future runs.
 
 ## Step 4: Running InterARTIC on the test dataset
 
-Click `Add Job` on the interARTIC web interface. Then fill the fields as given in the following table.
+Click `Add Job` on the interARTIC web interface. Then fill the fields as given in the following table. Note that when you click (double click on some browsers) on fields for **input data directory** and **Select a CSV file**, a list of files/directories should appear from which you can select.
 
 | field  | value  | description  |
 |---|---|---|
