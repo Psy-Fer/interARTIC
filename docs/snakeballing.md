@@ -81,8 +81,7 @@ rm -rf interartic-venv/
     mv ~/miniconda3/envs/artic-ncov2019/bin artic_bin/
     mv ~/miniconda3/envs/artic-ncov2019/lib artic_bin/
     rm -rf artic_bin/lib/node_modules
-
-    ``
+    ```
 
     v) Cleanup pcaches
     ```bash
