@@ -90,7 +90,7 @@ rm -rf interartic-venv/
 
     vi) Hard coded paths such as `/home/user/miniconda3/envs/artic-ncov2019/bin/python3.6` must be replaced with `/usr/bin/env python3.6`
 
-    Some ugly grep commands to patch these lazily.
+    Some ugly and lazy example grep commands to patch these:
 
     ```bash
     cd artic_bin/bin
@@ -110,7 +110,7 @@ rm -rf interartic-venv/
     done
     ```
 
-    vii) Hard coded paths such as `exec' /home/user/miniconda3/envs/artic-ncov2019/bin/python/` must be replaced with  `exec' /usr\/bin\/env python` 
+    vii) Hard coded paths such as `exec' /home/user/miniconda3/envs/artic-ncov2019/bin/python/` must be replaced with  `exec' /usr/bin/env python` 
 
     ```bash
     grep -l "exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python" * | while read p; do 
