@@ -27,7 +27,7 @@ The `run.sh` script has now launched a new interactive interARTIC session. To se
 
 ## Step 2: Downloading test dataset
 
-Open a new terminal to download and extract the [example test dataset](https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download). The commands below will extract the dataset to `/data`, assuming `/data` exists on the computer (`sudo mkdir /data` if not) and you have write permission to `/data` (`sudo chmod 777 /data` if not). The `/data` folder is the default location for sequencing outputs on an ONT GridION or PromethION device, but on your own machine you may use a custom location such as `/home/username/data` if you wish.
+Open a new terminal to download and extract the [example test dataset](https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download). The commands below will extract the dataset to */data*, assuming */data* exists on the computer (`sudo mkdir /data` if not) and you have write permission to */data* (`sudo chmod 777 /data` if not). The `/data` folder is the default location for sequencing outputs on an ONT GridION or PromethION device, but on your own machine you may use a custom location such as `/home/username/data` if you wish (hint: you may use the `pwd` on your terminal to get your current working directory).
 
 ```bash
 cd /data
