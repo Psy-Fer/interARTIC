@@ -4,6 +4,7 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 <img src="docs/homepage.svg" width="60%">
 
+[![GitHub Downloads](https://img.shields.io/github/downloads/Psy-Fer/interARTIC/total?logo=GitHub)](https://github.com/Psy-Fer/interARTIC/releases)
 
 # Quick start
 
