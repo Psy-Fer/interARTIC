@@ -620,7 +620,7 @@ def parameters():
         # primer_select is so that on reload, the correct radio button will be selected
         primer_select = primer_type
 
-        if primer_type == 'other':
+        if virus == 'custom':
             primer_type = other_primer_type
 
         # store input_name
@@ -888,7 +888,7 @@ def error(job_name):
         # primer_select is so that on reload, the correct radio button will be selected
         primer_select = primer_type
 
-        if primer_type == 'other':
+        if virus == 'custom':
             primer_type = other_primer_type
 
         # store input_name
