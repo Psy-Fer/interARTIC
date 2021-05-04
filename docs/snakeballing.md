@@ -1,5 +1,5 @@
 
-# Packaging (aka "snake charming")
+# Software packaging (aka "snake charming")
 
 InterARTIC development involved the use of the Python programming language and depends on several third-party Python modules and software written predominantly in Python (e.g., *Flash*, *Celery*, *ARTIC* tools, etc). The Python ecosystem (including the language itself, in addition to Python libraries) has limited backward compatibility. As a result, Python software is often compatible only with the exact version of the Python interpreter and library versions it was developed with (sometimes specific even to the minor version level).
 
