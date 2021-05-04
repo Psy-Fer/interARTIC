@@ -436,6 +436,17 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         #to be filled later
         read_file = ""
 
+    if pipeline in ["both", "nanopolish"]:
+        # check for sequencing summary file for nanopolish
+        seq_sum_found = False
+        for file in os.listdir(input_folder):
+            if fnmatch.fnmatch(file, "*sequencing_summary*.txt"):
+                seq_sum_found = True
+        if not seq_sum_found:
+            flash("Warning: sequencing_summary.txt file not found in input folder structure")
+            errors['input_folder'] = "sequencing_summary.txt file not found"
+            return errors, output_folder
+
     #both pipelines running
     if pipeline == "both":
         # TODO: check all os.system() calls
