@@ -41,16 +41,11 @@
            {% endwith %}
       <div class="container is-widescreen">
       <div class="columns">
-          <!-- <div class="column is-one-quarter">
-          </div> -->
          <div class="column">
         <center>
         <h1 class="title is-4"> Output </h1>
         <label class="subtitle is-5">Select sample</label><br><br>
         <form autocomplete="off" method=POST>
-        <!-- <div class="tooltip"> (info)
-            <span class="tooltiptext">This will typically be the directory containing your nanopore runs.</span>
-        </div><br> -->
 
           <input class="input" list="search" name="sample_folder" id="sample_folder" placeholder="Search for sample folder" value="" autocomplete="off" required>
             <datalist id="search">
@@ -67,13 +62,7 @@
         </div>
         </div>
         <center>
-          <!-- <div class="columns"> -->
-            <!-- <div class="column">
-              <h1 class="title is-4"> Files produced </h1>
-              <text> These are the files produced from "</text><text style="color:#0066cc">{{ job_name }}</text><text>".</text>
-              <text> They have been saved into the selected folder "</text><text style="color:#0066cc">{{ output_folder }}</text><text>".</text><br>
-              <text id="files"> {{output_files}} </text>
-            </div> -->
+
           <h1 class="title is-4"> Data Visualisation </h1>
           <div>
           {% if plots_found %}
@@ -89,79 +78,16 @@
             {{vcf_table|safe}}
            {% endif %}
           </div>
+          <br><br>
+          <div>
+           {% if fasta_found %}
+                <a class="button is-medium" type=button name="dload_fasta" id="dload_fasta" value="Download consensus.fasta" href="{{fasta}}" download>Download consensus.fasta</a>
+           {% endif %}
+           </div>
       </center>
       <br><br>
 
-
-              <!-- style="height:1000px;width:1000px" -->
-
-              <!-- {% if vcf_found %}
-              {% if create_vcfs == "Enabled" %}
-              <h1 class="title is-6"> Variants found </h1>
-              <div id="vcf">
-              <input class="button is-small" type="submit" name="submit_button" id="produce_graphs" value="Produce graphs" onClick="produceGraphs({{variant_graphs}})">
-              </div><br>
-              {% endif %}
-              <b> Enable vcf graphs to be generated? </b><br>
-              <text> Current status: </text><i><b>{{create_vcfs}}</b></i><br>
-              <small> This creates a simple graph from the <i>sample_name.pass.vcf.gz</i> file/s in the output folder. Please disable if you would not like this feature. <br>
-              <form method=POST>
-                <input type="radio" id="enable_vcf" name="save" value="enable_vcf">
-                <label for="enable_vcf"> Enable </label><br>
-                <input type="radio" id="disable_vcf" name="save" value="disable_vcf">
-                <label for="disable_vcf"> Disable </label><br>
-                <input class="button is-small" type="submit" name="submit_button" value="Confirm"> </small>
-              </form><br>
-              {% else %}
-              <b> Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder. </b><br>
-              {% endif %}
-              {% if plots_found %}
-              {% if save_graphs == "Enabled" %}
-              <h1 class="title is-6"> Plots produced from pipeline </h1>
-              <form method=POST>
-                <input type="radio" id="barplot" name="plot" value="barplot" required>
-                <label for="barplot"> Barplot </label><br>
-                <input type="radio" id="boxplot" name="plot" value="boxplot">
-                <label for="boxplot"> Boxplot </label><br>
-                <input type="radio" id="both" name="plot" value="both">
-                <label for="both"> Both </label><br>
-                <br>
-                <div id="preview">
-                  <text> Previewing plots: </text>
-                    {% if barplots %}
-                      {% for plot in barplots %}
-                        <img src="{{ plot }}" alt="{{ plot }}">
-                      {% endfor %}
-                    {% endif %}
-                    {% if boxplots %}
-                      {% for plot in boxplots %}
-                        <img src= "{{ plot }}" alt="{{ plot }}">
-                      {% endfor %}
-                    {% endif %}
-                </div>
-                <br><input class="button is-small" type="submit" name="submit_button" value="Preview">
-
-                </form>
-                {% endif %}
-                <br>
-                <b> Enable plots produced to be previewed? </b><br>
-                <text> Current status: </text><i><b>{{save_graphs}}</b></i><br>
-                <small> This requires the plots to be saved to a static folder. Please disable if you would not like this feature. <br>
-                <form method=POST>
-                  <input type="radio" id="enable" name="save" value="enable" required>
-                  <label for="enable"> Enable </label><br>
-                  <input type="radio" id="disable" name="save" value="disable">
-                  <label for="disable"> Disable </label><br>
-                  <input class="button is-small" type="submit" name="submit_button" value="Confirm"> </small>
-                </form>
-              {% else %}
-              <b> Plots cannot be previewed: No plots were found in the output folder. </b><br>
-              {% endif %}
-            </div> -->
-
             <input class="button is-small" type="submit" name="submit_button" id="direct_to_progress" value="Go back to progress"><br>
-        <!-- </div> -->
-
 
     </div>
     </div>
@@ -172,63 +98,6 @@
         location.href = "/progress/{{ job_name }}";
       };
 
-        // function produceGraphs(vcf_table){
-        //     var vcfs = document.getElementById("vcf");
-        //     // var dataURL = canvas.toDataURL();
-        //     // var vcf_graph = document.createElement("img");
-        //     // vcf_graph.src = dataURL;
-        //     var dl = document.createElement('a');
-        //     // dl.href = dataURL;
-        //     // dl.setAttribute('download', "vcf"+sample+".png");
-        //     var small = document.createElement("small");
-        //     // dl.innerHTML = "Download";
-        //     // vcfs.appendChild(vcf_graph);
-        //     // small.appendChild(dl);
-        //     // vcfs.appendChild(small);
-        //     var table = document.createElement("table");
-        //     var row = table.insertRow(0)
-        //     var chrom = row.insertCell(0)
-        //     var pos = row.insertCell(1)
-        //     var ref = row.insertCell(2)
-        //     var alt = row.insertCell(3)
-        //     var depth = row.insertCell(4)
-        //     var qual = row.insertCell(5)
-        //     chrom.innerHTML = "CHROM"
-        //     pos.innerHTML = "POS"
-        //     ref.innerHTML = "REF"
-        //     alt.innerHTML = "ALT"
-        //     depth.innerHTML = "DEPTH"
-        //     qual.innerHTML = "QUAL"
-        //     chrom.style.padding = '5px'
-        //     pos.style.padding = '5px'
-        //     ref.style.padding = '5px'
-        //     alt.style.padding = '5px'
-        //     depth.style.padding = '5px'
-        //     qual.style.padding = '5px'
-        //     for(j = 1, leng = variant_graphs.length-1, text = ""; j < leng; j++){
-        //       row = table.insertRow(j)
-        //       chrom = row.insertCell(0)
-        //       pos = row.insertCell(1)
-        //       ref = row.insertCell(2)
-        //       alt = row.insertCell(3)
-        //       depth = row.insertCell(4)
-        //       qual = row.insertCell(5)
-        //       chrom.innerHTML = variant_graphs[j][0]
-        //       pos.innerHTML = variant_graphs[j][1]
-        //       ref.innerHTML = variant_graphs[j][2]
-        //       alt.innerHTML = variant_graphs[j][3]
-        //       depth.innerHTML = variant_graphs[j][4]
-        //       qual.innerHTML = variant_graphs[j][5]
-        //       chrom.style.padding = '5px'
-        //       pos.style.padding = '5px'
-        //       ref.style.padding = '5px'
-        //       alt.style.padding = '5px'
-        //       depth.style.padding = '5px'
-        //       qual.style.padding = '5px'
-        //     }
-        //     vcfs.appendChild(table);
-        //   }
-        // }
         function hide() {
           var message = document.getElementById("flash");
           message.style.display = "none";
