@@ -621,7 +621,11 @@ def parameters():
         primer_select = primer_type
 
         if virus == 'custom':
-            primer_type = other_primer_type
+            if other_primer_type:
+                primer_type = other_primer_type
+            else:
+                primer_type = "Custom-primer-scheme"
+
 
         # store input_name
         input_name = input_folder
@@ -889,7 +893,11 @@ def error(job_name):
         primer_select = primer_type
 
         if virus == 'custom':
-            primer_type = other_primer_type
+            if other_primer_type:
+                primer_type = other_primer_type
+            else:
+                primer_type = "Custom-primer-scheme"
+
 
         # store input_name
         input_name = input_folder
