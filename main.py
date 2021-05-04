@@ -390,6 +390,13 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         flash("Warning: Input folder contains no data, please check input and try again")
         return errors, output_folder
 
+    io_check = output_input.strip("/")
+    if_check = input_folder.strip("/")
+    if io_check == if_check:
+        errors['input_output_folder'] = "Output directory will be in the same folder as data"
+        flash("Warning: Output directory will be in the same folder as data, please check data structure info in documentation.")
+        return errors, output_folder
+
     #if no output folder entered, creates one inside of input folder
     if not output_folder and not os.path.isdir(output_input):
         errors['input_output_folder'] = "Input and output don't exist"
