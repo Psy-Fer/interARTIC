@@ -158,7 +158,12 @@
                 </div>
                 <label class="subtitle is-5">Select the input data directory for your experiment: *</label>
                 <div class="tooltip"> (info)
-                    <span class="tooltiptext">This will typically be the directory containing your nanopore runs.</span>
+                    <span class="tooltiptext">This will typically be the top most directory containing your nanopore run.<br><br>
+                                              <b>Data structure:</b><br>
+                                              selected_folder/runid/fastq_pass<br>
+                                              selected_folder/runid/fast5_pass<br>
+                                              ...
+                                              </span>
                 </div><br>
                   <input class="input" list="search" name="input_folder" id="input_folder" placeholder="Search for input folder" value="{{input_name}}" autocomplete="off" required>
                     <datalist id="search">
