@@ -392,8 +392,8 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
     io_check = output_input.strip("/")
     if_check = input_folder.strip("/")
-	sys.stderr.write("io_check: {}\n".format(io_check))
-	sys.stderr.write("if_check: {}\n".format(if_check))
+    sys.stderr.write("io_check: {}\n".format(io_check))
+    sys.stderr.write("if_check: {}\n".format(if_check))
     if io_check == if_check:
         errors['input_output_folder'] = "Output directory will be in the same folder as data"
         flash("Warning: Output directory will be in the same folder as data, please check data structure info in documentation.")
@@ -668,7 +668,9 @@ def parameters():
             input_folder = ""
             output_input = ""
         else:
-            output_input = input_folder
+            os.chdir(input_folder)
+            tmp_oi = os.getcwd()
+            output_input = tmp_oi
 
             # get the correct input folder filepath from user input
             # path = glob.glob(input_folder + '/*/*')[0]
@@ -932,7 +934,9 @@ def error(job_name):
             input_folder = ""
             output_input = ""
         else:
-            output_input = input_folder
+            os.chdir(input_folder)
+            tmp_oi = os.getcwd()
+            output_input = tmp_oi
 
             # get the correct input folder filepath from user input
             # path = glob.glob(input_folder + '/*/*')[0]
