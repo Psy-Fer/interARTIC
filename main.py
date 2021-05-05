@@ -392,6 +392,8 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
 
     io_check = output_input.strip("/")
     if_check = input_folder.strip("/")
+	sys.stderr.write("io_check: {}\n".format(io_check))
+	sys.stderr.write("if_check: {}\n".format(if_check))
     if io_check == if_check:
         errors['input_output_folder'] = "Output directory will be in the same folder as data"
         flash("Warning: Output directory will be in the same folder as data, please check data structure info in documentation.")
