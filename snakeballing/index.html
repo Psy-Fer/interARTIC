@@ -169,8 +169,7 @@ done</p>
 done
 ```</p>
 <p>vii. Hard coded paths such as <code>exec' /home/user/miniconda3/envs/artic-ncov2019/bin/python/</code> must be replaced with  <code>exec' /usr/bin/env python</code>.</p>
-<p><code>bash
-grep -l "exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python" * | while read p; do
+<p><code>grep -l "exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python" * | while read p; do
 echo $p;
 sed -i  "s/exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/python/exec' \/usr\/bin\/env python/g" $p;  
 done</code></p>
