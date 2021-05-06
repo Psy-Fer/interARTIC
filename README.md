@@ -6,6 +6,8 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 [![GitHub Downloads](https://img.shields.io/github/downloads/Psy-Fer/interARTIC/total?logo=GitHub)](https://github.com/Psy-Fer/interARTIC/releases)
 
+#### Pre-print: [InterARTIC: an interactive web application for whole-genome nanopore sequencing analysis of SARS-CoV-2 and other viruses](https://www.biorxiv.org/content/10.1101/2021.04.21.440861v2)
+
 # Quick start
 
 ## Step 1: Installing interARTIC
@@ -37,7 +39,7 @@ tar xf FLFL031920_sample_data.tar.gz
 rm FLFL031920_sample_data.tar.gz
 ```
 
-Once extracted, you should see two directories: 
+Once extracted, you should see two directories:
 1. *FLFL031920* containing a data from a nanopore sequencing run of 10 multiplexed SARS-CoV-2 isolates, performed on an ONT GridION. The *.fast5* files, *.fastq* files and the sequencing summary file are amongst the extracted data. This example dataset follows the same directory structure of a nanopore sequencing run with live base-calling enabled.
 2. *sample-barcodes* containing a *.csv* manifest file that matches sample names to sample barcodes.
 
@@ -95,6 +97,3 @@ Building from source is not straightforward, due to the dependency hell of Pytho
 interARTIC is a layer built on top of the [ARTIC pipeline](https://github.com/artic-network/artic-ncov2019). Binary releases of interARTIC contain:
 1. [Python 3.7 binaries](https://github.com/indygreg/python-build-standalone) (build: [cpython-3.7.7-linux64-20200409T0045](https://github.com/indygreg/python-build-standalone/releases/download/20200408/cpython-3.7.7-linux64-20200409T0045.tar.zst)) and several Python 3.7 modules available through *pypi* (e.g., [celery](https://pypi.org/project/celery/), [redis](https://pypi.org/project/redis/), [flask](https://pypi.org/project/Flask/), [redis-server](https://pypi.org/project/redis-server/))
 3. [ARTIC pipeline binaries](https://bioconda.github.io/recipes/artic/README.html) available through bioconda that includes many dependencies (e.g., Python 3.6, medaka, nanopolish)
-
-
-
