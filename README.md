@@ -17,7 +17,7 @@ We provide a pre-compiled binary release for common Linux distributions on x86_6
 First, open an Ubuntu terminal and run the following commands to download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest), extract the tar ball and run the provided *run.sh* script:
 
 ```bash
-wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.2-beta/interartic-v0.2-linux-x86-64-binaries.tar.gz -O interartic_bin.tar.gz
+wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.3/interartic-v0.3-linux-x86-64-binaries.tar.gz -O interartic_bin.tar.gz
 tar xf interartic_bin.tar.gz
 cd interartic_bin
 ./run.sh
