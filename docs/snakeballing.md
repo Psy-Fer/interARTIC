@@ -49,78 +49,78 @@ rm -rf interartic-venv/
 
 5. Now the interARTIC environment is done, but the hard part is the artic pipeline which needs a different python environment. Now let us grab compiled binaries for artic and its dependencies through conda repositories.
 
-i. In the same virtual machine install an older miniconda
+    i. In the same virtual machine install an older miniconda
 
-```bash
-rm -rf ~/miniconda3/
-wget https://repo.anaconda.com/miniconda/Miniconda3-4.3.11-Linux-x86_64.sh
-./Miniconda3-4.3.11-Linux-x86_64.sh -b -p $HOME/miniconda3
-rm Miniconda3-4.3.11-Linux-x86_64.sh
-```
-
-
-ii. Now clone the artic repository
+    ```bash
+    rm -rf ~/miniconda3/
+    wget https://repo.anaconda.com/miniconda/Miniconda3-4.3.11-Linux-x86_64.sh
+    ./Miniconda3-4.3.11-Linux-x86_64.sh -b -p $HOME/miniconda3
+    rm Miniconda3-4.3.11-Linux-x86_64.sh
+    ```
 
 
-```bash
-cd ..
-git clone https://github.com/artic-network/artic-ncov2019.git
-cd artic-ncov2019 && git checkout 7e359dae37d894b40ae7e35c3582f14244ef4d36
-cd ..
-```
+    ii. Now clone the artic repository
+
+
+    ```bash
+    cd ..
+    git clone https://github.com/artic-network/artic-ncov2019.git
+    cd artic-ncov2019 && git checkout 7e359dae37d894b40ae7e35c3582f14244ef4d36
+    cd ..
+    ```
 
     iii. Grab the dependencies for artic through conda. This will take ages.
 
-```bash
-~/miniconda3/bin/conda env create -f artic-ncov2019/environment.yml
-```
+    ```bash
+    ~/miniconda3/bin/conda env create -f artic-ncov2019/environment.yml
+    ```
 
     iv. Move the relavent binaries and library modules
 
-```bash
-cd interartic_bin
-mkdir artic_bin
-mv ~/miniconda3/envs/artic-ncov2019/bin artic_bin/
-mv ~/miniconda3/envs/artic-ncov2019/lib artic_bin/
-rm -rf artic_bin/lib/node_modules
-```
+    ```bash
+    cd interartic_bin
+    mkdir artic_bin
+    mv ~/miniconda3/envs/artic-ncov2019/bin artic_bin/
+    mv ~/miniconda3/envs/artic-ncov2019/lib artic_bin/
+    rm -rf artic_bin/lib/node_modules
+    ```
 
     v. Cleanup pycaches
 
-```bash
-find ./ -name __pycache__ -type d | xargs rm -r
-```
+    ```bash
+    find ./ -name __pycache__ -type d | xargs rm -r
+    ```
 
     vi. Hard coded paths such as `/home/user/miniconda3/envs/artic-ncov2019/bin/python3.6` must be replaced with `/usr/bin/env python3.6`
 
     Some ugly and lazy example grep commands to patch these:
 
-```bash
-cd artic_bin/bin
-grep -l "#\!/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python3.6" * | while read p; do
-  echo $p;
-  sed -i "s/\/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/python3.6/\/usr\/bin\/env python3.6/g" $p;  
-done
+    ```bash
+    cd artic_bin/bin
+    grep -l "#\!/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python3.6" * | while read p; do
+      echo $p;
+      sed -i "s/\/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/python3.6/\/usr\/bin\/env python3.6/g" $p;  
+    done
 
-grep -l "#\!/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python" * | while read p; do
-  echo $p;
-  sed -i "s/\/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/python/\/usr\/bin\/env python/g" $p;  
-done
+    grep -l "#\!/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python" * | while read p; do
+      echo $p;
+      sed -i "s/\/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/python/\/usr\/bin\/env python/g" $p;  
+    done
 
-grep -l "#\!/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/perl" * | while read p; do
-  echo $p;
-  sed -i "s/\/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/perl/\/usr\/bin\/env perl/g" $p;  
-done
-```
+    grep -l "#\!/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/perl" * | while read p; do
+      echo $p;
+      sed -i "s/\/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/perl/\/usr\/bin\/env perl/g" $p;  
+    done
+    ```
 
     vii. Hard coded paths such as `exec' /home/user/miniconda3/envs/artic-ncov2019/bin/python/` must be replaced with  `exec' /usr/bin/env python`
 
-```bash
-grep -l "exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python" * | while read p; do
-  echo $p;
-  sed -i  "s/exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/python/exec' \/usr\/bin\/env python/g" $p;  
-done
-```
+    ```bash
+    grep -l "exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python" * | while read p; do
+      echo $p;
+      sed -i  "s/exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/python/exec' \/usr\/bin\/env python/g" $p;  
+    done
+    ```
 
 6. Now tarball
 
@@ -132,7 +132,9 @@ tar zcvf interartic_bin.tar.gz interartic_bin
 7. Extract on another Linux computer and thoroughly test.
 
 
-Look at the (run.sh)[https://github.com/Psy-Fer/interARTIC/blob/master/run.sh] to see how this is run. The following are some important environmental variables.
+Look at the [run.sh](https://github.com/Psy-Fer/interARTIC/blob/master/run.sh) to see how this is run. Important points from the _run.sh_ script are briefly explained below:
+
+Following are some important environmental variables in the _run.sh_ that are used to isolate the Pythons inside interARTIC from loading wrong modules from user local directories (prevention of snake entagnglements!).
 
 
 ```bash
@@ -141,13 +143,13 @@ unset PYTHONHOME
 unset PYTHONPATH
 ```
 
-Run the main.py from the extracted directory inside a subshell:
+Run *main.py* from the extracted directory inside a subshell as a background process:
 
 ```bash
 ( bin/python3.7 main.py ... )&
 ```
 
-Run the celery from the extracted directory inside a subshell by exporting the artic_bin/bin to PATH and /artic_bin/lib/ to LD_LIBRARY_PATH:
+Run *celery* from the extracted directory inside a subshell by exporting *artic_bin/bin* to *PATH* and *artic_bin/lib/* to *LD_LIBRARY_PATH*
 
 ```bash
 ( export PATH=`pwd`/artic_bin/bin:`pwd`/scripts:$PATH; export LD_LIBRARY_PATH=`pwd`/artic_bin/lib/:$LD_LIBRARY_PATH; bin/python3.7m bin/celery worker -A main.celery )&
