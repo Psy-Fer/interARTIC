@@ -91,6 +91,9 @@ See [here](https://psy-fer.github.io/interARTIC/troubleshooting/) for troublesho
 
 Building from source is not straightforward, due to the dependency hell of Python versions (circumventing this hell was one of the motivations for developing interARTIC). Step-by-step instructions for building from source are given [here](https://psy-fer.github.io/interARTIC/installation/).
 
+# Snake Charming
+
+Developers interested in learning how we create portable binary releases, read our packaging steps (aka the art of snake charming) detailed [here](https://psy-fer.github.io/interARTIC/snakeballing).
 
 # Acknowledgement
 
