@@ -31,14 +31,14 @@
 			<br>
 			<div class="notification is-danger is-light" id="errorMsg" style="display:none;">
 				<button class="delete" onclick="hideError()"></button>
-				An error has occurred. Please check the output log. If you would like to <b>abort</b> the current run and return to the input parameters page, please click the <b>Rerun Job</b> button below.
+				An error has occurred. Please check the output log. If no samples finished to completion, please <b>abort</b> the current run and try again. For help, please contact the interARTIC team on GitHub.
 			</div>
 			<div class="notification is-danger is-light" id="multipleErrorMsg" style="display:none;">
 				<button class="delete" onclick="hideError()"></button>
-				<p id="errorNum" style="display:inline;">{{ numErrors }}</p> errors have occurred. Please check the output log. If you would like to <b>abort</b> the current run and return to the input parameters page, please click the <b>Rerun Job</b> button below.
+				<p id="errorNum" style="display:inline;">{{ numErrors }}</p> errors have occurred. Please check the output log. If no samples finished to completion, please <b>abort</b> the current run and try again. For help, please contact the interARTIC team on GitHub.
 			</div>
-			<button id="errorParams" class="button is-danger is-light" style="display:none">Rerun Job</button>
-			<script type="text/javascript">
+			<!-- <button id="errorParams" class="button is-danger is-light" style="display:none">Rerun Job</button> -->
+			<!-- <script type="text/javascript">
 				document.getElementById("errorParams").onclick = function () {
 					var job_name = this.name;
 		            var modal = document.getElementById("rerunModal");
@@ -59,9 +59,9 @@
 		            	location.href = "/error/{{ job_name }}"
 		            }
 				};
-			</script>
-			<br>
-			<a class="button is-danger is-light" id="abort" name='{{ job_name }}'>Abort Job</a>
+			</script> -->
+			<br><br>
+			<a type=button class="button is-danger is-light is-medium" id="abort" name='{{ job_name }}'>Abort Job</a>
 
 			<button id="direct_to_output" class="button float-left submit-button" style="display:none;">Go to output</button>
 			<br>
@@ -295,11 +295,21 @@
 			var frac = document.getElementById('frac').innerText.trim();
 			console.log("inside function");
 			if (frac === "4/4 steps complete") {
-				console.log(frac);
-				document.getElementById('abort').style.display = "none";
-				document.getElementById('direct_to_output').style.display = "block";
-				document.getElementById('jobPlace').style.display = "none";
-				document.getElementById('jobComplete').style.display = "block";
+				var errors = document.getElementById('errorNum').innerText.trim();
+				if (errors != 0) {
+					console.log(frac);
+					document.getElementById('abort').style.display = "none";
+					document.getElementById('direct_to_output').style.display = "block";
+					document.getElementById('jobPlace').style.display = "none";
+					document.getElementById('jobComplete').style.display = "block";
+				}
+				else {
+					console.log(frac);
+					document.getElementById('abort').style.display = "block";
+					document.getElementById('direct_to_output').style.display = "block";
+					document.getElementById('jobPlace').style.display = "none";
+					document.getElementById('jobComplete').style.display = "block";
+				}
 			}
 		}
 
@@ -314,8 +324,8 @@
 						document.getElementById('errorMsg').style.display = "none";
 						document.getElementById('multipleErrorMsg').style.display = "block";
 					}
-					document.getElementById('errorParams').style.display = "block";
-					document.getElementById('abort').style.display = "none";
+					// document.getElementById('errorParams').style.display = "block";
+					// document.getElementById('abort').style.display = "block";
 				}
 			}, 900);
 
