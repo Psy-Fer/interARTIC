@@ -141,7 +141,7 @@ rm -rf artic_bin/lib/node_modules</code></p>
 <p><code>bash
 find ./ -name __pycache__ -type d | xargs rm -r</code></p>
 <p>vi. Hard coded paths such as <code>/home/user/miniconda3/envs/artic-ncov2019/bin/python3.6</code> must be replaced with <code>/usr/bin/env python3.6</code>. Some ugly and lazy example grep commands to patch these:</p>
-<p>```bash
+<p>```
 cd artic_bin/bin
 grep -l "#!/home\/hasindu\/miniconda3\/envs\/artic-ncov2019\/bin/python3.6" * | while read p; do
   echo $p;
