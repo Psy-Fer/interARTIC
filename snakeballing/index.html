@@ -84,11 +84,14 @@ Theme by GitBook
 </li>
 <li>
 <p>Obtain Python binaries compiled in the aforementioned fashion from https://github.com/indygreg/python-build-standalone. Refer to https://python-build-standalone.readthedocs.io/en/latest/ for more information.</p>
-<p><code>wget https://github.com/indygreg/python-build-standalone/releases/download/20200408/cpython-3.7.7-linux64-20200409T0045.tar.zst #python 3.7 needed for interARTIC
-zstd -d cpython-3.7.7-linux64-20200409T0045.tar.zst #extract zstd archive
-tar xvf cpython-3.7.7-linux64-20200409T0045.tar
-mkdir interartic_bin &amp;&amp; mv python/install/* interartic_bin/</code></p>
 </li>
+</ol>
+<pre><code>    wget https://github.com/indygreg/python-build-standalone/releases/download/20200408/cpython-3.7.7-linux64-20200409T0045.tar.zst #python 3.7 needed for interARTIC
+    zstd -d cpython-3.7.7-linux64-20200409T0045.tar.zst #extract zstd archive
+    tar xvf cpython-3.7.7-linux64-20200409T0045.tar
+    mkdir interartic_bin &amp;&amp; mv python/install/* interartic_bin/
+</code></pre>
+<ol>
 <li>
 <p>Now clone the interARTIC repository and copy the relevant scripts and data.</p>
 <p><code>bash
