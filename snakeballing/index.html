@@ -172,22 +172,18 @@ Theme by GitBook
   tar zcvf interartic_bin.tar.gz interartic_bin
 </code></pre>
 <ol>
-<li>
-<p>Extract on another Linux computer and thoroughly test.</p>
+<li>Extract on another Linux computer and thoroughly test.</li>
+</ol>
 <p>Look at the <a href="https://github.com/Psy-Fer/interARTIC/blob/master/run.sh">run.sh</a> to see how this is run. Important points from the <em>run.sh</em> script are briefly explained below:</p>
 <p>Following are some important environmental variables in the <em>run.sh</em> that are used to isolate the Pythons inside interARTIC from loading wrong modules from user local directories (prevention of snake entagnglements!).</p>
-</li>
-</ol>
 <pre><code class="language-bash">  export PYTHONNOUSERSITE=1
   unset PYTHONHOME
   unset PYTHONPATH
 </code></pre>
-<pre><code>Run *main.py* from the extracted directory inside a subshell as a background process:
-</code></pre>
+<p>Run <em>main.py</em> from the extracted directory inside a subshell as a background process:</p>
 <pre><code class="language-bash">  ( bin/python3.7 main.py ... )&amp;
 </code></pre>
-<pre><code>Run *celery* from the extracted directory inside a subshell by exporting *artic_bin/bin* to *PATH* and *artic_bin/lib/* to *LD_LIBRARY_PATH*
-</code></pre>
+<p>Run <em>celery</em> from the extracted directory inside a subshell by exporting <em>artic_bin/bin</em> to <em>PATH</em> and <em>artic_bin/lib/</em> to <em>LD_LIBRARY_PATH</em></p>
 <pre><code class="language-bash">  ( export PATH=`pwd`/artic_bin/bin:`pwd`/scripts:$PATH; export LD_LIBRARY_PATH=`pwd`/artic_bin/lib/:$LD_LIBRARY_PATH; bin/python3.7m bin/celery worker -A main.celery )&amp;
 </code></pre>
 
