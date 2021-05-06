@@ -5,4 +5,5 @@ nav:
     - Installation: installation.md
     - Usage: usage.md
     - Troubleshooting: troubleshooting.md
+    - Software Packaging: snakeballing.md
 plugins: []
