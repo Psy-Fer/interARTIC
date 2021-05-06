@@ -133,30 +133,25 @@
 <li>
 <p>Now the interARTIC environment is done, but the hard part is the artic pipeline which needs a different python environment. Now let us grab compiled binaries for artic and its dependencies through conda repositories. </p>
 <p>i. In the same virtual machine install an older miniconda.</p>
-<p><code>bash
-rm -rf ~/miniconda3/
+<p><code>rm -rf ~/miniconda3/
 wget https://repo.anaconda.com/miniconda/Miniconda3-4.3.11-Linux-x86_64.sh
 ./Miniconda3-4.3.11-Linux-x86_64.sh -b -p $HOME/miniconda3
 rm Miniconda3-4.3.11-Linux-x86_64.sh</code></p>
 <p>ii. Now clone the artic repository.</p>
-<p><code>bash
-cd ..
+<p><code>cd ..
 git clone https://github.com/artic-network/artic-ncov2019.git
 cd artic-ncov2019 &amp;&amp; git checkout 7e359dae37d894b40ae7e35c3582f14244ef4d36
 cd ..</code></p>
 <p>iii. Grab the dependencies for artic through conda. This will take ages.</p>
-<p><code>bash
-~/miniconda3/bin/conda env create -f artic-ncov2019/environment.yml</code></p>
+<p><code>~/miniconda3/bin/conda env create -f artic-ncov2019/environment.yml</code></p>
 <p>iv. Move the relavent binaries and library modules.</p>
-<p><code>bash
-cd interartic_bin
+<p><code>cd interartic_bin
 mkdir artic_bin
 mv ~/miniconda3/envs/artic-ncov2019/bin artic_bin/
 mv ~/miniconda3/envs/artic-ncov2019/lib artic_bin/
 rm -rf artic_bin/lib/node_modules</code></p>
 <p>v. Cleanup pycaches.</p>
-<p><code>bash
-find ./ -name __pycache__ -type d | xargs rm -r</code></p>
+<p><code>find ./ -name __pycache__ -type d | xargs rm -r</code></p>
 <p>vi. Hard coded paths such as <code>/home/user/miniconda3/envs/artic-ncov2019/bin/python3.6</code> must be replaced with <code>/usr/bin/env python3.6</code>. Some ugly and lazy example grep commands to patch these:</p>
 <p>```
 cd artic_bin/bin
