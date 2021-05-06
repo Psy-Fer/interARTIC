@@ -27,7 +27,7 @@ In summary, if the relevant Python interpreter, all the modules and third party 
     mv interARTIC/templates interARTIC/scripts interARTIC/static interARTIC/src interARTIC/primer-schemes interARTIC/run.sh interARTIC/main.py interARTIC/config.init interartic_bin/
     ```
 
-4. Now install the required dependencies using pypi in a virtual environment and move those to our snakeball directory.
+4. Now install the required dependencies using *pypi* in a virtual environment and move those to our snakeball directory.
 
     ```bash
     cd interartic_bin/
@@ -122,7 +122,7 @@ In summary, if the relevant Python interpreter, all the modules and third party 
         done
     ```
 
-6. Now tarball
+6. Now tarball everything. That is create the snakeball!
 
     ```bash
     cd ../../../
