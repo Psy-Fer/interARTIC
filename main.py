@@ -1217,7 +1217,7 @@ def output(job_name):
                         l = l.strip('\n')
                         l = l.split('\t')
                         row = dict(zip(header, l))
-                        k = ["{}: {}".format(key, row[key]) for key in row.keys()]
+                        # k = ["{}: {}".format(key, row[key]) for key in row.keys()]
                         # sys.stderr.write(",".join(k))
                         # sys.stderr.write("\n")
                         depth = int(row["INFO"].split(";")[0].split("=")[1])
