@@ -32,9 +32,15 @@ If this does not fix the issue, please let the developers know via GitHub so tha
 
 If a job is missing from the home page, wait a few seconds and refresh the page.
 
-## bin/python3.7: error while loading shared libraries: libnsl.so.1: cannot open shared object file: No such file or directory
+## On Fedora minimal builds
 
-This is likely to happen on Fedora. Install the following package.
+### ./run.sh: line 7: ps: command not found
+
+```
+dnf install -y procps
+```
+
+### bin/python3.7: error while loading shared libraries: libnsl.so.1: cannot open shared object file: No such file or directory
 
 `sudo dnf install libnsl`
 
