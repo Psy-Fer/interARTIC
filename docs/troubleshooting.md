@@ -32,6 +32,12 @@ If this does not fix the issue, please let the developers know via GitHub so tha
 
 If a job is missing from the home page, wait a few seconds and refresh the page.
 
+## bin/python3.7: error while loading shared libraries: libnsl.so.1: cannot open shared object file: No such file or directory
+
+This is likely to happen on Fedora. Install the following package.
+
+`sudo dnf install libnsl`
+
 ## Any other errors
 
 If there are any other errors, please let the developers know via GitHub so that we can look into it for you.
