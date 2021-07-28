@@ -84,7 +84,7 @@ REDIS_LOG=$LOG_LOCATION/redis.log
 INTERARTIC_LOG=$LOG_LOCATION/interartic.log
 CELERY_LOG=$LOG_LOCATION/celery.log
 REALPATH=$(dirname $0)
-readlink $0 && REALPATH=$(dirname $(readlink -f $0))
+readlink $0 && REALPATH=$(dirname $(readlink $0))
 
 export PYTHONNOUSERSITE=1
 unset PYTHONHOME
