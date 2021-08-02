@@ -47,6 +47,18 @@ For detailed information on the input data structure and *.csv* manifest file, p
 
 **IMPORTANT: Make sure the the data directory and file names do not contain white space and non-ASCII characters.**
 
+<!--
+Debian
+arch_linux
+fedora
+centos
+gentoo
+opensuse
+
+https://osxdaily.com/2016/09/27/allow-apps-from-anywhere-macos-gatekeeper/
+
+-->
+
 
 ## Step 3: Configuring interARTIC
 
@@ -103,5 +115,4 @@ interARTIC is a layer built on top of the [ARTIC pipeline](https://github.com/ar
 
 # Notes
 
-An experimental version of pre-compiled binaries for ARMv8 (aarch64) is available [here](https://www.dropbox.com/s/4h0a335bvg755im/interartic_v0.3_aarch64_ubuntu18_beta.tar.gz?dl=1). Currently, only the nanopolish pipeline is available for aarch64 and we have only tested on Ubuntu 18.04 on Jetson Xavier and Jetson Nano platforms. 
-
+An experimental version of pre-compiled binaries for ARMv8 (aarch64) is available [here](https://www.dropbox.com/s/4h0a335bvg755im/interartic_v0.3_aarch64_ubuntu18_beta.tar.gz?dl=1). Currently, only the nanopolish pipeline is available for aarch64 and we have only tested on Ubuntu 18.04 on Jetson Xavier and Jetson Nano platforms.
