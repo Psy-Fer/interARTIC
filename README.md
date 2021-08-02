@@ -47,6 +47,18 @@ For detailed information on the input data structure and *.csv* manifest file, p
 
 **IMPORTANT: Make sure the the data directory and file names do not contain white space and non-ASCII characters.**
 
+<!--
+Debian
+arch_linux
+fedora
+centos
+gentoo
+opensuse
+
+https://osxdaily.com/2016/09/27/allow-apps-from-anywhere-macos-gatekeeper/
+
+-->
+
 
 ## Step 3: Configuring interARTIC
 
@@ -100,3 +112,7 @@ Developers interested in learning how we create portable binary releases, read o
 interARTIC is a layer built on top of the [ARTIC pipeline](https://github.com/artic-network/artic-ncov2019). Binary releases of interARTIC contain:
 1. [Python 3.7 binaries](https://github.com/indygreg/python-build-standalone) (build: [cpython-3.7.7-linux64-20200409T0045](https://github.com/indygreg/python-build-standalone/releases/download/20200408/cpython-3.7.7-linux64-20200409T0045.tar.zst)) and several Python 3.7 modules available through *pypi* (e.g., [celery](https://pypi.org/project/celery/), [redis](https://pypi.org/project/redis/), [flask](https://pypi.org/project/Flask/), [redis-server](https://pypi.org/project/redis-server/))
 3. [ARTIC pipeline binaries](https://bioconda.github.io/recipes/artic/README.html) available through bioconda that includes many dependencies (e.g., Python 3.6, medaka, nanopolish)
+
+# Notes
+
+An experimental version of pre-compiled binaries for ARMv8 (aarch64) is available [here](https://www.dropbox.com/s/4h0a335bvg755im/interartic_v0.3_aarch64_ubuntu18_beta.tar.gz?dl=1). Currently, only the nanopolish pipeline is available for aarch64 and we have only tested on Ubuntu 18.04 on Jetson Xavier and Jetson Nano platforms.
