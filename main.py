@@ -199,7 +199,7 @@ def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd, plot_cmd, step):
         self.update_state(state='PROGRESS', meta={'current': n, 'status': status, 'command': cmd})
         returnCode = po.returncode
         if returnCode != 0:
-            self.update_state(state='FAILURE', meta={'exc_type': type(ex).__name__, 'exc_message': traceback.format_exc().split('\n'), 'current': n, 'status': 'Command failed', 'command': cmd})
+            self.update_state(state='FAILURE', meta={'exc_type': "STAND IN TYPE", 'exc_message': traceback.format_exc().split('\n'), 'current': n, 'status': 'Command failed', 'command': cmd})
             raise Exception("Command {} got return code {}.\nSTDOUT: {}\nSTDERR: {}".format(cmd, returnCode, stdout, stderr))
             break
 
@@ -325,6 +325,8 @@ def home():
 
 @app.route("/about")
 def about():
+    # dump versions of software to file, then read file and display
+
 	return render_template("about.html", VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 def check_special_characters(func):
