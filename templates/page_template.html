@@ -28,5 +28,12 @@
     {% block content %}
     {% endblock %}
 
+    {% block footer %}
+    <div class="container">
+        <div id="footer">
+            <p>Software Versions: InterARTIC {{ VERSION }}, artic {{ ARTIC_VERSION }}</p>
+        </div>
+    </div>
+  {%- endblock %}
  </body>
 </html>
