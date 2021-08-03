@@ -12,16 +12,41 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 ## Step 1: Installing interARTIC
 
-We provide a pre-compiled binary release for common Linux distributions on x86_64 architecture. The binary release is tested to work well on Ubuntu 14, 16, 18 and 20 distributions (on Windows Subsystem for Linux as well). The binary release should work on other distributions as long as *GLIBC 2.17* (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
+Pre-compiled binary releases are provided for Linux and MacOS for easy installation. The linux binaries can be run on Windows using Windows Subsystem for Linux (WSL). Download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest) for your operating system and architecture, extract the tar ball and run the provided *run.sh* script by following the instructions below.
 
-First, open an Ubuntu terminal and run the following commands to download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest), extract the tar ball and run the provided *run.sh* script:
 
-```bash
-wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.3/interartic-v0.3-linux-x86-64-binaries.tar.gz -O interartic_bin.tar.gz
-tar xf interartic_bin.tar.gz
-cd interartic_bin
-./run.sh
-```
+* Linux/Windows
+
+  We provide a pre-compiled binary release for common Linux distributions on both _x86_64_ and _aarch64_ (_ARMv8_) architectures. 
+
+  - *x86_64*: Binaries for _x86_64_ should work on any Linux distribution as long as *GLIBC 2.17* (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present. We have tested on Ubuntu (versions 14, 16, 18 and 20), CentOS, Debian, Fedora, Arch Linux, Gentoo Linux and openSUSE. These binaries are also verified to work on Windows 10 through Windows Subsystem for Linux. Open a bash terminal and execute the following commands:
+
+    ```bash
+    wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.3/interartic-v0.3-linux-x86-64-binaries.tar.gz -O interartic_bin.tar.gz
+    tar xf interartic_bin.tar.gz
+    cd interartic_bin
+    ./run.sh
+    ```
+
+  - *aarch64*: Binaries for aarch64 should work any Linux distribution with *GLIBC 2.23* or higher. Currently, only the nanopolish pipeline is available for _aarch64_ and we have tested on Ubuntu 16 and Ubuntu 18.04 (using Rock64, Jetson Xavier and Jetson Nano single board computers).  For aarch64, run the same commands as above except the *wget* command, that should be now replaced with:
+
+    ```
+    wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.4-beta/interartic-v0.4-beta-linux-aarch64-binaries.tar.gz -O interartic_bin.tar.gz
+
+    ```
+
+
+* macOS
+
+  We provide a pre-compiled binary release for macOS on x86_64. Newer mac with M1 ARM chip can still run these binaries opaqly through Rosetta. Open a terminal and execute the following commands:
+
+  ```bash
+  wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.4-beta/interartic-v0.4-beta-macos-x86-64-binaries.tar.gz -O interartic_bin.tar.gz
+  xattr -dr com.apple.quarantine interartic_bin.tar.gz  #to prevent the macOS's gatekeeper from being blocking our binaries, required if you download through a web browser, but just in case
+  tar xf interartic_bin.tar.gz
+  cd interartic_bin
+  ./run.sh
+  ```
 
 **IMPORTANT: Make sure the interARTIC binaries reside at a location with no white characters and non-ASCII characters in directory names.**
 
@@ -107,12 +132,13 @@ Building from source is not straightforward, due to the dependency hell of Pytho
 
 Developers interested in learning how we create portable binary releases, read our packaging steps (aka the art of snake charming) detailed [here](https://psy-fer.github.io/interARTIC/snakeballing).
 
+# Updating interARTIC
+
+To update interARTIC to the latest version, simply delete the directory containing the old interARTIC binaries and obtain the latest version by following the same steps under installation above.
+
 # Acknowledgement
 
 interARTIC is a layer built on top of the [ARTIC pipeline](https://github.com/artic-network/artic-ncov2019). Binary releases of interARTIC contain:
 1. [Python 3.7 binaries](https://github.com/indygreg/python-build-standalone) (build: [cpython-3.7.7-linux64-20200409T0045](https://github.com/indygreg/python-build-standalone/releases/download/20200408/cpython-3.7.7-linux64-20200409T0045.tar.zst)) and several Python 3.7 modules available through *pypi* (e.g., [celery](https://pypi.org/project/celery/), [redis](https://pypi.org/project/redis/), [flask](https://pypi.org/project/Flask/), [redis-server](https://pypi.org/project/redis-server/))
 3. [ARTIC pipeline binaries](https://bioconda.github.io/recipes/artic/README.html) available through bioconda that includes many dependencies (e.g., Python 3.6, medaka, nanopolish)
 
-# Notes
-
-An experimental version of pre-compiled binaries for ARMv8 (aarch64) is available [here](https://www.dropbox.com/s/4h0a335bvg755im/interartic_v0.3_aarch64_ubuntu18_beta.tar.gz?dl=1). Currently, only the nanopolish pipeline is available for aarch64 and we have only tested on Ubuntu 18.04 on Jetson Xavier and Jetson Nano platforms.
