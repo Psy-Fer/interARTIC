@@ -41,7 +41,7 @@ Pre-compiled binary releases are provided for Linux and MacOS for easy installat
   We provide a pre-compiled binary release for macOS on x86_64. Newer mac with M1 ARM chip can still run these binaries opaqly through Rosetta. Open a terminal and execute the following commands:
 
   ```bash
-  wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.4-beta/interartic-v0.4-beta-macos-x86-64-binaries.tar.gz -O interartic_bin.tar.gz
+  curl https://github.com/Psy-Fer/interARTIC/releases/download/v0.4-beta/interartic-v0.4-beta-macos-x86-64-binaries.tar.gz -o interartic_bin.tar.gz
   xattr -dr com.apple.quarantine interartic_bin.tar.gz  #to prevent the macOS's gatekeeper from being blocking our binaries, required if you download through a web browser, but just in case
   tar xf interartic_bin.tar.gz
   cd interartic_bin
