@@ -59,7 +59,8 @@ Open a new terminal to download and extract the [example test dataset](https://c
 
 ```bash
 cd /data
-wget https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download -O FLFL031920_sample_data.tar.gz
+wget https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download -O FLFL031920_sample_data.tar.gz 
+#if you do not have wget: curl -o FLFL031920_sample_data.tar.gz -L https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download 
 tar xf FLFL031920_sample_data.tar.gz
 rm FLFL031920_sample_data.tar.gz
 ```
