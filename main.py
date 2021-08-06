@@ -237,6 +237,70 @@ def killJob(self, job_name):
     sys.stderr.write("\n")
     return 1
 
+@celery.task(bind=True)
+def getVersions(self):
+
+    root = os.path.join(os.path.dirname(os.path.realpath(__file__)))
+    bin_path = os.path.join(root, "artic_bin", "bin")
+    logger.info("In celery task, getting software versions...")
+    version_file = os.path.join(root, "version_dump.txt")
+    logger.info(version_file)
+    version_dic = {"artic": "UNKNOWN",
+                   "medaka": "UNKNOWN",
+                   "nanopolish": "UNKNOWN",
+                   "minimap2": "UNKNOWN",
+                   "samtools": "UNKNOWN",
+                   "bcftools": "UNKNOWN",
+                   "muscle": "UNKNOWN",
+                   "longshot": "UNKNOWN"}
+    def _versions():
+        cmd_list = ["{}/artic --version | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "artic " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/medaka --version | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "medaka " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/nanopolish --version | head -1 | cut -d ' ' -f3 | awk '{}' >> {}".format(bin_path, '{print "nanopolish " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/minimap2 --version | awk '{}' >> {}".format(bin_path, '{print "minimap2 " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/samtools --version | head -1 | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "samtools " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/bcftools --version | head -1 | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "bcftools " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/muscle --version 2>&1 | head -3 | tail -1 | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "muscle " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/longshot --version 2>&1 | tail -1 | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "longshot " $1}', os.path.join(root, "version_dump.txt")),
+                    ]
+        for cmd in cmd_list:
+            os.system(cmd)
+
+    if os.path.isfile(version_file):
+        # remove and re-make
+        logger.info("File found and deleting")
+        os.remove(version_file)
+        logger.info("File being re-made")
+        _versions()
+
+    if not os.path.isfile(version_file):
+        logger.info("File not found, building..")
+        _versions()
+
+    # final check to see if the file was made
+    if not os.path.isfile(version_file):
+        # error making file
+        logger.info("File STILL not found, error")
+        flash("WARNING: Could not construct software version table in: {}".format(version_file))
+
+
+    if os.path.isfile(version_file):
+        # read file
+        logger.info("Reading file")
+        with open(version_file, 'r') as f:
+            for l in f:
+                l = l.strip("\n")
+                l = l.split(" ")
+                if len(l) > 1:
+                    name = l[0]
+                    version = l[1]
+                    if name in list(version_dic.keys()):
+                        if version == "1:":
+                            continue
+                        version_dic[name] = version
+    return version_dic
+
+
 @app.route('/task/<job_name>', methods = ['POST'])
 def task(job_name):
     job = qSys.getJobByName(job_name)
@@ -325,9 +389,11 @@ def home():
 
 @app.route("/about")
 def about():
-    # dump versions of software to file, then read file and display
+    # Get version info to display on about page
+    res = getVersions.apply_async()
+    version_dic = res.get()
 
-	return render_template("about.html", VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+    return render_template("about.html", VERSION_DIC=version_dic, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 def check_special_characters(func):
     @functools.wraps(func)
