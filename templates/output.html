@@ -83,6 +83,9 @@
            {% if fasta_found %}
                 <a class="button is-medium" type=button name="dload_fasta" id="dload_fasta" value="Download consensus.fasta" href="{{fasta}}" download>Download consensus.fasta</a>
            {% endif %}
+           {% if fasta_tar %}
+                <a class="button is-medium" type=button name="dload_fasta_tar" id="dload_fasta_tar" value="Download all consensus.fasta as tar file" href="{{fasta_tar}}" download>Download all consensus.fasta as tar file</a>
+           {% endif %}
            </div>
       </center>
       <br><br>

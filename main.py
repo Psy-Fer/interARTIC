@@ -1266,6 +1266,20 @@ def output(job_name):
                         fasta_found = True
         sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
 
+        # combine all single files into single tarball
+        for sample in fastas.keys():
+            fasta = fastas[sample]
+            fasta_file = fasta.split("/")[-1]
+            fasta_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name
+            if not os.path.isdir(fasta_path):
+                mkdir = "mkdir -p " + fasta_path
+                os.system(mkdir)
+            cp_fasta = "cp " + fasta + " " + fasta_path
+            os.system(cp_fasta)
+        cmd = "tar -cf " + fasta_path + ".tar -C " + fasta_path + " ."
+        os.system(cmd)
+        html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
+
     if request.method == "POST":
         sample = request.form.get('sample_folder')
         # sys.stderr.write("sample:{}\n".format(sample))
@@ -1354,7 +1368,7 @@ def output(job_name):
 
 
         # sys.stderr.write("running plot return\n")
-        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
     # sys.stderr.write("running regular return\n")
     return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
