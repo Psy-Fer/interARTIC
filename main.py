@@ -1266,7 +1266,11 @@ def output(job_name):
                         fasta_found = True
         sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
 
-        # combine all single files into single tarball
+        # combine all single files into single tarball and single file
+        if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"):
+            os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta")
+        if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"):
+            os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar")
         for sample in fastas.keys():
             fasta = fastas[sample]
             fasta_file = fasta.split("/")[-1]
@@ -1276,6 +1280,9 @@ def output(job_name):
                 os.system(mkdir)
             cp_fasta = "cp " + fasta + " " + fasta_path
             os.system(cp_fasta)
+            cmd = "cat " + fasta + " >> " + os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name + ".fasta"
+            os.system(cmd)
+        html_fasta_all = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"
         cmd = "tar -cf " + fasta_path + ".tar -C " + fasta_path + " ."
         os.system(cmd)
         html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
@@ -1368,7 +1375,7 @@ def output(job_name):
 
 
         # sys.stderr.write("running plot return\n")
-        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
     # sys.stderr.write("running regular return\n")
     return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
