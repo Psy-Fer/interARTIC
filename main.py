@@ -1270,11 +1270,15 @@ def output(job_name):
         sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
         total_samples = len(sample_folders)
         sample_dic = {}
-        for i in range(len(sample_folders)):
+        for i in range(0, len(sample_folders)):
             sample_dic[sample_folders[i]] = i
         # k = [i for i in sample_folders]
         # sys.stderr.write(",".join(k))
         # sys.stderr.write("\n")
+        # k = [[i, sample_dic[sample_folders[i]]] for i in range(0, len(sample_folders))]
+        # for i, j in k:
+        #     sys.stderr.write(":".join([str(i), str(k)]))
+        #     sys.stderr.write("\n")
 
         # combine all single files into single tarball and single file
         if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"):
@@ -1298,6 +1302,7 @@ def output(job_name):
         html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
 
     if request.method == "POST":
+        # sys.stderr.write("sample_num (START):{}\n".format(current_sample_num))
         if request.form.get("select_sample"):
             sample = request.form.get('sample_folder')
             if sample == '':
@@ -1305,6 +1310,7 @@ def output(job_name):
             elif sample is None:
                 sample = sample_folders[0]
             current_sample_num = sample_dic[sample] + 1
+            # sys.stderr.write("sample_num (V):{}\n".format(current_sample_num))
         elif request.form.get("next_sample"):
             current_sample_num = int(request.form.get('current_sample_number')) - 1
             if current_sample_num == '':
@@ -1317,19 +1323,23 @@ def output(job_name):
                     n_val = 0
                 sample = sample_folders[n_val]
             current_sample_num = sample_dic[sample] + 1
+            # sys.stderr.write("sample_num (N):{}\n".format(current_sample_num))
         elif request.form.get("previous_sample"):
             current_sample_num = int(request.form.get('current_sample_number')) -1
+            # sys.stderr.write("sample_num (P_start):{}\n".format(current_sample_num))
             if current_sample_num == '':
-                sample = sample_folders[-1]
+                sample = sample_folders[len(sample_folders) - 1]
             elif current_sample_num is None:
-                sample = sample_folders[-1]
+                sample = sample_folders[len(sample_folders) - 1]
+            elif current_sample_num == -1:
+                sample = sample_folders[len(sample_folders) - 1]
             else:
                 p_val = sample_dic[sample_folders[current_sample_num]] - 1
                 if p_val < 0:
                     p_val = len(sample_folders) - 1
                 sample = sample_folders[p_val]
             current_sample_num = sample_dic[sample] + 1
-        # sys.stderr.write("sample:{}\n".format(sample))
+            # sys.stderr.write("sample_num (P):{}\n".format(current_sample_num))
         if vcf_found:
             if sample in vcfs.keys():
                 # sys.stderr.write("vcf found and building\n")
