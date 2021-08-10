@@ -1237,6 +1237,9 @@ def output(job_name):
     vcf_found = False
     fasta_found = False
     sample = ""
+    current_sample = ""
+    total_samples = ""
+    current_sample_num = 0
 
     if output_folder:
         # sys.stderr.write("output_folder found\n")
@@ -1265,6 +1268,13 @@ def output(job_name):
                         fastas[sample_name] = os.path.join(dirpath,name)
                         fasta_found = True
         sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
+        total_samples = len(sample_folders)
+        sample_dic = {}
+        for i in range(len(sample_folders)):
+            sample_dic[sample_folders[i]] = i
+        # k = [i for i in sample_folders]
+        # sys.stderr.write(",".join(k))
+        # sys.stderr.write("\n")
 
         # combine all single files into single tarball and single file
         if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"):
@@ -1288,7 +1298,37 @@ def output(job_name):
         html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
 
     if request.method == "POST":
-        sample = request.form.get('sample_folder')
+        if request.form.get("select_sample"):
+            sample = request.form.get('sample_folder')
+            if sample == '':
+                sample = sample_folders[0]
+            elif sample is None:
+                sample = sample_folders[0]
+            current_sample_num = sample_dic[sample] + 1
+        elif request.form.get("next_sample"):
+            current_sample_num = int(request.form.get('current_sample_number')) - 1
+            if current_sample_num == '':
+                sample = sample_folders[0]
+            elif current_sample_num is None:
+                sample = sample_folders[0]
+            else:
+                n_val = sample_dic[sample_folders[current_sample_num]] + 1
+                if n_val > len(sample_folders) - 1:
+                    n_val = 0
+                sample = sample_folders[n_val]
+            current_sample_num = sample_dic[sample] + 1
+        elif request.form.get("previous_sample"):
+            current_sample_num = int(request.form.get('current_sample_number')) -1
+            if current_sample_num == '':
+                sample = sample_folders[-1]
+            elif current_sample_num is None:
+                sample = sample_folders[-1]
+            else:
+                p_val = sample_dic[sample_folders[current_sample_num]] - 1
+                if p_val < 0:
+                    p_val = len(sample_folders) - 1
+                sample = sample_folders[p_val]
+            current_sample_num = sample_dic[sample] + 1
         # sys.stderr.write("sample:{}\n".format(sample))
         if vcf_found:
             if sample in vcfs.keys():
@@ -1327,11 +1367,11 @@ def output(job_name):
             else:
                 flash("Warning: No vcf files found in {}".format(output_folder))
                 sys.stderr.write("no vcf for sample found\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
         else:
             flash("Warning: No vcf files found in {}".format(output_folder))
             sys.stderr.write("no vcfs found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
         if plots_found:
             if sample in plots.keys():
                 plot = plots[sample]
@@ -1347,11 +1387,11 @@ def output(job_name):
             else:
                 plot = False
                 sys.stderr.write("plot for sample not found in plots\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
         else:
             plot = False
             sys.stderr.write("plots not found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
         if fasta_found:
             if sample in fastas.keys():
@@ -1367,17 +1407,17 @@ def output(job_name):
             else:
                 flash("Warning: No fasta files found in {}".format(output_folder))
                 sys.stderr.write("no fasta for sample found\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
         else:
             flash("Warning: No fasta files found in {}".format(output_folder))
             sys.stderr.write("no vcfs found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 
         # sys.stderr.write("running plot return\n")
-        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
     # sys.stderr.write("running regular return\n")
-    return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+    return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
     # return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, vcf_table=vcf_table, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
 
