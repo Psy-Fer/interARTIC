@@ -434,6 +434,16 @@
                       <div class="control">
                         <!-- barcode type -->
                         <br>
+                        <label class="subtitle is-5" for="guppyplex">Demultiplexing: *</label><br><br>
+                        <label class="subtitle is-5" for="guppyplex"></label><br><br>
+                        <input type="checkbox" id="guppyplex" name="guppyplex">
+                         <label for="guppyplex">Already demultiplexed with guppy?</label><br>
+                         {% if guppyplex %}
+                           <script>
+                               document.getElementById("guppyplex").checked = true;
+                           </script>
+                         {% endif %}
+
                         <label class="subtitle is-5" for="barcode_type">Which library preparation method was used: *</label><br><br>
                         <input type="radio" id="native" name="barcode_type" value="native" onclick="setParams()">
                         <label for="native">Ligation library prep (eg SQK-LSK109)</label><br>

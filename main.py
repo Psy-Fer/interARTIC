@@ -158,7 +158,7 @@ def check_override(output_folder, override_data, skip):
 
 
 @celery.task(bind=True)
-def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd, plot_cmd, step):
+def executeJob(self, job_name, gather_cmd, guppyplex_cmd, demult_cmd, min_cmd, plot_cmd, step):
     logger.info("In celery task, executing job...")
     logger.info("executing job_name: {}".format(job_name))
     logger.info("Starting from step: {}".format(step))
@@ -172,7 +172,13 @@ def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd, plot_cmd, step):
 
     self.update_state(state='PROGRESS', meta={'current':10, 'status':'Beginning execution'})
 
-    commands = [gather_cmd, demult_cmd, min_cmd, plot_cmd]
+    if guppyplex_cmd != "":
+        sys.stderr.write("guppyplex_cmd detected\n")
+        commands = [guppyplex_cmd, min_cmd, plot_cmd]
+    else:
+        sys.stderr.write("guppyplex_cmd NOT detected\n")
+        sys.stderr.write(guppyplex_cmd+"\n")
+        commands = [gather_cmd, demult_cmd, min_cmd, plot_cmd]
     for i, cmd in enumerate(commands[step:]):
         po = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid,
                             stdout=subprocess.PIPE,
@@ -699,6 +705,7 @@ def parameters():
         skip_nanopolish = request.form.get('skip_nanopolish')
         dry_run = request.form.get('dry_run')
         # num_samples = request.form.get('num_samples')
+        guppyplex = request.form.get('guppyplex')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
         virus = request.form.get('virus')
@@ -707,6 +714,7 @@ def parameters():
         step = int(request.form.get('step'))
 
         sys.stderr.write("override_data: {}\n".format(override_data))
+        sys.stderr.write("guppyplex: {}\n".format(guppyplex))
 
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
         # primer_select is so that on reload, the correct radio button will be selected
@@ -753,6 +761,8 @@ def parameters():
                 for fileName in sdName:
                     if fnmatch.fnmatch(fileName, "fastq*"):
                         tmp_folder_list.append(os.path.join(dName, fileName))
+                    elif fnmatch.fnmatch(fileName, "barcode*"):
+                        tmp_folder_list.append(os.path.join(dName, fileName))
             if len(tmp_folder_list) == 0:
                 queueList = []
                 flash("Warning: No fastq files found in {}".format(input_folder))
@@ -764,7 +774,7 @@ def parameters():
                                             pipeline=pipeline, min_length=min_length,
                                             max_length=max_length, primer_scheme=primer_scheme,
                                             primer_type=primer_type, num_samples=num_samples,
-                                            primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                            primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                             errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
                                             other_primer_type=other_primer_type, primer_select=primer_select,
                                             schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
@@ -775,7 +785,7 @@ def parameters():
                                         pipeline=pipeline, min_length=min_length,
                                         max_length=max_length, primer_scheme=primer_scheme,
                                         primer_type=primer_type, num_samples=num_samples,
-                                        primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                        primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                         errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
                                         other_primer_type=other_primer_type, primer_select=primer_select,
                                         schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
@@ -859,7 +869,7 @@ def parameters():
                                         pipeline=pipeline, min_length=min_length,
                                         max_length=max_length, primer_scheme=primer_scheme,
                                         primer_type=primer_type, num_samples=num_samples,
-                                        primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                        primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                         errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
                                         other_primer_type=other_primer_type, primer_select=primer_select,
                                         schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
@@ -870,7 +880,7 @@ def parameters():
                                     pipeline=pipeline, min_length=min_length,
                                     max_length=max_length, primer_scheme=primer_scheme,
                                     primer_type=primer_type, num_samples=num_samples,
-                                    primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                    primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                     errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
                                     other_primer_type=other_primer_type, primer_select=primer_select,
                                     schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
@@ -882,27 +892,27 @@ def parameters():
         # create new jobs
         if pipeline != "both":
             #Create a new instance of the Job class
-            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, guppyplex, barcode_type, input_name, csv_filepath, primer_select, input_name)
 
             #Add job to queue
             qSys.addJob(new_job)
             print("qSys has jobs: ", qSys.printQueue())
-            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.demult_cmd, new_job.min_cmd, new_job.plot_cmd, step])
+            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.guppyplex_cmd, new_job.demult_cmd, new_job.min_cmd, new_job.plot_cmd, step])
             new_job.task_id = new_task.id
         #if both pipelines
         else:
             #Create a new medaka instance of the Job class
-            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, guppyplex, barcode_type, input_name, csv_filepath, primer_select, input_name)
             #Create a new nanopolish instance of the Job class
-            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, guppyplex, barcode_type, input_name, csv_filepath, primer_select, input_name)
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
-            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.demult_cmd, new_job_m.min_cmd, new_job_m.plot_cmd, step])
+            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.guppyplex_cmd, new_job_m.demult_cmd, new_job_m.min_cmd, new_job_m.plot_cmd, step])
             new_job_m.task_id = task_m.id
             #Add nanopolish job to queue
             qSys.addJob(new_job_n)
-            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd, new_job_n.plot_cmd, step])
+            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.guppyplex_cmd, new_job_n.demult_cmd, new_job_n.min_cmd, new_job_n.plot_cmd, step])
             new_job_n.task_id = task_n.id
 
         # redirect to the progress page
@@ -1185,12 +1195,13 @@ def progress(job_name):
     primer_scheme = job.primer_scheme
     primer_type = job.primer_type
     num_samples = job.num_samples
+    guppyplex = job.guppyplex
     barcode_type = job.barcode_type
 
     return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue,
                             queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder,
                             read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme,
-                            primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,numErrors=numErrors, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                            primer_type=primer_type, num_samples=num_samples, guppyplex=guppyplex, barcode_type=barcode_type, numErrors=numErrors, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):
