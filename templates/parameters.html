@@ -340,9 +340,9 @@
                       <label class="subtitle is-5" for="output_folder">Select the virus you want to analyse: *</label>
                       <!-- <h1 class="subtitle">Select the virus you want to analyse: *</h1> -->
                       <div class="tooltip"> (info)
-                          <span class="tooltiptext">If your virus and/or primer scheme is not in this list, please select "custom" and provide custom files.<br><br>
-                                                    If you wish to add a new virus or primer scheme to this menue, please let us know at:<br><br>
-                                                    https://github.com/Psy-Fer/interARTIC/issues</span>
+                          <span class="tooltiptext">- If your virus and/or primer scheme is not in this list, please select "custom" and provide custom files.<br><br>
+                                                    - If you wish to add a new virus or primer scheme to this menue, please let us know at:<br><br>
+                                                    - https://github.com/Psy-Fer/interARTIC/issues</span>
                       </div><br><br>
                       <input type="radio" id="SARS-CoV-2" name="virus" value="SARS-CoV-2" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})" required>
                       <label for="SARS-CoV-2">SARS-CoV-2 (nCoV-2019)</label><br>
@@ -434,10 +434,13 @@
                       <div class="control">
                         <!-- barcode type -->
                         <br>
-                        <label class="subtitle is-5" for="guppyplex">Demultiplexing: *</label><br><br>
-                        <label class="subtitle is-5" for="guppyplex"></label><br><br>
+                        <label class="subtitle is-5" for="guppyplex">Demultiplexing: *</label>
+                            <div class="tooltip"> (info)
+                                <span class="tooltiptext">- If your samples have been demultiplex by guppy or live basecalling in MinKNOW, check this box.<br><br>
+                                                          - If your samples have not been demultiplexed, porechop will be used to demultiplex the reads</span>
+                            </div><br><br>
                         <input type="checkbox" id="guppyplex" name="guppyplex">
-                         <label for="guppyplex">Already demultiplexed with guppy?</label><br>
+                         <label for="guppyplex">Already demultiplexed with guppy?</label><br><br>
                          {% if guppyplex %}
                            <script>
                                document.getElementById("guppyplex").checked = true;
