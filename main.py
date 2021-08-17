@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, redirect, url_for, json, jsonify, flash
 #from src.job import Job
 import src.queue as q
