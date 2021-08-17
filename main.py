@@ -253,7 +253,8 @@ def getVersions(self):
     logger.info("In celery task, getting software versions...")
     version_file = os.path.join(root, "version_dump.txt")
     logger.info(version_file)
-    version_dic = {"artic": "UNKNOWN",
+    version_dic = {"interartic": VERSION,
+                   "artic": "UNKNOWN",
                    "medaka": "UNKNOWN",
                    "nanopolish": "UNKNOWN",
                    "minimap2": "UNKNOWN",
