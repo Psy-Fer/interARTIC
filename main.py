@@ -177,7 +177,7 @@ def executeJob(self, job_name, gather_cmd, guppyplex_cmd, demult_cmd, min_cmd, p
         commands = [guppyplex_cmd, min_cmd, plot_cmd]
     else:
         sys.stderr.write("guppyplex_cmd NOT detected\n")
-        sys.stderr.write(guppyplex_cmd+"\n")
+        # sys.stderr.write(guppyplex_cmd+"\n")
         commands = [gather_cmd, demult_cmd, min_cmd, plot_cmd]
     for i, cmd in enumerate(commands[step:]):
         po = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid,
