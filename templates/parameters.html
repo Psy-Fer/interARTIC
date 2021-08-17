@@ -366,6 +366,8 @@
                             <label for="nCoV_2019_artic_V2"> Artic V2 (400bp)</label><br>
                             <input type="radio" id="nCoV_2019_artic_V3" name="primer_type" value="nCoV_2019_artic_V3" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
                             <label for="nCoV_2019_artic_V3"> Artic V3 (400bp)</label><br>
+                            <input type="radio" id="nCoV_2019_artic_V4" name="primer_type" value="nCoV_2019_artic_V4" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
+                            <label for="nCoV_2019_artic_V4"> Artic V4 (400bp)</label><br>
                             <input type="radio" id="nCoV_2019_eden_V1" name="primer_type" value="nCoV_2019_eden_V1" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
                             <label for="nCoV_2019_eden_V1"> Eden V1 (2500bp)</label><br>
                             <input type="radio" id="nCoV_2019_midnight_V1" name="primer_type" value="nCoV_2019_midnight_V1" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
@@ -635,6 +637,9 @@
         } else if (id == 'nCoV_2019_artic_V3') {
             primer_scheme_dir.value = schemesJson['nCoV_2019_artic_V3_scheme'];
             primer_scheme.value = schemesJson['nCoV_2019_artic_V3_scheme_name'];
+        } else if (id == 'nCoV_2019_artic_V4') {
+            primer_scheme_dir.value = schemesJson['nCoV_2019_artic_V4_scheme'];
+            primer_scheme.value = schemesJson['nCoV_2019_artic_V4_scheme_name'];
         } else if (id == 'nCoV_2019_eden_V1') {
             primer_scheme_dir.value = schemesJson['nCoV_2019_eden_V1_scheme'];
             primer_scheme.value = schemesJson['nCoV_2019_eden_V1_scheme_name'];
@@ -651,6 +656,7 @@
               document.getElementById("nCoV_2019_artic_V1").checked = false
               document.getElementById("nCoV_2019_artic_V2").checked = false
               document.getElementById("nCoV_2019_artic_V3").checked = false
+              document.getElementById("nCoV_2019_artic_V4").checked = false
               document.getElementById("nCoV_2019_eden_V1").checked = false
               document.getElementById("nCoV_2019_midnight_V1").checked = false
               document.getElementById("IturiEBOV_artic_V1").checked = false
@@ -668,7 +674,7 @@
         function setParams() {
           var max_length = document.getElementById("max_length");
           var min_length = document.getElementById("min_length");
-          if((nCoV_2019_artic_V1.checked || nCoV_2019_artic_V2.checked || nCoV_2019_artic_V3.checked) && native.checked) {
+          if((nCoV_2019_artic_V1.checked || nCoV_2019_artic_V2.checked || nCoV_2019_artic_V3.checked || nCoV_2019_artic_V4.checked) && native.checked) {
             max_length.value = '500';
             min_length.value = '300';
         } else if (nCoV_2019_eden_V1.checked && native.checked) {
