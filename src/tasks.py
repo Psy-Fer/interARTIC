@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from celery import shared_task
 import subprocess
 from celery.utils.log import get_task_logger
