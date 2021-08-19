@@ -258,15 +258,21 @@ class Job:
                         elif bc_count == 0:
                             sys.stderr.write("barcode directory not found. Either directory structure is broken/changed, or the barcode does not exist for this dataset.\n")
                             continue
+                        f5_dir_list = []
+                        for dName, sdName, fList in os.walk(self._input_folder):
+                            for fileName in fList:
+                                if fnmatch.fnmatch(fileName, "*.fast5"):
+                                    f5_dir_list.append(dName)
+                                    break
                         f5_count = 0
                         general_pass = 0
                         barcode_fast5_pass_dir = ""
                         barcode_fast5_dir = ""
                         fast5_pass_dir = ""
-                        for d in dir_list:
-                            if fnmatch.fnmatch(d, "*barcode"+barcode[-2]+"*"):
-                                f5_count += 1
+                        for d in f5_dir_list:
+                            if fnmatch.fnmatch(d, "*barcode"+barcode[-2:]+"*"):
                                 if fnmatch.fnmatch(d, "*fast5_pass*"):
+                                    f5_count += 1
                                     barcode_fast5_pass_dir = d
                                 barcode_fast5_dir = d
                             elif fnmatch.fnmatch(d, "*fast5_pass*"):
@@ -276,13 +282,13 @@ class Job:
                             if barcode_fast5_pass_dir:
                                 barcode_fast5_dir = barcode_fast5_pass_dir
                             else:
-                                sys.stderr.write("barcode fast5 PASS directory not found. Either directory structure is broken/changed, or the barcode does not exist for this dataset.")
+                                sys.stderr.write("barcode fast5 PASS directory not found. Either directory structure is broken/changed, or the barcode does not exist for this dataset.\n")
                                 continue
                         if barcode_fast5_dir == "":
                             if fast5_pass_dir != "":
                                 barcode_fast5_dir = fast5_pass_dir
                         elif f5_count == 0 and general_pass == 0:
-                            sys.stderr.write("barcode fast5 directory not found. Either directory structure is broken/changed, or the barcode does not exist for this dataset.")
+                            sys.stderr.write("barcode fast5 directory not found. Either directory structure is broken/changed, or the barcode does not exist for this dataset.\n")
                             continue
                         guppyplex_cmd = guppyplex_cmd + " echo '*****RUNNING GUPPYPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic guppyplex --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + barcode_dir + " --output " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq" + " >> " + self._output_folder +"/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt;" + " nanopolish index -d " + barcode_fast5_dir + " " + self._job_name + "_fastq_pass-" + barcode + ".fastq;"
                 # change directory into output folder
@@ -364,6 +370,8 @@ class Job:
                         minion_cmd = minion_cmd + "; mkdir " + dir_path
                         #move fastq_pass file into folder
                         minion_cmd = minion_cmd + ";echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + dir_path + "/ 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        if self._guppyplex == "on":
+                             minion_cmd = minion_cmd + "; mv " + self._output_folder + "/*" + barcode + ".fastq.index* " + dir_path + "/ 2>> " + self._output_folder + "/all_cmds_log.txt"
                         #append minion cmd in barcode directory
                         minion_cmd = minion_cmd + "; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file  ./" + self._job_name + "_fastq_pass-" + barcode + ".fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + "_" + sample_name + "_" + barcode + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 

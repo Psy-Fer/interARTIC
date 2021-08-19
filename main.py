@@ -414,13 +414,15 @@ def check_special_characters(func):
         """
         def _detect_special_characer(pass_string, filename=False):
             if filename:
-                regex= re.compile('^[a-zA-Z0-9._/-]+$')
+                # regex= re.compile('^[a-zA-Z0-9._/-]+$')
+                f = ''.join(e for e in pass_string if e.isalnum() or e in [".", "-", "_", "/"])
             else:
-                regex= re.compile('^[a-zA-Z0-9_/-]+$')
-            if(regex.search(pass_string) == None):
-                ret = True
-            else:
+                # regex= re.compile('^[a-zA-Z0-9_/-]+$')
+                f = ''.join(e for e in pass_string if e.isalnum() or e in ["-", "_", "/"])
+            if (f == pass_string):
                 ret = False
+            else:
+                ret = True
             return ret
         # gets names of arguments
         args_name = inspect.getargspec(func)[0]
@@ -435,10 +437,10 @@ def check_special_characters(func):
                 # sys.stderr.write("\n")
                 if arg == "csv_filepath":
                     if _detect_special_characer(str(a), filename=True):
-                        errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use: a-Z, 0-9 . _ /".format(arg, str(a))
+                        errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use utf-8 alpha/numerical or . _ - /".format(arg, str(a))
                     continue
                 if _detect_special_characer(str(a)):
-                    errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use: a-Z, 0-9, _, /".format(arg, str(a))
+                    errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use utf-8 alpha/numerical or _ - /".format(arg, str(a))
         if len(errors) != 0:
             return errors, args[1]
         return func(*args, **kwargs)
@@ -527,16 +529,16 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         #to be filled later
         read_file = ""
 
-    if pipeline in ["both", "nanopolish"]:
-        # check for sequencing summary file for nanopolish
-        seq_sum_found = False
-        for file in os.listdir(input_folder):
-            if fnmatch.fnmatch(file, "*sequencing_summary*.txt"):
-                seq_sum_found = True
-        if not seq_sum_found:
-            flash("Warning: sequencing_summary.txt file not found in input folder structure")
-            errors['input_folder'] = "sequencing_summary.txt file not found"
-            return errors, output_folder
+    # if pipeline in ["both", "nanopolish"]:
+    #     # check for sequencing summary file for nanopolish
+    #     seq_sum_found = False
+    #     for file in os.listdir(input_folder):
+    #         if fnmatch.fnmatch(file, "*sequencing_summary*.txt"):
+    #             seq_sum_found = True
+    #     if not seq_sum_found:
+    #         flash("Warning: sequencing_summary.txt file not found in input folder structure")
+    #         errors['input_folder'] = "sequencing_summary.txt file not found"
+    #         return errors, output_folder
 
     #both pipelines running
     if pipeline == "both":
@@ -664,7 +666,8 @@ def getInputFolders(filepath):
     print(checkFoldersCmd)
 
 
-    folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
+    folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("utf8").split("\n")
+    # folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
 
     return folders
 
