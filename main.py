@@ -99,7 +99,7 @@ schemes['nCoV_2019_artic_V2_scheme'] = os.path.join(primer_folder, "artic")
 schemes['nCoV_2019_artic_V2_scheme_name'] = "nCoV-2019/V2"
 schemes['nCoV_2019_artic_V3_scheme'] = os.path.join(primer_folder, "artic")
 schemes['nCoV_2019_artic_V3_scheme_name'] = "nCoV-2019/V3"
-schemes['nCoV_2019_artic_V3_scheme'] = os.path.join(primer_folder, "artic")
+schemes['nCoV_2019_artic_V4_scheme'] = os.path.join(primer_folder, "artic")
 schemes['nCoV_2019_artic_V4_scheme_name'] = "nCoV-2019/V4"
 
 # ZaireEbola shemes
