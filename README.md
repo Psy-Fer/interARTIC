@@ -13,14 +13,14 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 A video tutorial of setting up and running InterARTIC: https://youtu.be/odLa3sXCoTQ
 
-## Step 1: Installing InterARTIC
+## Step 1: Initiating InterARTIC
 
 Pre-compiled binary releases are provided for Linux and MacOS for easy installation. The linux binaries can be run on Windows using Windows Subsystem for Linux (WSL). Download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest) for your operating system and architecture, extract the tar ball and run the provided *run.sh* script by following the instructions below.
 
 
 * Linux/Windows
 
-  We provide a pre-compiled binary release for common Linux distributions on both _x86_64_ and _aarch64_ (_ARMv8_) architectures. 
+  We provide a pre-compiled binary release for common Linux distributions on both _x86_64_ and _aarch64_ (_ARMv8_) architectures.
 
   - *x86_64*: Binaries for _x86_64_ should work on any Linux distribution as long as *GLIBC 2.17* (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present. We have tested on Ubuntu (versions 14, 16, 18 and 20), CentOS, Debian, Fedora, Arch Linux, Gentoo Linux and openSUSE. These binaries are also verified to work on Windows 10 through Windows Subsystem for Linux. Open a bash terminal and execute the following commands:
 
@@ -62,8 +62,8 @@ Open a new terminal to download and extract the [example test dataset](https://c
 
 ```bash
 cd /data
-wget https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download -O FLFL031920_sample_data.tar.gz 
-#if you do not have wget: curl -o FLFL031920_sample_data.tar.gz -L https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download 
+wget https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download -O FLFL031920_sample_data.tar.gz
+#if you do not have wget: curl -o FLFL031920_sample_data.tar.gz -L https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download
 tar xf FLFL031920_sample_data.tar.gz
 rm FLFL031920_sample_data.tar.gz
 ```
@@ -145,4 +145,3 @@ To update interARTIC to the latest version, simply delete the directory containi
 interARTIC is a layer built on top of the [ARTIC pipeline](https://github.com/artic-network/artic-ncov2019). Binary releases of interARTIC contain:
 1. [Python 3.7 binaries](https://github.com/indygreg/python-build-standalone) (build: [cpython-3.7.7-linux64-20200409T0045](https://github.com/indygreg/python-build-standalone/releases/download/20200408/cpython-3.7.7-linux64-20200409T0045.tar.zst)) and several Python 3.7 modules available through *pypi* (e.g., [celery](https://pypi.org/project/celery/), [redis](https://pypi.org/project/redis/), [flask](https://pypi.org/project/Flask/), [redis-server](https://pypi.org/project/redis-server/))
 3. [ARTIC pipeline binaries](https://bioconda.github.io/recipes/artic/README.html) available through bioconda that includes many dependencies (e.g., Python 3.6, medaka, nanopolish)
-
