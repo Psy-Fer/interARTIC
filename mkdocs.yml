@@ -1,9 +1,10 @@
 site_name: InterARTIC Documentation
-theme: gitbook
+theme: mkdocs
 nav:
     - Home: index.md
     - Installation: installation.md
     - Usage: usage.md
     - Troubleshooting: troubleshooting.md
+    - Custom Primers: primers.md
     - Software Packaging: snakeballing.md
 plugins: []
