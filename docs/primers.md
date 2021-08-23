@@ -165,7 +165,7 @@ As you can see, the `--scheme-directory` is the top directory, then the position
 
 To use a custom primer scheme in InterARTIC, (ie, one not included in the defaults provided) first select `Custom` in the virus selection panel:
 
-![custom selection](docs/custom_1.jpg)
+![custom selection](custom_1.jpg)
 
 
 Then in the "Please enter your custom primer here:" field, ender the name of your primer-scheme (can be anything). This will be used in the output folder naming method.
