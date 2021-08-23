@@ -47,7 +47,7 @@
         <label class="subtitle is-5">Select sample</label><br><br>
         <form autocomplete="off" method=POST>
 
-          <input class="input" list="search" name="sample_folder" id="sample_folder" placeholder="Search for sample folder" value="" autocomplete="off" required>
+          <input class="input" list="search" name="sample_folder" id="sample_folder" placeholder="Search for sample folder" value="" autocomplete="off">
             <datalist id="search">
               {% if sample_folders %}
                 {% for folder in sample_folders %}
@@ -56,7 +56,10 @@
               {% endif %}
             </datalist>
             <br><br>
+            <input class="input" type="hidden" name="current_sample_number" id="current_sample_number" value="{{ current_sample_num }}">
+            <input class="button is-small" type="submit" name="previous_sample" id="previous_sample" value="Previous sample">
             <input class="button is-small" type="submit" name="select_sample" id="select_sample" value="View">
+            <input class="button is-small" type="submit" name="next_sample" id="next_sample" value="Next sample">
         </form>
         </center>
         </div>
@@ -64,6 +67,7 @@
         <center>
 
           <h1 class="title is-4"> Data Visualisation </h1>
+          <p> Sample {{current_sample_num}} of {{total_samples}} </p>
           <div>
           {% if plots_found %}
             <label class="subtitle is-5">{{sample_folder}}</label><br><br>
@@ -82,6 +86,12 @@
           <div>
            {% if fasta_found %}
                 <a class="button is-medium" type=button name="dload_fasta" id="dload_fasta" value="Download consensus.fasta" href="{{fasta}}" download>Download consensus.fasta</a>
+           {% endif %}
+           {% if fasta_tar %}
+                <a class="button is-medium" type=button name="dload_fasta_tar" id="dload_fasta_tar" value="Download all consensus.fasta as tar file" href="{{fasta_tar}}" download>Download all consensus.fasta as tar file</a>
+           {% endif %}
+           {% if fasta_all %}
+                <a class="button is-medium" type=button name="dload_fasta_all" id="dload_fasta_all" value="Download all consensus as a single .fasta file" href="{{fasta_all}}" download>Download all consensus as a single .fasta file</a>
            {% endif %}
            </div>
       </center>

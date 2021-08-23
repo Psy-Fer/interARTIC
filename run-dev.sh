@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash
 
 trap cleanup SIGINT
 
@@ -34,7 +34,7 @@ echo "Starting interartic. Log location: ./interartic.log"
 ( python3 main.py $REDIS_PORT &> interartic.log || die "Launching inteartic failed. see ./interartic.log" ) &
 sleep 1
 echo "Starting celery. Log location: ./celery.log"
-( conda activate artic-ncov2019 ; export PATH=`pwd`/scripts:$PATH; celery worker -A main.celery -b redis://localhost:$REDIS_PORT/0 --result-backend redis://localhost:$REDIS_PORT/0 --concurrency=1 --loglevel=info &> celery.log || die "Launching celery failed. See ./celery.log" ) &
+( eval "$(conda shell.bash hook)"; conda activate artic-ncov2019 ; export PATH=`pwd`/scripts:$PATH; celery worker -A main.celery -b redis://localhost:$REDIS_PORT/0 --result-backend redis://localhost:$REDIS_PORT/0 --concurrency=1 --loglevel=info &> celery.log || die "Launching celery failed. See ./celery.log" ) &
 sleep 1
 echo ""
 echo "Visit http://127.0.0.1:5000 now"

@@ -340,9 +340,9 @@
                       <label class="subtitle is-5" for="output_folder">Select the virus you want to analyse: *</label>
                       <!-- <h1 class="subtitle">Select the virus you want to analyse: *</h1> -->
                       <div class="tooltip"> (info)
-                          <span class="tooltiptext">If your virus and/or primer scheme is not in this list, please select "custom" and provide custom files.<br><br>
-                                                    If you wish to add a new virus or primer scheme to this menue, please let us know at:<br><br>
-                                                    https://github.com/Psy-Fer/interARTIC/issues</span>
+                          <span class="tooltiptext">- If your virus and/or primer scheme is not in this list, please select "custom" and provide custom files.<br><br>
+                                                    - If you wish to add a new virus or primer scheme to this menue, please let us know at:<br><br>
+                                                    - https://github.com/Psy-Fer/interARTIC/issues</span>
                       </div><br><br>
                       <input type="radio" id="SARS-CoV-2" name="virus" value="SARS-CoV-2" onClick="getReference(this.id), getOtherPrimer(this.id), setSchemes(this.id, {{schemes}})" required>
                       <label for="SARS-CoV-2">SARS-CoV-2 (nCoV-2019)</label><br>
@@ -366,6 +366,8 @@
                             <label for="nCoV_2019_artic_V2"> Artic V2 (400bp)</label><br>
                             <input type="radio" id="nCoV_2019_artic_V3" name="primer_type" value="nCoV_2019_artic_V3" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
                             <label for="nCoV_2019_artic_V3"> Artic V3 (400bp)</label><br>
+                            <input type="radio" id="nCoV_2019_artic_V4" name="primer_type" value="nCoV_2019_artic_V4" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
+                            <label for="nCoV_2019_artic_V4"> Artic V4 (400bp)</label><br>
                             <input type="radio" id="nCoV_2019_eden_V1" name="primer_type" value="nCoV_2019_eden_V1" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
                             <label for="nCoV_2019_eden_V1"> Eden V1 (2500bp)</label><br>
                             <input type="radio" id="nCoV_2019_midnight_V1" name="primer_type" value="nCoV_2019_midnight_V1" onclick="setSchemes(this.id, {{schemes}}), getOtherPrimer(this.id)">
@@ -400,12 +402,21 @@
                    <div class="field">
                      <div class="control">
                        <div id="other_primer" style="display:none">
-                           Please enter your custom primer here:
+                           Please enter your custom primer descriptor:
+                           <div class="tooltip"> (info)
+                               <span class="tooltiptext">- This is the name used when building files and folders for tracing which high level scheme strategy was used.<br>
+                                                         - Please enter a utf-8 compliant name.<br>
+                                                         - If left blank, "Custom-primer-scheme" will be used by default.<br></span>
+                           </div>
                            <input class="input" type="text" id="other_primer_type" name="other_primer_type" value={{other_primer_type}}>
                        </div><br>
 
                           <!-- primer scheme directory -->
-                          <label class="subtitle is-5" for="primer_scheme">Primer scheme directory: *</label><br>
+                          <label class="subtitle is-5" for="primer_scheme">Primer scheme top directory: *</label>
+                            <div class="tooltip"> (info)
+                              <span class="tooltiptext">- This is the top dircectory containing the subdirectorys of virus/version (entered below)<br>
+                                                        - Please refer to primer docs for further information.<br></span>
+                            </div><br>
                           <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br>
                           {% if errors %}
                               {% if errors['primer_scheme_dir'] %}
@@ -424,7 +435,12 @@
                           <br>
 
                           <!-- primer scheme name -->
-                          <label class="subtitle is-5" for="primer_scheme">Name of primer scheme: *</label><br>
+                          <label class="subtitle is-5" for="primer_scheme">Name of primer scheme: *</label>
+                          <div class="tooltip"> (info)
+                            <span class="tooltiptext">- This is the virus/version folders within the top directory structure.<br>
+                                                      - For example: nCoV-2019/V3 <br>
+                                                      - Please refer to primer docs for further information.<br></span>
+                          </div><br>
                           <small> e.g. nCoV-2019/V3 </small><br>
                           <input class="input" type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br>
                      </div>
@@ -434,6 +450,19 @@
                       <div class="control">
                         <!-- barcode type -->
                         <br>
+                        <label class="subtitle is-5" for="guppyplex">Demultiplexing: *</label>
+                            <div class="tooltip"> (info)
+                                <span class="tooltiptext">- If your samples have been demultiplex by guppy or live basecalling in MinKNOW, check this box.<br><br>
+                                                          - If your samples have not been demultiplexed, porechop will be used to demultiplex the reads</span>
+                            </div><br><br>
+                        <input type="checkbox" id="guppyplex" name="guppyplex">
+                         <label for="guppyplex">Already demultiplexed with guppy?</label><br><br>
+                         {% if guppyplex %}
+                           <script>
+                               document.getElementById("guppyplex").checked = true;
+                           </script>
+                         {% endif %}
+
                         <label class="subtitle is-5" for="barcode_type">Which library preparation method was used: *</label><br><br>
                         <input type="radio" id="native" name="barcode_type" value="native" onclick="setParams()">
                         <label for="native">Ligation library prep (eg SQK-LSK109)</label><br>
@@ -622,6 +651,9 @@
         } else if (id == 'nCoV_2019_artic_V3') {
             primer_scheme_dir.value = schemesJson['nCoV_2019_artic_V3_scheme'];
             primer_scheme.value = schemesJson['nCoV_2019_artic_V3_scheme_name'];
+        } else if (id == 'nCoV_2019_artic_V4') {
+            primer_scheme_dir.value = schemesJson['nCoV_2019_artic_V4_scheme'];
+            primer_scheme.value = schemesJson['nCoV_2019_artic_V4_scheme_name'];
         } else if (id == 'nCoV_2019_eden_V1') {
             primer_scheme_dir.value = schemesJson['nCoV_2019_eden_V1_scheme'];
             primer_scheme.value = schemesJson['nCoV_2019_eden_V1_scheme_name'];
@@ -638,6 +670,7 @@
               document.getElementById("nCoV_2019_artic_V1").checked = false
               document.getElementById("nCoV_2019_artic_V2").checked = false
               document.getElementById("nCoV_2019_artic_V3").checked = false
+              document.getElementById("nCoV_2019_artic_V4").checked = false
               document.getElementById("nCoV_2019_eden_V1").checked = false
               document.getElementById("nCoV_2019_midnight_V1").checked = false
               document.getElementById("IturiEBOV_artic_V1").checked = false
@@ -655,7 +688,7 @@
         function setParams() {
           var max_length = document.getElementById("max_length");
           var min_length = document.getElementById("min_length");
-          if((nCoV_2019_artic_V1.checked || nCoV_2019_artic_V2.checked || nCoV_2019_artic_V3.checked) && native.checked) {
+          if((nCoV_2019_artic_V1.checked || nCoV_2019_artic_V2.checked || nCoV_2019_artic_V3.checked || nCoV_2019_artic_V4.checked) && native.checked) {
             max_length.value = '500';
             min_length.value = '300';
         } else if (nCoV_2019_eden_V1.checked && native.checked) {

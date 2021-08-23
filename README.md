@@ -8,9 +8,12 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 #### Pre-print: [InterARTIC: an interactive web application for whole-genome nanopore sequencing analysis of SARS-CoV-2 and other viruses](https://www.biorxiv.org/content/10.1101/2021.04.21.440861v2)
 
+
 # Quick start
 
-## Step 1: Installing interARTIC
+A video tutorial of setting up and running InterARTIC: https://youtu.be/odLa3sXCoTQ
+
+## Step 1: Installing InterARTIC
 
 Pre-compiled binary releases are provided for Linux and MacOS for easy installation. The linux binaries can be run on Windows using Windows Subsystem for Linux (WSL). Download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest) for your operating system and architecture, extract the tar ball and run the provided *run.sh* script by following the instructions below.
 

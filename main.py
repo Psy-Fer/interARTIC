@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, redirect, url_for, json, jsonify, flash
 #from src.job import Job
 import src.queue as q
@@ -24,6 +25,10 @@ import traceback
 import functools
 import inspect
 import pandas as pd
+
+
+VERSION = "0.3"
+ARTIC_VERSION = "1.2.1"
 
 pd.set_option('display.width', 1000)
 pd.set_option('colheader_justify', 'center')
@@ -94,6 +99,8 @@ schemes['nCoV_2019_artic_V2_scheme'] = os.path.join(primer_folder, "artic")
 schemes['nCoV_2019_artic_V2_scheme_name'] = "nCoV-2019/V2"
 schemes['nCoV_2019_artic_V3_scheme'] = os.path.join(primer_folder, "artic")
 schemes['nCoV_2019_artic_V3_scheme_name'] = "nCoV-2019/V3"
+schemes['nCoV_2019_artic_V4_scheme'] = os.path.join(primer_folder, "artic")
+schemes['nCoV_2019_artic_V4_scheme_name'] = "nCoV-2019/V4"
 
 # ZaireEbola shemes
 schemes['IturiEBOV_artic_V1_scheme'] = os.path.join(primer_folder, "artic")
@@ -154,7 +161,7 @@ def check_override(output_folder, override_data, skip):
 
 
 @celery.task(bind=True)
-def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd, plot_cmd, step):
+def executeJob(self, job_name, gather_cmd, guppyplex_cmd, demult_cmd, min_cmd, plot_cmd, step):
     logger.info("In celery task, executing job...")
     logger.info("executing job_name: {}".format(job_name))
     logger.info("Starting from step: {}".format(step))
@@ -168,7 +175,13 @@ def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd, plot_cmd, step):
 
     self.update_state(state='PROGRESS', meta={'current':10, 'status':'Beginning execution'})
 
-    commands = [gather_cmd, demult_cmd, min_cmd, plot_cmd]
+    if guppyplex_cmd != "":
+        sys.stderr.write("guppyplex_cmd detected\n")
+        commands = [guppyplex_cmd, min_cmd, plot_cmd]
+    else:
+        sys.stderr.write("guppyplex_cmd NOT detected\n")
+        # sys.stderr.write(guppyplex_cmd+"\n")
+        commands = [gather_cmd, demult_cmd, min_cmd, plot_cmd]
     for i, cmd in enumerate(commands[step:]):
         po = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid,
                             stdout=subprocess.PIPE,
@@ -195,7 +208,7 @@ def executeJob(self, job_name, gather_cmd, demult_cmd, min_cmd, plot_cmd, step):
         self.update_state(state='PROGRESS', meta={'current': n, 'status': status, 'command': cmd})
         returnCode = po.returncode
         if returnCode != 0:
-            self.update_state(state='FAILURE', meta={'current': n, 'status': 'Command failed', 'command': cmd})
+            self.update_state(state='FAILURE', meta={'exc_type': "STAND IN TYPE", 'exc_message': traceback.format_exc().split('\n'), 'current': n, 'status': 'Command failed', 'command': cmd})
             raise Exception("Command {} got return code {}.\nSTDOUT: {}\nSTDERR: {}".format(cmd, returnCode, stdout, stderr))
             break
 
@@ -232,6 +245,71 @@ def killJob(self, job_name):
     sys.stderr.write("killJob FAILED (ANAKIN EMPTY) - 1")
     sys.stderr.write("\n")
     return 1
+
+@celery.task(bind=True)
+def getVersions(self):
+
+    root = os.path.join(os.path.dirname(os.path.realpath(__file__)))
+    bin_path = os.path.join(root, "artic_bin", "bin")
+    logger.info("In celery task, getting software versions...")
+    version_file = os.path.join(root, "version_dump.txt")
+    logger.info(version_file)
+    version_dic = {"interartic": VERSION,
+                   "artic": "UNKNOWN",
+                   "medaka": "UNKNOWN",
+                   "nanopolish": "UNKNOWN",
+                   "minimap2": "UNKNOWN",
+                   "samtools": "UNKNOWN",
+                   "bcftools": "UNKNOWN",
+                   "muscle": "UNKNOWN",
+                   "longshot": "UNKNOWN"}
+    def _versions():
+        cmd_list = ["{}/artic --version | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "artic " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/medaka --version | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "medaka " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/nanopolish --version | head -1 | cut -d ' ' -f3 | awk '{}' >> {}".format(bin_path, '{print "nanopolish " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/minimap2 --version | awk '{}' >> {}".format(bin_path, '{print "minimap2 " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/samtools --version | head -1 | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "samtools " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/bcftools --version | head -1 | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "bcftools " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/muscle --version 2>&1 | head -3 | tail -1 | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "muscle " $1}', os.path.join(root, "version_dump.txt")),
+                    "{}/longshot --version 2>&1 | tail -1 | cut -d ' ' -f2 | awk '{}' >> {}".format(bin_path, '{print "longshot " $1}', os.path.join(root, "version_dump.txt")),
+                    ]
+        for cmd in cmd_list:
+            os.system(cmd)
+
+    if os.path.isfile(version_file):
+        # remove and re-make
+        logger.info("File found and deleting")
+        os.remove(version_file)
+        logger.info("File being re-made")
+        _versions()
+
+    if not os.path.isfile(version_file):
+        logger.info("File not found, building..")
+        _versions()
+
+    # final check to see if the file was made
+    if not os.path.isfile(version_file):
+        # error making file
+        logger.info("File STILL not found, error")
+        flash("WARNING: Could not construct software version table in: {}".format(version_file))
+
+
+    if os.path.isfile(version_file):
+        # read file
+        logger.info("Reading file")
+        with open(version_file, 'r') as f:
+            for l in f:
+                l = l.strip("\n")
+                l = l.split(" ")
+                if len(l) > 1:
+                    name = l[0]
+                    version = l[1]
+                    if name in list(version_dic.keys()):
+                        if version == "1:":
+                            continue
+                        version_dic[name] = version
+    return version_dic
+
 
 @app.route('/task/<job_name>', methods = ['POST'])
 def task(job_name):
@@ -296,7 +374,7 @@ def home():
 
         if request.form.get('search_input') == 'Confirm':
             if len(errors) != 0:
-                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv)
+                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
             global input_filepath
             input_filepath = search_input
 
@@ -312,16 +390,20 @@ def home():
         if request.form.get('add_job') == "Add Job":
             if len(errors) != 0:
                 flash("WARNING:File paths entered are not valid")
-                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv)
+                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
             else:
                 return redirect(url_for('parameters'))
 
     # return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, eden_folder=schemes['eden_scheme'], eden_name=schemes['eden_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
-    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv)
+    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 @app.route("/about")
 def about():
-	return render_template("about.html")
+    # Get version info to display on about page
+    res = getVersions.apply_async()
+    version_dic = res.get()
+
+    return render_template("about.html", VERSION_DIC=version_dic, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 def check_special_characters(func):
     @functools.wraps(func)
@@ -332,13 +414,15 @@ def check_special_characters(func):
         """
         def _detect_special_characer(pass_string, filename=False):
             if filename:
-                regex= re.compile('^[a-zA-Z0-9._/-]+$')
+                # regex= re.compile('^[a-zA-Z0-9._/-]+$')
+                f = ''.join(e for e in pass_string if e.isalnum() or e in [".", "-", "_", "/"])
             else:
-                regex= re.compile('^[a-zA-Z0-9_/-]+$')
-            if(regex.search(pass_string) == None):
-                ret = True
-            else:
+                # regex= re.compile('^[a-zA-Z0-9_/-]+$')
+                f = ''.join(e for e in pass_string if e.isalnum() or e in ["-", "_", "/"])
+            if (f == pass_string):
                 ret = False
+            else:
+                ret = True
             return ret
         # gets names of arguments
         args_name = inspect.getargspec(func)[0]
@@ -353,10 +437,10 @@ def check_special_characters(func):
                 # sys.stderr.write("\n")
                 if arg == "csv_filepath":
                     if _detect_special_characer(str(a), filename=True):
-                        errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use: a-Z, 0-9 . _ /".format(arg, str(a))
+                        errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use utf-8 alpha/numerical or . _ - /".format(arg, str(a))
                     continue
                 if _detect_special_characer(str(a)):
-                    errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use: a-Z, 0-9, _, /".format(arg, str(a))
+                    errors["char_error_{}".format(arg)] = "Invalid character in {}: ' {} ', please use utf-8 alpha/numerical or _ - /".format(arg, str(a))
         if len(errors) != 0:
             return errors, args[1]
         return func(*args, **kwargs)
@@ -445,16 +529,16 @@ def checkInputs(input_folder, output_folder, primer_scheme_dir, read_file, pipel
         #to be filled later
         read_file = ""
 
-    if pipeline in ["both", "nanopolish"]:
-        # check for sequencing summary file for nanopolish
-        seq_sum_found = False
-        for file in os.listdir(input_folder):
-            if fnmatch.fnmatch(file, "*sequencing_summary*.txt"):
-                seq_sum_found = True
-        if not seq_sum_found:
-            flash("Warning: sequencing_summary.txt file not found in input folder structure")
-            errors['input_folder'] = "sequencing_summary.txt file not found"
-            return errors, output_folder
+    # if pipeline in ["both", "nanopolish"]:
+    #     # check for sequencing summary file for nanopolish
+    #     seq_sum_found = False
+    #     for file in os.listdir(input_folder):
+    #         if fnmatch.fnmatch(file, "*sequencing_summary*.txt"):
+    #             seq_sum_found = True
+    #     if not seq_sum_found:
+    #         flash("Warning: sequencing_summary.txt file not found in input folder structure")
+    #         errors['input_folder'] = "sequencing_summary.txt file not found"
+    #         return errors, output_folder
 
     #both pipelines running
     if pipeline == "both":
@@ -582,7 +666,8 @@ def getInputFolders(filepath):
     print(checkFoldersCmd)
 
 
-    folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
+    folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("utf8").split("\n")
+    # folders = subprocess.check_output(checkFoldersCmd, shell=True, stderr=subprocess.STDOUT).decode("ascii").split("\n")
 
     return folders
 
@@ -627,6 +712,7 @@ def parameters():
         skip_nanopolish = request.form.get('skip_nanopolish')
         dry_run = request.form.get('dry_run')
         # num_samples = request.form.get('num_samples')
+        guppyplex = request.form.get('guppyplex')
         barcode_type = request.form.get('barcode_type')
         csv_file = request.form.get('csv_file')
         virus = request.form.get('virus')
@@ -635,6 +721,7 @@ def parameters():
         step = int(request.form.get('step'))
 
         sys.stderr.write("override_data: {}\n".format(override_data))
+        sys.stderr.write("guppyplex: {}\n".format(guppyplex))
 
         # set correct primer_type - if primer type is other, get the correct primer type from the tet input
         # primer_select is so that on reload, the correct radio button will be selected
@@ -681,6 +768,8 @@ def parameters():
                 for fileName in sdName:
                     if fnmatch.fnmatch(fileName, "fastq*"):
                         tmp_folder_list.append(os.path.join(dName, fileName))
+                    elif fnmatch.fnmatch(fileName, "barcode*"):
+                        tmp_folder_list.append(os.path.join(dName, fileName))
             if len(tmp_folder_list) == 0:
                 queueList = []
                 flash("Warning: No fastq files found in {}".format(input_folder))
@@ -692,10 +781,10 @@ def parameters():
                                             pipeline=pipeline, min_length=min_length,
                                             max_length=max_length, primer_scheme=primer_scheme,
                                             primer_type=primer_type, num_samples=num_samples,
-                                            primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                            primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                             errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
                                             other_primer_type=other_primer_type, primer_select=primer_select,
-                                            schemes=schemes, override_data=override_data)
+                                            schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
                 return render_template("parameters.html", job_name=job_name, queue=displayQueue,
                                         input_name=input_name, input_folder=input_folder,
@@ -703,10 +792,10 @@ def parameters():
                                         pipeline=pipeline, min_length=min_length,
                                         max_length=max_length, primer_scheme=primer_scheme,
                                         primer_type=primer_type, num_samples=num_samples,
-                                        primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                        primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                         errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
                                         other_primer_type=other_primer_type, primer_select=primer_select,
-                                        schemes=schemes, override_data=override_data)
+                                        schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
             tmp_path = tmp_folder_list[0].split("/")[:-1]
             path = "/".join(tmp_path)
             os.chdir(path)
@@ -787,10 +876,10 @@ def parameters():
                                         pipeline=pipeline, min_length=min_length,
                                         max_length=max_length, primer_scheme=primer_scheme,
                                         primer_type=primer_type, num_samples=num_samples,
-                                        primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                        primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                         errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
                                         other_primer_type=other_primer_type, primer_select=primer_select,
-                                        schemes=schemes, override_data=override_data)
+                                        schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
             return render_template("parameters.html", job_name=job_name, queue=displayQueue,
                                     input_name=input_name, input_folder=input_folder,
@@ -798,10 +887,10 @@ def parameters():
                                     pipeline=pipeline, min_length=min_length,
                                     max_length=max_length, primer_scheme=primer_scheme,
                                     primer_type=primer_type, num_samples=num_samples,
-                                    primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
+                                    primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                     errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
                                     other_primer_type=other_primer_type, primer_select=primer_select,
-                                    schemes=schemes, override_data=override_data)
+                                    schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 
         #no spaces in the job name - messes up commands
@@ -810,27 +899,27 @@ def parameters():
         # create new jobs
         if pipeline != "both":
             #Create a new instance of the Job class
-            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
+            new_job = qSys.newJob(job_name, input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder, normalise, num_threads, pipeline, min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, guppyplex, barcode_type, input_name, csv_filepath, primer_select, input_name)
 
             #Add job to queue
             qSys.addJob(new_job)
             print("qSys has jobs: ", qSys.printQueue())
-            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.demult_cmd, new_job.min_cmd, new_job.plot_cmd, step])
+            new_task = executeJob.apply_async(args=[new_job.job_name, new_job.gather_cmd, new_job.guppyplex_cmd, new_job.demult_cmd, new_job.min_cmd, new_job.plot_cmd, step])
             new_job.task_id = new_task.id
         #if both pipelines
         else:
             #Create a new medaka instance of the Job class
-            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
+            new_job_m = qSys.newJob(job_name + "_medaka", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/medaka", normalise, num_threads, "medaka", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, guppyplex, barcode_type, input_name, csv_filepath, primer_select, input_name)
             #Create a new nanopolish instance of the Job class
-            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples,barcode_type, input_name, csv_filepath, primer_select, input_name)
+            new_job_n = qSys.newJob(job_name + "_nanopolish", input_folder, read_file, primer_scheme_dir, primer_scheme, primer_type, output_folder + "/nanopolish", normalise, num_threads, "nanopolish", min_length, max_length, bwa, skip_nanopolish, dry_run, override_data, num_samples, guppyplex, barcode_type, input_name, csv_filepath, primer_select, input_name)
 
             #Add medaka job to queue
             qSys.addJob(new_job_m)
-            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.demult_cmd, new_job_m.min_cmd, new_job_m.plot_cmd, step])
+            task_m = executeJob.apply_async(args=[new_job_m.job_name, new_job_m.gather_cmd, new_job_m.guppyplex_cmd, new_job_m.demult_cmd, new_job_m.min_cmd, new_job_m.plot_cmd, step])
             new_job_m.task_id = task_m.id
             #Add nanopolish job to queue
             qSys.addJob(new_job_n)
-            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.demult_cmd, new_job_n.min_cmd, new_job_n.plot_cmd, step])
+            task_n = executeJob.apply_async(args=[new_job_n.job_name, new_job_n.gather_cmd, new_job_n.guppyplex_cmd, new_job_n.demult_cmd, new_job_n.min_cmd, new_job_n.plot_cmd, step])
             new_job_n.task_id = task_n.id
 
         # redirect to the progress page
@@ -842,14 +931,14 @@ def parameters():
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
-        return render_template("parameters.html", queue=None, folders=folders, csvs=csvs, schemes=schemes)
+        return render_template("parameters.html", queue=None, folders=folders, csvs=csvs, schemes=schemes, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
     for item in qSys.queue.getItems():
         queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", queue = displayQueue, folders=folders, csvs=csvs, schemes=schemes)
+    return render_template("parameters.html", queue = displayQueue, folders=folders, csvs=csvs, schemes=schemes, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 # error page, accessed if a user wants to re-run a job if an error occurs during a run
 # @app.route("/error/<job_name>", methods = ["POST","GET"])
@@ -988,7 +1077,7 @@ def parameters():
 #                                         primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
 #                                         errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
 #                                         other_primer_type=other_primer_type, primer_select=primer_select,
-#                                         schemes=schemes, override_data=override_data)
+#                                         schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 #             for item in qSys.queue.getItems():
 #                 queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
 #
@@ -1004,7 +1093,7 @@ def parameters():
 #                                     primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
 #                                     errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
 #                                     other_primer_type=other_primer_type, primer_select=primer_select,
-#                                     schemes=schemes, override_data=override_data)
+#                                     schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 #
 #         #no spaces in the job name - messes up commands
 #         job_name = job_name.replace(" ", "_")
@@ -1052,7 +1141,7 @@ def parameters():
 #                                 primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
 #                                 errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
 #                                 other_primer_type=other_primer_type, primer_select=primer_select,
-#                                 schemes=schemes, override_data=override_data)
+#                                 schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 #
 #     for item in qSys.queue.getItems():
 #         queueList.append({item.job_name : url_for('progress', job_name=item.job_name, task_id = item.task_id)})
@@ -1068,7 +1157,7 @@ def parameters():
 #                             primer_scheme_dir=primer_scheme_dir, barcode_type=barcode_type,
 #                             errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
 #                             other_primer_type=other_primer_type, primer_select=primer_select,
-#                             schemes=schemes, override_data=override_data)
+#                             schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 # Progress page
 @app.route("/progress/<job_name>", methods = ["GET", "POST"])
@@ -1113,12 +1202,13 @@ def progress(job_name):
     primer_scheme = job.primer_scheme
     primer_type = job.primer_type
     num_samples = job.num_samples
+    guppyplex = job.guppyplex
     barcode_type = job.barcode_type
 
     return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue,
                             queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder,
                             read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme,
-                            primer_type=primer_type, num_samples=num_samples,barcode_type=barcode_type,numErrors=numErrors)
+                            primer_type=primer_type, num_samples=num_samples, guppyplex=guppyplex, barcode_type=barcode_type, numErrors=numErrors, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):
@@ -1165,6 +1255,9 @@ def output(job_name):
     vcf_found = False
     fasta_found = False
     sample = ""
+    current_sample = ""
+    total_samples = ""
+    current_sample_num = 0
 
     if output_folder:
         # sys.stderr.write("output_folder found\n")
@@ -1193,10 +1286,78 @@ def output(job_name):
                         fastas[sample_name] = os.path.join(dirpath,name)
                         fasta_found = True
         sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
+        total_samples = len(sample_folders)
+        sample_dic = {}
+        for i in range(0, len(sample_folders)):
+            sample_dic[sample_folders[i]] = i
+        # k = [i for i in sample_folders]
+        # sys.stderr.write(",".join(k))
+        # sys.stderr.write("\n")
+        # k = [[i, sample_dic[sample_folders[i]]] for i in range(0, len(sample_folders))]
+        # for i, j in k:
+        #     sys.stderr.write(":".join([str(i), str(k)]))
+        #     sys.stderr.write("\n")
+
+        # combine all single files into single tarball and single file
+        if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"):
+            os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta")
+        if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"):
+            os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar")
+        for sample in fastas.keys():
+            fasta = fastas[sample]
+            fasta_file = fasta.split("/")[-1]
+            fasta_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name
+            if not os.path.isdir(fasta_path):
+                mkdir = "mkdir -p " + fasta_path
+                os.system(mkdir)
+            cp_fasta = "cp " + fasta + " " + fasta_path
+            os.system(cp_fasta)
+            cmd = "cat " + fasta + " >> " + os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name + ".fasta"
+            os.system(cmd)
+        html_fasta_all = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"
+        cmd = "tar -cf " + fasta_path + ".tar -C " + fasta_path + " ."
+        os.system(cmd)
+        html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
 
     if request.method == "POST":
-        sample = request.form.get('sample_folder')
-        # sys.stderr.write("sample:{}\n".format(sample))
+        # sys.stderr.write("sample_num (START):{}\n".format(current_sample_num))
+        if request.form.get("select_sample"):
+            sample = request.form.get('sample_folder')
+            if sample == '':
+                sample = sample_folders[0]
+            elif sample is None:
+                sample = sample_folders[0]
+            current_sample_num = sample_dic[sample] + 1
+            # sys.stderr.write("sample_num (V):{}\n".format(current_sample_num))
+        elif request.form.get("next_sample"):
+            current_sample_num = int(request.form.get('current_sample_number')) - 1
+            if current_sample_num == '':
+                sample = sample_folders[0]
+            elif current_sample_num is None:
+                sample = sample_folders[0]
+            else:
+                n_val = sample_dic[sample_folders[current_sample_num]] + 1
+                if n_val > len(sample_folders) - 1:
+                    n_val = 0
+                sample = sample_folders[n_val]
+            current_sample_num = sample_dic[sample] + 1
+            # sys.stderr.write("sample_num (N):{}\n".format(current_sample_num))
+        elif request.form.get("previous_sample"):
+            current_sample_num = int(request.form.get('current_sample_number')) -1
+            # sys.stderr.write("sample_num (P_start):{}\n".format(current_sample_num))
+            if current_sample_num == '':
+                sample = sample_folders[len(sample_folders) - 1]
+            elif current_sample_num is None:
+                sample = sample_folders[len(sample_folders) - 1]
+            elif current_sample_num == -1:
+                sample = sample_folders[len(sample_folders) - 1]
+            else:
+                p_val = sample_dic[sample_folders[current_sample_num]] - 1
+                if p_val < 0:
+                    p_val = len(sample_folders) - 1
+                sample = sample_folders[p_val]
+            current_sample_num = sample_dic[sample] + 1
+            # sys.stderr.write("sample_num (P):{}\n".format(current_sample_num))
         if vcf_found:
             if sample in vcfs.keys():
                 # sys.stderr.write("vcf found and building\n")
@@ -1217,7 +1378,7 @@ def output(job_name):
                         l = l.strip('\n')
                         l = l.split('\t')
                         row = dict(zip(header, l))
-                        k = ["{}: {}".format(key, row[key]) for key in row.keys()]
+                        # k = ["{}: {}".format(key, row[key]) for key in row.keys()]
                         # sys.stderr.write(",".join(k))
                         # sys.stderr.write("\n")
                         depth = int(row["INFO"].split(";")[0].split("=")[1])
@@ -1234,11 +1395,11 @@ def output(job_name):
             else:
                 flash("Warning: No vcf files found in {}".format(output_folder))
                 sys.stderr.write("no vcf for sample found\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
         else:
             flash("Warning: No vcf files found in {}".format(output_folder))
             sys.stderr.write("no vcfs found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
         if plots_found:
             if sample in plots.keys():
                 plot = plots[sample]
@@ -1254,11 +1415,11 @@ def output(job_name):
             else:
                 plot = False
                 sys.stderr.write("plot for sample not found in plots\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
         else:
             plot = False
             sys.stderr.write("plots not found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
         if fasta_found:
             if sample in fastas.keys():
@@ -1274,17 +1435,17 @@ def output(job_name):
             else:
                 flash("Warning: No fasta files found in {}".format(output_folder))
                 sys.stderr.write("no fasta for sample found\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
         else:
             flash("Warning: No fasta files found in {}".format(output_folder))
             sys.stderr.write("no vcfs found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
 
         # sys.stderr.write("running plot return\n")
-        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample)
+        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
     # sys.stderr.write("running regular return\n")
-    return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample)
+    return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
 
     # return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, vcf_table=vcf_table, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
 
