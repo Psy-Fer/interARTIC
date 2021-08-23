@@ -13,7 +13,7 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 A video tutorial of setting up and running InterARTIC: https://youtu.be/odLa3sXCoTQ
 
-## Step 1: Installing InterARTIC
+## Step 1: Initiating InterARTIC
 
 We provide a pre-compiled binary release for common Linux distributions on x86_64 architecture. The binary release is tested to work well on Ubuntu 14, 16, 18 and 20 distributions (on Windows Subsystem for Linux as well). The binary release should work on other distributions as long as *GLIBC 2.17* (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present.
 
