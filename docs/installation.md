@@ -117,8 +117,8 @@ Follow [this link](https://artic.readthedocs.io/en/latest/installation/) to acce
 Clone the repository from github by entering the following commands into your terminal.
 
 ```
-git clone https://github.com/tthnguyen11/interARTIC.git
-cd interARTIC 
+git clone https://github.com/Psy-Fer/interARTIC
+cd interARTIC
 ```
 
 ## Installing the Redis Server
@@ -136,7 +136,7 @@ Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to
 
 ## Launching interARTIC
 
-Now launch a new terminal and go inside the interARTIC-venv virtual environment we created above by calling `source interARTIC-venv/bin/activate`.  interARTIC can be launched by running the provided `run-dev.sh` script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below. 
+Now launch a new terminal and go inside the interARTIC-venv virtual environment we created above by calling `source interARTIC-venv/bin/activate`.  interARTIC can be launched by running the provided `run-dev.sh` script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below.
 
 ### Automatic launch
 
@@ -182,7 +182,14 @@ If you wish to **turn concurrency on** and run multiple jobs at a time, then ple
 Navigate to your browser and follow [this link](http://127.0.0.1:5000) to access interARTIC.
 
 
+# Installation using Docker
 
+```
+git clone https://github.com/Psy-Fer/interARTIC
+cd interARTIC
+docker build - < Dockerfile
+docker run -p 5000:5000  -v /path/to/local/data/data/:/data/ <image_id>
+```
 
 
 <!--
