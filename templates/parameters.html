@@ -402,12 +402,21 @@
                    <div class="field">
                      <div class="control">
                        <div id="other_primer" style="display:none">
-                           Please enter your custom primer here:
+                           Please enter your custom primer descriptor:
+                           <div class="tooltip"> (info)
+                               <span class="tooltiptext">- This is the name used when building files and folders for tracing which high level scheme strategy was used.<br>
+                                                         - Please enter a utf-8 compliant name.<br>
+                                                         - If left blank, "Custom-primer-scheme" will be used by default.<br></span>
+                           </div>
                            <input class="input" type="text" id="other_primer_type" name="other_primer_type" value={{other_primer_type}}>
                        </div><br>
 
                           <!-- primer scheme directory -->
-                          <label class="subtitle is-5" for="primer_scheme">Primer scheme directory: *</label><br>
+                          <label class="subtitle is-5" for="primer_scheme">Primer scheme top directory: *</label>
+                            <div class="tooltip"> (info)
+                              <span class="tooltiptext">- This is the top dircectory containing the subdirectorys of virus/version (entered below)<br>
+                                                        - Please refer to primer docs for further information.<br></span>
+                            </div><br>
                           <input class="input" type="text" id="primer_scheme_dir" name="primer_scheme_dir" size="60" value="{{primer_scheme_dir}}" required><br>
                           {% if errors %}
                               {% if errors['primer_scheme_dir'] %}
@@ -426,7 +435,12 @@
                           <br>
 
                           <!-- primer scheme name -->
-                          <label class="subtitle is-5" for="primer_scheme">Name of primer scheme: *</label><br>
+                          <label class="subtitle is-5" for="primer_scheme">Name of primer scheme: *</label>
+                          <div class="tooltip"> (info)
+                            <span class="tooltiptext">- This is the virus/version folders within the top directory structure.<br>
+                                                      - For example: nCoV-2019/V3 <br>
+                                                      - Please refer to primer docs for further information.<br></span>
+                          </div><br>
                           <small> e.g. nCoV-2019/V3 </small><br>
                           <input class="input" type="text" id="primer_scheme" name="primer_scheme" size="30" value="{{primer_scheme}}" required><br>
                      </div>
