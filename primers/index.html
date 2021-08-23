@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Custom Primers - InterARTIC Documentation</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">InterARTIC Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../installation/" class="nav-link">Installation</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../usage/" class="nav-link">Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Custom Primers</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../snakeballing/" class="nav-link">Software Packaging</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a rel="prev" href="../troubleshooting/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../snakeballing/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#custom-primers" class="nav-link">Custom Primers</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#referencefasta-structure" class="nav-link">*.reference.fasta structure</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#schemebed-structure" class="nav-link">*.scheme.bed structure</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#why-the-structure-and-naming-matter" class="nav-link">Why the structure and naming matter</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#using-custom-primer-scheme-in-interartic" class="nav-link">Using custom primer scheme in InterARTIC</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="custom-primers">Custom Primers</h1>
+<p>The underlying artic pipeline of InterARTIC allows a user to use any primer scheme designed for viruses, given a few rules are followed, both in formatting, and folder structure. Here we will descibe these rules, how to build the required files, and how to use them with InterARTIC.</p>
+<p>In the examples, we use nCoV-2019 as the virus name, and it's best to be consistent with naming conventions across both folder and files. We did not write the artic pipeline, and some assumptions on naming are made in the tools. If you are using a different virus, name the files in the same manner, so <code>my-virus.bed</code>, <code>my-virus.scheme.bed</code> for example.</p>
+<p>The following files are required for the underlying artic pipeline:</p>
+<pre><code>nCoV-2019.reference.fasta
+nCoV-2019.scheme.bed
+</code></pre>
+<p>The folder structure should be in the form <code>primer-scheme/virus/version</code>.</p>
+<p>Here are a few examples:</p>
+<pre><code>primer-schemes
+├── artic
+│   ├── nCoV-2019
+│   ├── V1
+│   │   ├── nCoV-2019.bed
+│   │   ├── nCoV-2019.insert.bed
+│   │   ├── nCoV-2019.log
+│   │   ├── nCoV-2019.pdf
+│   │   ├── nCoV-2019.pickle
+│   │   ├── nCoV-2019.primer.bed
+│   │   ├── nCoV-2019.reference.fasta
+│   │   ├── nCoV-2019.reference.fasta.fai
+│   │   ├── nCoV-2019.scheme.bed
+│   │   ├── nCoV-2019_SMARTplex.tsv
+│   │   ├── nCoV-2019.svg
+│   │   └── nCoV-2019.tsv
+│   ├── V2
+│   │   ├── nCoV-2019.bed
+│   │   ├── nCoV-2019.insert.bed
+│   │   ├── nCoV-2019.primer.bed
+│   │   ├── nCoV-2019.reference.fasta
+│   │   ├── nCoV-2019.scheme.bed
+│   │   └── nCoV-2019.tsv
+│   ├── V3
+│   │   ├── nCoV-2019.bed
+│   │   ├── nCoV-2019.insert.bed
+│   │   ├── nCoV-2019.primer.bed
+│   │   ├── nCoV-2019.reference.fasta
+│   │   ├── nCoV-2019.reference.fasta.fai
+│   │   ├── nCoV-2019.scheme.bed
+│   │   └── nCoV-2019.tsv
+│   └── V4
+│       ├── README
+│       ├── SARS-CoV-2.design.fasta
+│       ├── SARS-CoV-2.insert.bed
+│       ├── SARS-CoV-2.primer.bed
+│       ├── SARS-CoV-2.reference.fasta
+│       └── SARS-CoV-2.scheme.bed
+├── eden
+│   └── nCoV-2019
+│       └── V1
+│           ├── nCoV-2019.reference.fasta
+│           ├── nCoV-2019.reference.fasta.fai
+│           ├── nCoV-2019.scheme.bed
+│           └── nCoV-2019.scheme.bed.old
+└── midnight
+    └── nCoV-2019
+        └── V1
+            ├── nCoV-2019.bed
+            ├── nCoV-2019.reference.fasta
+            ├── nCoV-2019.reference.fasta.fai
+            └── nCoV-2019.scheme.bed
+</code></pre>
+<p>It can be seen here, there are more files, then just the 2 required stated above. That is simply from keeping initial bed files, in the translation to the <code>*.scheme.bed</code> files, or the <code>*reference.fasta.fai</code> files which are automatically created index files from minimap2 when doing read alignment, or other intermediate files.</p>
+<h5 id="note-because-minimap2-needs-to-write-the-fai-files-to-the-same-directory-as-the-reference-file-the-directoy-housing-these-files-must-be-writable">Note: Because minimap2 needs to write the <code>.fai</code> files to the same directory as the reference file, the directoy housing these files must be writable.</h5>
+<h2 id="referencefasta-structure">*.reference.fasta structure</h2>
+<p>The reference file is exactly that, a fasta file containing the reference genome of the target virus. In this case, with 60nt per line.</p>
+<p>Here is the first 9 lines of the nCov-2019 (SARS-CoV-2) viral reference genome file.</p>
+<pre><code>&gt;MN908947.3
+ATTAAAGGTTTATACCTTCCCAGGTAACAAACCAACCAACTTTCGATCTCTTGTAGATCT
+GTTCTCTAAACGAACTTTAAAATCTGTGTGGCTGTCACTCGGCTGCATGCTTAGTGCACT
+CACGCAGTATAATTAATAACTAATTACTGTCGTTGACAGGACACGAGTAACTCGTCTATC
+TTCTGCAGGCTGCTTACGGTTTCGTCCGTGTTGCAGCCGATCATCAGCACATCTAGGTTT
+CGTCCGGGTGTGACCGAAAGGTAAGATGGAGAGCCTTGTCCCTGGTTTCAACGAGAAAAC
+ACACGTCCAACTCAGTTTGCCTGTTTTACAGGTTCGCGACGTGCTCGTACGTGGCTTTGG
+AGACTCCGTGGAGGAGGTCTTATCAGAGGCACGTCAACATCTTAAAGATGGCACTTGTGG
+CTTAGTAGAAGTTGAAAAAGGCGTTTTGCCTCAACTTGAACAGCCCTATGTGTTCATCAA
+</code></pre>
+<h2 id="schemebed-structure">*.scheme.bed structure</h2>
+<p>The primer scheme bed file should be in the following form</p>
+<pre><code>reference   start   stop    primer_name pool
+</code></pre>
+<p>Here are the first 6 lines of the eden ~2500bp primer set</p>
+<pre><code>MN908947.3  31  54  nCoV-2019_1_LEFT    nCoV-2019_1
+MN908947.3  2569    2592    nCoV-2019_1_RIGHT   nCoV-2019_1
+MN908947.3  1876    1897    nCoV-2019_2_LEFT    nCoV-2019_2
+MN908947.3  4429    4450    nCoV-2019_2_RIGHT   nCoV-2019_2
+MN908947.3  4295    4321    nCoV-2019_3_LEFT    nCoV-2019_1
+MN908947.3  6847    6873    nCoV-2019_3_RIGHT   nCoV-2019_1
+</code></pre>
+<p>Here is the first 6 lines of the midnight ~1200bp primer set</p>
+<pre><code>MN908947.3  30  54  SARSCoV2120_1_LEFT  nCoV-2019_1
+MN908947.3  1205    1183    SARSCoV2120_1_RIGHT nCoV-2019_1
+MN908947.3  1100    1128    SARSCoV2120_2_LEFT  nCoV-2019_2
+MN908947.3  2266    2244    SARSCoV2120_2_RIGHT nCoV-2019_2
+MN908947.3  2153    2179    SARSCoV2120_3_LEFT  nCoV-2019_1
+MN908947.3  3257    3235    SARSCoV2120_3_RIGHT nCoV-2019_1
+</code></pre>
+<p>Here is the first 6 lines of the artic V3 ~400bp primer set</p>
+<pre><code>MN908947.3  30  54  nCoV-2019_1_LEFT    nCoV-2019_1
+MN908947.3  385 410 nCoV-2019_1_RIGHT   nCoV-2019_1
+MN908947.3  320 342 nCoV-2019_2_LEFT    nCoV-2019_2
+MN908947.3  704 726 nCoV-2019_2_RIGHT   nCoV-2019_2
+MN908947.3  642 664 nCoV-2019_3_LEFT    nCoV-2019_1
+MN908947.3  1004    1028    nCoV-2019_3_RIGHT   nCoV-2019_1
+</code></pre>
+<p>And here is the first 6 lines of the artic V4 ~400bp primer set
+It is a little different</p>
+<pre><code>MN908947.3  25  50  SARS-CoV-2_1_LEFT   1   +
+MN908947.3  408 431 SARS-CoV-2_1_RIGHT  1   -
+MN908947.3  324 344 SARS-CoV-2_2_LEFT   2   +
+MN908947.3  705 727 SARS-CoV-2_2_RIGHT  2   -
+MN908947.3  644 666 SARS-CoV-2_3_LEFT   1   +
+MN908947.3  1017    1044    SARS-CoV-2_3_RIGHT  1   -
+</code></pre>
+<p>The artic nomenclature has changed and they have added an extra field.</p>
+<p>Currently it is best to design primer-schemes similar to the first 3 examples here for now.</p>
+<h2 id="why-the-structure-and-naming-matter">Why the structure and naming matter</h2>
+<p>When the primer scheme is used within the artic minion command, it is in the following form: (<code>...</code> is other commands)</p>
+<pre><code>artic minion ... --scheme-directory ~/primer-schemes/artic nCoV-2019/V1 sample-name
+</code></pre>
+<p>Where <code>nCoV-2019/V1</code> and  <code>sample-name</code> are positinal arguments.
+As you can see, the <code>--scheme-directory</code> is the top directory, then the positional argument <code>nCoV-2019/V1</code> sets the virus and version as directory names. Thus the structure shown above, of <code>scheme/virus/version</code> needs to be in that format.</p>
+<h2 id="using-custom-primer-scheme-in-interartic">Using custom primer scheme in InterARTIC</h2>
+<p>To use a custom primer scheme in InterARTIC, (ie, one not included in the defaults provided) first select <code>Custom</code> in the virus selection panel:</p>
+<p><img alt="custom selection" src="../custom_1.jpg" /></p>
+<p>Then in the "Please enter your custom primer here:" field, ender the name of your primer-scheme (can be anything). This will be used in the output folder naming method.</p>
+<p>Then enter the <code>--scheme-directory</code> path into the <code>Primer scheme directory:</code> field</p>
+<p>Then the <code>virus/version</code> info into the <code>Name of primer scheme:</code> field.</p>
+<p>InterARTIC will take care of the rest.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

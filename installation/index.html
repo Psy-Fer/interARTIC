@@ -12,11 +12,11 @@
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
         <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
@@ -44,6 +44,9 @@
                             </li>
                             <li class="navitem">
                                 <a href="../troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../primers/" class="nav-link">Custom Primers</a>
                             </li>
                             <li class="navitem">
                                 <a href="../snakeballing/" class="nav-link">Software Packaging</a>
@@ -119,6 +122,11 @@
             </li>
               </ul>
             </li>
+            
+            <li class="nav-item" data-level="1"><a href="#installation-using-docker" class="nav-link">Installation using Docker</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
@@ -151,6 +159,7 @@
 <li><a href="#launching-interartic-web-interface">Launching interARTIC web interface</a></li>
 </ul>
 </li>
+<li><a href="#installation-using-docker">Installation using Docker</a></li>
 </ul>
 </div>
 <p>This page has the instructions to build interARTIC from the source, which is tedious. If your system is a common Linux distribution (including Windows Subsystem for Linux), follow steps <a href="https://github.com/Psy-Fer/interARTIC#quick-start">here</a> to easily install interARTIC using pre-compiled binaries.</p>
@@ -225,8 +234,8 @@ conda deactivate
 <p>Follow <a href="https://artic.readthedocs.io/en/latest/installation/">this link</a> to access the documentation for installing Artic.</p>
 <h2 id="installing-interartic">Installing interARTIC</h2>
 <p>Clone the repository from github by entering the following commands into your terminal.</p>
-<pre><code>git clone https://github.com/tthnguyen11/interARTIC.git
-cd interARTIC 
+<pre><code>git clone https://github.com/Psy-Fer/interARTIC
+cd interARTIC
 </code></pre>
 <h2 id="installing-the-redis-server">Installing the Redis Server</h2>
 <p>To locally build the redis server and do a test launch, enter the following into your command prompt in your interARTIC base folder:</p>
@@ -235,7 +244,7 @@ cd interARTIC
 <p>Exit the redis server by pressing ctrl+c now. Now close the terminal.</p>
 <p>Alternatively, you can follow <a href="https://redis.io/topics/quickstart">this link</a> to install the Redis Server manually.</p>
 <h2 id="launching-interartic">Launching interARTIC</h2>
-<p>Now launch a new terminal and go inside the interARTIC-venv virtual environment we created above by calling <code>source interARTIC-venv/bin/activate</code>.  interARTIC can be launched by running the provided <code>run-dev.sh</code> script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below. </p>
+<p>Now launch a new terminal and go inside the interARTIC-venv virtual environment we created above by calling <code>source interARTIC-venv/bin/activate</code>.  interARTIC can be launched by running the provided <code>run-dev.sh</code> script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below.</p>
 <h3 id="automatic-launch">Automatic launch</h3>
 <p>To start interARTIC, navigate to the directory where the interARTIC repository was cloned and enter the following command into your command prompt:</p>
 <pre><code>./run-dev.sh
@@ -266,6 +275,12 @@ conda activate artic-ncov2019; celery worker -A main.celery -b redis://localhost
 <p>If you wish to <strong>turn concurrency on</strong> and run multiple jobs at a time, then please follow the steps under Manual launch above except that now you should not pass <code>--concurrency=1</code> to celery.</p>
 <h2 id="launching-interartic-web-interface">Launching interARTIC web interface</h2>
 <p>Navigate to your browser and follow <a href="http://127.0.0.1:5000">this link</a> to access interARTIC.</p>
+<h1 id="installation-using-docker">Installation using Docker</h1>
+<pre><code>git clone https://github.com/Psy-Fer/interARTIC
+cd interARTIC
+docker build - &lt; Dockerfile
+docker run -p 5000:5000  -v /path/to/local/data/data/:/data/ &lt;image_id&gt;
+</code></pre>
 <!--
 On any text editor, open ```config.init```. Update each of the configurations as necessary. All inputs should be file paths. More information about this can be found in the next section.
 

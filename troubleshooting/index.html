@@ -12,11 +12,11 @@
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
         <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
@@ -46,6 +46,9 @@
                                 <a href="./" class="nav-link">Troubleshooting</a>
                             </li>
                             <li class="navitem">
+                                <a href="../primers/" class="nav-link">Custom Primers</a>
+                            </li>
+                            <li class="navitem">
                                 <a href="../snakeballing/" class="nav-link">Software Packaging</a>
                             </li>
                         </ul>
@@ -57,7 +60,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../snakeballing/" class="nav-link">
+                                <a rel="next" href="../primers/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -89,6 +92,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="2"><a href="#on-fedora-minimal-builds" class="nav-link">On Fedora minimal builds</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#any-other-errors" class="nav-link">Any other errors</a>
               <ul class="nav flex-column">
               </ul>
@@ -110,6 +117,11 @@
 </ul>
 </li>
 <li><a href="#missing-job-on-home-page">Missing job on Home Page</a></li>
+<li><a href="#on-fedora-minimal-builds">On Fedora minimal builds</a><ul>
+<li><a href="#runsh-line-7-ps-command-not-found">./run.sh: line 7: ps: command not found</a></li>
+<li><a href="#binpython37-error-while-loading-shared-libraries-libnslso1-cannot-open-shared-object-file-no-such-file-or-directory">bin/python3.7: error while loading shared libraries: libnsl.so.1: cannot open shared object file: No such file or directory</a></li>
+</ul>
+</li>
 <li><a href="#any-other-errors">Any other errors</a></li>
 </ul>
 </li>
@@ -131,6 +143,12 @@ kill -9 &lt;process ID&gt;    # where process ID is the number in the second col
 <p>If this does not fix the issue, please let the developers know via GitHub so that the command can be implemented.</p>
 <h2 id="missing-job-on-home-page">Missing job on Home Page</h2>
 <p>If a job is missing from the home page, wait a few seconds and refresh the page.</p>
+<h2 id="on-fedora-minimal-builds">On Fedora minimal builds</h2>
+<h3 id="runsh-line-7-ps-command-not-found">./run.sh: line 7: ps: command not found</h3>
+<pre><code>dnf install -y procps
+</code></pre>
+<h3 id="binpython37-error-while-loading-shared-libraries-libnslso1-cannot-open-shared-object-file-no-such-file-or-directory">bin/python3.7: error while loading shared libraries: libnsl.so.1: cannot open shared object file: No such file or directory</h3>
+<p><code>sudo dnf install libnsl</code></p>
 <h2 id="any-other-errors">Any other errors</h2>
 <p>If there are any other errors, please let the developers know via GitHub so that we can look into it for you.</p></div>
             </div>
