@@ -29,6 +29,8 @@ import pandas as pd
 
 VERSION = "0.3"
 ARTIC_VERSION = "1.2.1"
+DOCS = "static/site/index.html"
+print(DOCS)
 
 pd.set_option('display.width', 1000)
 pd.set_option('colheader_justify', 'center')
@@ -374,7 +376,7 @@ def home():
 
         if request.form.get('search_input') == 'Confirm':
             if len(errors) != 0:
-                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
             global input_filepath
             input_filepath = search_input
 
@@ -390,12 +392,12 @@ def home():
         if request.form.get('add_job') == "Add Job":
             if len(errors) != 0:
                 flash("WARNING:File paths entered are not valid")
-                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                return render_template("home.html", input_folder=search_input, errors=errors, csv_folder=search_csv, search_csv=search_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
             else:
                 return redirect(url_for('parameters'))
 
     # return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, eden_folder=schemes['eden_scheme'], eden_name=schemes['eden_scheme_name'], midnight_folder=schemes['midnight_scheme'], midnight_name=schemes['midnight_scheme_name'], artic_folder=schemes['artic_scheme'], artic_name=schemes['artic_scheme_name'])
-    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+    return render_template("home.html", input_folder=input_filepath, csv_folder=sample_csv, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
 @app.route("/about")
 def about():
@@ -403,7 +405,7 @@ def about():
     res = getVersions.apply_async()
     version_dic = res.get()
 
-    return render_template("about.html", VERSION_DIC=version_dic, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+    return render_template("about.html", VERSION_DIC=version_dic, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
 def check_special_characters(func):
     @functools.wraps(func)
@@ -784,7 +786,7 @@ def parameters():
                                             primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                             errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
                                             other_primer_type=other_primer_type, primer_select=primer_select,
-                                            schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                                            schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
                 return render_template("parameters.html", job_name=job_name, queue=displayQueue,
                                         input_name=input_name, input_folder=input_folder,
@@ -795,7 +797,7 @@ def parameters():
                                         primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                         errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
                                         other_primer_type=other_primer_type, primer_select=primer_select,
-                                        schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                                        schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
             tmp_path = tmp_folder_list[0].split("/")[:-1]
             path = "/".join(tmp_path)
             os.chdir(path)
@@ -879,7 +881,7 @@ def parameters():
                                         primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                         errors=errors, folders=folders, csvs=csvs, csv_name=csv_file,
                                         other_primer_type=other_primer_type, primer_select=primer_select,
-                                        schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                                        schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
             return render_template("parameters.html", job_name=job_name, queue=displayQueue,
                                     input_name=input_name, input_folder=input_folder,
@@ -890,7 +892,7 @@ def parameters():
                                     primer_scheme_dir=primer_scheme_dir, guppyplex=guppyplex, barcode_type=barcode_type,
                                     errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
                                     other_primer_type=other_primer_type, primer_select=primer_select,
-                                    schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                                    schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
 
         #no spaces in the job name - messes up commands
@@ -931,14 +933,14 @@ def parameters():
     #Update displayed queue on home page
     queueList = []
     if qSys.queue.empty():
-        return render_template("parameters.html", queue=None, folders=folders, csvs=csvs, schemes=schemes, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+        return render_template("parameters.html", queue=None, folders=folders, csvs=csvs, schemes=schemes, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
     for item in qSys.queue.getItems():
         queueList.append({item._job_name : url_for('progress', job_name=item._job_name, task_id = item._task_id)})
 
     queueDict = {'jobs': queueList}
     displayQueue = json.htmlsafe_dumps(queueDict)
-    return render_template("parameters.html", queue = displayQueue, folders=folders, csvs=csvs, schemes=schemes, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+    return render_template("parameters.html", queue = displayQueue, folders=folders, csvs=csvs, schemes=schemes, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
 # error page, accessed if a user wants to re-run a job if an error occurs during a run
 # @app.route("/error/<job_name>", methods = ["POST","GET"])
@@ -1208,7 +1210,7 @@ def progress(job_name):
     return render_template("progress.html", outputLog=outputLog, num_in_queue=num_in_queue,
                             queue_length=queue_length, job_name=job_name, frac=frac, input_folder=input_folder, output_folder=output_folder,
                             read_file=read_file, pipeline=pipeline, min_length=min_length, max_length=max_length, primer_scheme=primer_scheme,
-                            primer_type=primer_type, num_samples=num_samples, guppyplex=guppyplex, barcode_type=barcode_type, numErrors=numErrors, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                            primer_type=primer_type, num_samples=num_samples, guppyplex=guppyplex, barcode_type=barcode_type, numErrors=numErrors, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
 @app.route("/abort/<job_name>", methods = ["GET", "POST"])
 def abort(job_name):
@@ -1395,11 +1397,11 @@ def output(job_name):
             else:
                 flash("Warning: No vcf files found in {}".format(output_folder))
                 sys.stderr.write("no vcf for sample found\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
         else:
             flash("Warning: No vcf files found in {}".format(output_folder))
             sys.stderr.write("no vcfs found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
         if plots_found:
             if sample in plots.keys():
                 plot = plots[sample]
@@ -1415,11 +1417,11 @@ def output(job_name):
             else:
                 plot = False
                 sys.stderr.write("plot for sample not found in plots\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
         else:
             plot = False
             sys.stderr.write("plots not found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
         if fasta_found:
             if sample in fastas.keys():
@@ -1435,17 +1437,17 @@ def output(job_name):
             else:
                 flash("Warning: No fasta files found in {}".format(output_folder))
                 sys.stderr.write("no fasta for sample found\n")
-                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+                return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
         else:
             flash("Warning: No fasta files found in {}".format(output_folder))
             sys.stderr.write("no vcfs found\n")
-            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
 
         # sys.stderr.write("running plot return\n")
-        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
     # sys.stderr.write("running regular return\n")
-    return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION)
+    return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
     # return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, vcf_table=vcf_table, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)
 
