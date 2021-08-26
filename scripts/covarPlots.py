@@ -133,10 +133,10 @@ def get_bed(args):
             print(l)
             if "alt" in l[3]:
                 continue
-            if l[-1][-1] == '1':
+            if l[4][-1] == '1':
                 tmp_1.append(int(l[1]))
                 tmp_1.append(int(l[2]))
-            elif l[-1][-1] == '2':
+            elif l[4][-1] == '2':
                 tmp_2.append(int(l[1]))
                 tmp_2.append(int(l[2]))
             else:
