@@ -25,6 +25,7 @@ import traceback
 import functools
 import inspect
 import pandas as pd
+import numpy as np
 
 
 VERSION = "0.3"
@@ -1245,10 +1246,13 @@ def delete(job_name):
 def output(job_name):
     job = qSys.getJobByName(job_name)
     output_folder = job.output_folder
+    primer_scheme_dir = job.primer_scheme_dir
+    primer_scheme = job.primer_scheme
+    full_primer_scheme_dir = os.path.join(primer_scheme_dir, primer_scheme)
     # need to only do the big/file stuff once
 
     if len(job.metadata) < 1:
-
+        sys.stderr.write("building metadata\n")
         sample_folders = []
         plots = {}
         vcfs = {}
@@ -1344,6 +1348,7 @@ def output(job_name):
                 os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta")
             if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"):
                 os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar")
+            sys.stderr.write("building tars and all files\n")
             for sample in fastas.keys():
                 fasta = fastas[sample]
                 fasta_file = fasta.split("/")[-1]
@@ -1371,6 +1376,7 @@ def output(job_name):
                 fq_reads = 0
                 fq_len_list = []
                 read_qual_list = []
+                q_list = []
                 with open(meta[sample_name]["fastq"], 'r') as fq:
                     for l in fq:
                         if fq_count in [1, 3]:
@@ -1390,30 +1396,125 @@ def output(job_name):
                             avg_qual = x / len(quals)
                             read_qual_list.append(round(avg_qual - 33, 2))
                             fq_count = 1
-
                 # fastq read count
                 meta[sample_name]["fastq_count"] = fq_reads
                 sample_table.append(["Pass read count", fq_reads])
                 # fastq read length mean
-                x = 0
-                for i in fq_len_list:
-                    x += i
-                fastq_len_mean = x / fq_reads
-                meta[sample_name]["fastq_len_mean"] = round(fastq_len_mean, 2)
-                sample_table.append(["Mean read length", round(fastq_len_mean, 2)])
+                fastq_len_mean = np.mean(fq_len_list)
+                fastq_len_std = np.std(fq_len_list)
+                meta[sample_name]["fastq_len_mean"] = round(fastq_len_mean)
+                sample_table.append(["Read length mean", round(fastq_len_mean)])
+                meta[sample_name]["fastq_len_std"] = round(fastq_len_std, 2)
+                sample_table.append(["Read length stdev", round(fastq_len_std, 2)])
                 # fastq quality mean
-                x = 0
-                for i in read_qual_list:
-                    x += i
-                fastq_qual_mean = x / fq_reads
+                fastq_qual_mean = np.mean(read_qual_list)
+                fastq_qual_std = np.std(read_qual_list)
                 meta[sample_name]["fastq_qual_mean"] = round(fastq_qual_mean, 2)
-                sample_table.append(["Mean read quality", round(fastq_qual_mean, 2)])
+                sample_table.append(["Read quality mean", round(fastq_qual_mean, 2)])
+                meta[sample_name]["fastq_qual_std"] = round(fastq_qual_std, 2)
+                sample_table.append(["Read quality stdev", round(fastq_qual_std, 2)])
 
+                #get bed sets for each pool
+                if os.path.exists(full_primer_scheme_dir):
+                    #Finds all files in the output folder
+                    for (dirpath, dirnames, filenames) in os.walk(full_primer_scheme_dir):
+                        for name in filenames:
+                            if fnmatch.fnmatch(name, '*.scheme.bed'):
+                                scheme_bed_file = os.path.join(dirpath,name)
+                                break
+
+                if os.path.isfile(scheme_bed_file):
+                    tmp_1 = []
+                    tmp_2 = []
+                    bed_1 = []
+                    bed_2 = []
+                    with open(scheme_bed_file, 'r') as f:
+                        for l in f:
+                            l = l.strip('\n')
+                            l = l.strip('\t')
+                            l = l.split('\t')
+                            print(l)
+                            if "alt" in l[3]:
+                                continue
+                            if l[4][-1] == '1':
+                                tmp_1.append(int(l[1]))
+                                tmp_1.append(int(l[2]))
+                            elif l[4][-1] == '2':
+                                tmp_2.append(int(l[1]))
+                                tmp_2.append(int(l[2]))
+                            else:
+                                sys.stderr.write("bed format unknown: {}\n, please contact developers\n".format(l[-1]))
+
+                    tmp_1.sort()
+                    tmp_2.sort()
+
+                    for i in range(0,len(tmp_1)-3+1,4):
+                        bed_1.append((tmp_1[i], tmp_1[i+3]))
+                    for i in range(0,len(tmp_2)-3+1,4):
+                        bed_2.append((tmp_2[i], tmp_2[i+3]))
+
+                    P1, P2 = np.array(bed_1), np.array(bed_2)
+
+                    amp_dic = {}
+                    amp_count = 1
+                    amp_total = 0
+                    for i, j in P1:
+                        amp_dic[amp_count] = {}
+                        amp_dic[amp_count]["bounds"] = [i, j]
+                        amp_dic[amp_count]["depth"] = []
+                        amp_count += 2
+                        amp_total += 1
+
+                    amp_count = 2
+                    for i, j in P2:
+                        amp_dic[amp_count] = {}
+                        amp_dic[amp_count]["bounds"] = [i, j]
+                        amp_dic[amp_count]["depth"] = []
+                        amp_count += 2
+                        amp_total += 1
+
+                # mean of 2 means
                 # meta[sample_name]["pool_1_depths"]
+                D1 = []
+                with open(meta[sample_name]["pool_1_depths"], 'r') as d1:
+                    for l in d1:
+                        l = l.strip("\n")
+                        l = l.split("\t")
+                        D1.append(int(l[3]))
+
+                D2 = []
+                with open(meta[sample_name]["pool_2_depths"], 'r') as d2:
+                    for l in d2:
+                        l = l.strip("\n")
+                        l = l.split("\t")
+                        D2.append(int(l[3]))
+
+                total_mean_cov_list = []
+                for amp in amp_dic:
+                    if amp % 2 == 0:
+                        dlist = D2
+                    else:
+                        dlist = D1
+                    i, j = amp_dic[amp]["bounds"]
+                    amp_dic[amp]["depth"] = dlist[i:j]
+                    total_mean_cov_list.append(round(sum(dlist[i:j]) / len(dlist[i:j]), 2))
+
+                total_mean_cov = round(sum(total_mean_cov_list) / len(total_mean_cov_list))
+                meta[sample_name]["total_mean_cov"] = total_mean_cov
+                sample_table.append(["Total mean coverage", total_mean_cov])
+
+                for i in range(1, amp_total +1):
+                    D = amp_dic[i]["depth"]
+                    D_mean = round(sum(D) / len(D))
+                    sample_table.append(["Amplicon {} mean coverage".format(i), D_mean])
+
+
+
                 # meta[sample_name]["pool_2_depths"]
                 # meta[sample_name]["pass_vcf"]
                 # meta[sample_name]["fail_vcf"]
                 # meta[sample_name]["consensus"]
+
                 meta[sample_name]["table"] = sample_table
                 meta["sample_folders"] = sample_folders
                 meta["plots"] = plots
