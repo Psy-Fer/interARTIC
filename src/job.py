@@ -43,6 +43,7 @@ class Job:
         self._task_id = None
         self._primer_select = primer_select
         self._input_name = input_name
+        self._metadata = {}
 
     @property
     def job_name(self):
@@ -169,6 +170,14 @@ class Job:
         if val:
             self._task_id = val
 
+    @property
+    def metadata(self):
+        return self._metadata
+
+    @metadata.setter
+    def metadata(self, val):
+        if val:
+            self._metadata = val
 
     def __generateGatherCmd(self):
         gather_cmd = ""

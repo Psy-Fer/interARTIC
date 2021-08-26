@@ -1245,81 +1245,203 @@ def delete(job_name):
 def output(job_name):
     job = qSys.getJobByName(job_name)
     output_folder = job.output_folder
+    # need to only do the big/file stuff once
 
-    # debugging
-    # output_folder = "/home/jamfer/data/SARS-CoV-2/test_interARTIC/FLFL031920/dfsdfsdfsdf"
+    if len(job.metadata) < 1:
 
-    sample_folders = []
-    plots = {}
-    vcfs = {}
-    fastas = {}
-    plots_found = False
-    vcf_found = False
-    fasta_found = False
-    sample = ""
-    current_sample = ""
-    total_samples = ""
-    current_sample_num = 0
+        sample_folders = []
+        plots = {}
+        vcfs = {}
+        fastas = {}
+        meta = {}
+        plots_found = False
+        vcf_found = False
+        fasta_found = False
+        sample = ""
+        total_samples = ""
+        current_sample_num = 0
 
-    if output_folder:
-        # sys.stderr.write("output_folder found\n")
-        if os.path.exists(output_folder):
-            #Finds all files in the output folder
-            for (dirpath, dirnames, filenames) in os.walk(output_folder):
-                for i in dirnames:
-                    if "_medaka" in i:
-                        sample_folders.append(i)
-                    elif "_nanopolish" in i:
-                        sample_folders.append(i)
-                for name in filenames:
-                    #finds barplot pngs
-                    if fnmatch.fnmatch(name, '*CoVarPlot.png'):
-                        sample_name = dirpath.split("/")[-1]
-                        plots[sample_name] = os.path.join(dirpath,name)
-                        plots_found = True
-                    #finds vcf files
-                    if fnmatch.fnmatch(name, '*.pass.vcf.gz'):
-                        sample_name = dirpath.split("/")[-1]
-                        vcfs[sample_name] = (os.path.join(dirpath,name))
-                        vcf_found = True
-                    #finds consensus.fasta
-                    if fnmatch.fnmatch(name, '*.consensus.fasta'):
-                        sample_name = dirpath.split("/")[-1]
-                        fastas[sample_name] = os.path.join(dirpath,name)
-                        fasta_found = True
-        sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
-        total_samples = len(sample_folders)
-        sample_dic = {}
-        for i in range(0, len(sample_folders)):
-            sample_dic[sample_folders[i]] = i
-        # k = [i for i in sample_folders]
-        # sys.stderr.write(",".join(k))
-        # sys.stderr.write("\n")
-        # k = [[i, sample_dic[sample_folders[i]]] for i in range(0, len(sample_folders))]
-        # for i, j in k:
-        #     sys.stderr.write(":".join([str(i), str(k)]))
-        #     sys.stderr.write("\n")
+        if output_folder:
+            # sys.stderr.write("output_folder found\n")
+            if os.path.exists(output_folder):
+                #Finds all files in the output folder
+                for (dirpath, dirnames, filenames) in os.walk(output_folder):
+                    for i in dirnames:
+                        if "_medaka" in i:
+                            sample_folders.append(i)
+                        elif "_nanopolish" in i:
+                            sample_folders.append(i)
+                    sample_name = dirpath.split("/")[-1]
+                    meta[sample_name] = {}
+                    for name in filenames:
+                        #finds barplot pngs
+                        if fnmatch.fnmatch(name, '*CoVarPlot.png'):
+                            plots[sample_name] = os.path.join(dirpath,name)
+                            plots_found = True
+                        #finds vcf files
+                        if fnmatch.fnmatch(name, '*.pass.vcf.gz'):
+                            vcfs[sample_name] = (os.path.join(dirpath,name))
+                            meta[sample_name]["pass_vcf"] = (os.path.join(dirpath,name))
+                            vcf_found = True
+                        #finds consensus.fasta
+                        if fnmatch.fnmatch(name, '*.consensus.fasta'):
+                            fastas[sample_name] = os.path.join(dirpath,name)
+                            meta[sample_name]["consensus"] = (os.path.join(dirpath,name))
+                            fasta_found = True
+                        # nano_fastq_pass-NB04.fastq
+                        if fnmatch.fnmatch(name, '*.fastq'):
+                            meta[sample_name]["fastq"] = os.path.join(dirpath,name)
+                        # nano_fastq_pass-NB04.fastq.index
+                        # nano_fastq_pass-NB04.fastq.index.gzi
+                        # nano_fastq_pass-NB04.fastq.index.fai
+                        # nano_fastq_pass-NB04.fastq.index.readdb
+                        # nano_sample4_NB04.sorted.bam
+                        # nano_sample4_NB04.sorted.bam.bai
+                        # nano_sample4_NB04.trimmed.rg.sorted.bam
+                        # nano_sample4_NB04.alignreport.txt
+                        # nano_sample4_NB04.alignreport.er
+                        # nano_sample4_NB04.primertrimmed.rg.sorted.bam
+                        # nano_sample4_NB04.trimmed.rg.sorted.bam.bai
+                        # nano_sample4_NB04.primertrimmed.rg.sorted.bam.bai
+                        # nano_sample4_NB04.nCoV-2019_2.vcf
+                        # nano_sample4_NB04.nCoV-2019_1.vcf
+                        # nano_sample4_NB04.primersitereport.txt
+                        # nano_sample4_NB04.merged.vcf
+                        # nano_sample4_NB04.primers.vcf
+                        # nano_sample4_NB04.fail.vcf
+                        if fnmatch.fnmatch(name, '*.fail.vcf'):
+                            meta[sample_name]["fail_vcf"] = os.path.join(dirpath,name)
+                        # nano_sample4_NB04.pass.vcf.gz
+                        # nano_sample4_NB04.pass.vcf.gz.tbi
+                        # nano_sample4_NB04.coverage_mask.txt.nCoV-2019_2.depths
+                        if fnmatch.fnmatch(name, '*_2.depths'):
+                            meta[sample_name]["pool_2_depths"] = os.path.join(dirpath,name)
+                        # nano_sample4_NB04.coverage_mask.txt.nCoV-2019_1.depths
+                        if fnmatch.fnmatch(name, '*_1.depths'):
+                            meta[sample_name]["pool_1_depths"] = os.path.join(dirpath,name)
+                        # nano_sample4_NB04.coverage_mask.txt
+                        # nano_sample4_NB04.preconsensus.fasta
+                        # nano_sample4_NB04.consensus.fasta
+                        # nano_sample4_NB04.muscle.in.fasta
+                        # nano_sample4_NB04.muscle.out.fasta
+                        # nano_sample4_NB04.minion.log.txt
+                        # nano_sample4_NB04.CoVarPlot.png
+            sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
+            total_samples = len(sample_folders)
+            sample_dic = {}
+            for i in range(0, len(sample_folders)):
+                sample_dic[sample_folders[i]] = i
+            # k = [i for i in sample_folders]
+            # sys.stderr.write(",".join(k))
+            # sys.stderr.write("\n")
+            # k = [[i, sample_dic[sample_folders[i]]] for i in range(0, len(sample_folders))]
+            # for i, j in k:
+            #     sys.stderr.write(":".join([str(i), str(k)]))
+            #     sys.stderr.write("\n")
 
-        # combine all single files into single tarball and single file
-        if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"):
-            os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta")
-        if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"):
-            os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar")
-        for sample in fastas.keys():
-            fasta = fastas[sample]
-            fasta_file = fasta.split("/")[-1]
-            fasta_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name
-            if not os.path.isdir(fasta_path):
-                mkdir = "mkdir -p " + fasta_path
-                os.system(mkdir)
-            cp_fasta = "cp " + fasta + " " + fasta_path
-            os.system(cp_fasta)
-            cmd = "cat " + fasta + " >> " + os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name + ".fasta"
+            # combine all single files into single tarball and single file
+            if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"):
+                os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta")
+            if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"):
+                os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar")
+            for sample in fastas.keys():
+                fasta = fastas[sample]
+                fasta_file = fasta.split("/")[-1]
+                fasta_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name
+                if not os.path.isdir(fasta_path):
+                    mkdir = "mkdir -p " + fasta_path
+                    os.system(mkdir)
+                cp_fasta = "cp " + fasta + " " + fasta_path
+                os.system(cp_fasta)
+                cmd = "cat " + fasta + " >> " + os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name + ".fasta"
+                os.system(cmd)
+            html_fasta_all = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"
+            cmd = "tar -cf " + fasta_path + ".tar -C " + fasta_path + " ."
             os.system(cmd)
-        html_fasta_all = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"
-        cmd = "tar -cf " + fasta_path + ".tar -C " + fasta_path + " ."
-        os.system(cmd)
-        html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
+            html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
+
+            # build metrics files, store in output, then load as table in each sample
+            # build here so download all is available from start
+
+            for folder in sample_folders:
+                sample_name = folder.split("/")[-1]
+                sample_table = [["Metric", "Value"], ["Sample", sample_name]]
+                # fastq metrics
+                fq_count = 1
+                fq_reads = 0
+                fq_len_list = []
+                read_qual_list = []
+                with open(meta[sample_name]["fastq"], 'r') as fq:
+                    for l in fq:
+                        if fq_count in [1, 3]:
+                            fq_count += 1
+                            continue
+                        elif fq_count == 2:
+                            seq = l.strip("\n")
+                            fq_count += 1
+                            fq_reads += 1
+                            fq_len_list.append(len(seq))
+                            continue
+                        elif fq_count == 4:
+                            quals = l.strip("\n")
+                            x = 0
+                            for i in quals:
+                                x += ord(i)
+                            avg_qual = x / len(quals)
+                            read_qual_list.append(round(avg_qual - 33, 2))
+                            fq_count = 1
+
+                # fastq read count
+                meta[sample_name]["fastq_count"] = fq_reads
+                sample_table.append(["Pass read count", fq_reads])
+                # fastq read length mean
+                x = 0
+                for i in fq_len_list:
+                    x += i
+                fastq_len_mean = x / fq_reads
+                meta[sample_name]["fastq_len_mean"] = round(fastq_len_mean, 2)
+                sample_table.append(["Mean read length", round(fastq_len_mean, 2)])
+                # fastq quality mean
+                x = 0
+                for i in read_qual_list:
+                    x += i
+                fastq_qual_mean = x / fq_reads
+                meta[sample_name]["fastq_qual_mean"] = round(fastq_qual_mean, 2)
+                sample_table.append(["Mean read quality", round(fastq_qual_mean, 2)])
+
+                # meta[sample_name]["pool_1_depths"]
+                # meta[sample_name]["pool_2_depths"]
+                # meta[sample_name]["pass_vcf"]
+                # meta[sample_name]["fail_vcf"]
+                # meta[sample_name]["consensus"]
+                meta[sample_name]["table"] = sample_table
+                meta["sample_folders"] = sample_folders
+                meta["plots"] = plots
+                meta["vcfs"] = vcfs
+                meta["fastas"] = fastas
+                meta["plots_found"] = plots_found
+                meta["vcf_found"] = vcf_found
+                meta["fasta_found"] = fasta_found
+                meta["sample_dic"] = sample_dic
+                meta["total_samples"] = total_samples
+                meta["current_sample_num"] = current_sample_num
+                meta["html_fasta_all"] = html_fasta_all
+                meta["html_fasta_tar"] = html_fasta_tar
+                job.metadata = meta
+    else:
+        meta = job.metadata
+        sample_folders = meta["sample_folders"]
+        plots = meta["plots"]
+        vcfs = meta["vcfs"]
+        fastas = meta["fastas"]
+        plots_found = meta["plots_found"]
+        vcf_found = meta["vcf_found"]
+        fasta_found = meta["fasta_found"]
+        sample_dic = meta["sample_dic"]
+        total_samples = meta["total_samples"]
+        current_sample_num = meta["current_sample_num"]
+        html_fasta_all = meta["html_fasta_all"]
+        html_fasta_tar = meta["html_fasta_tar"]
 
     if request.method == "POST":
         # sys.stderr.write("sample_num (START):{}\n".format(current_sample_num))
@@ -1440,13 +1562,30 @@ def output(job_name):
                 return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
         else:
             flash("Warning: No fasta files found in {}".format(output_folder))
-            sys.stderr.write("no vcfs found\n")
+            sys.stderr.write("no fastas found\n")
             return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
+        if meta[sample]["table"]:
+            meta_table = meta[sample]["table"]
+            df = pd.DataFrame(meta_table[1:], columns=meta_table[0])
+            meta_table_html = df.to_html(classes='mystyle')
+        else:
+            flash("Warning: No metadata table data generated")
+            sys.stderr.write("no metadata found for sample: {}\n".format(sample))
+            return render_template("output.html", job_name=job_name, sample_folders=sample_folders, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
         # sys.stderr.write("running plot return\n")
-        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta, fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
+        return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta,
+                               fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found,
+                               sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples,
+                               meta_table_html=meta_table_html, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
     # sys.stderr.write("running regular return\n")
+    sample = request.form.get('sample_folder')
+    if sample == '':
+        sample = sample_folders[0]
+    elif sample is None:
+        sample = sample_folders[0]
+    current_sample_num = sample_dic[sample] + 1
     return render_template("output.html", job_name=job_name, sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
     # return render_template("output.html", job_name=job_name, output_folder=output_folder, output_files=output_files, save_graphs=save_able, vcf_table=vcf_table, create_vcfs=create_able, plots_found=plots_found, vcf_found=vcf_found)

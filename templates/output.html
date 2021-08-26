@@ -84,6 +84,12 @@
           </div>
           <br><br>
           <div>
+           {% if meta_table_html %}
+            {{meta_table_html|safe}}
+           {% endif %}
+          </div>
+          <br><br>
+          <div>
            {% if fasta_found %}
                 <a class="button is-medium" type=button name="dload_fasta" id="dload_fasta" value="Download consensus.fasta" href="{{fasta}}" download>Download consensus.fasta</a>
            {% endif %}
