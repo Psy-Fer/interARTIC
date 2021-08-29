@@ -1330,6 +1330,9 @@ def output(job_name):
                         # nano_sample4_NB04.muscle.out.fasta
                         # nano_sample4_NB04.minion.log.txt
                         # nano_sample4_NB04.CoVarPlot.png
+
+
+
             sample_folders.sort(key=lambda s: list(map(str, s.split('_')))[-2])
             total_samples = len(sample_folders)
             sample_dic = {}
@@ -1368,6 +1371,87 @@ def output(job_name):
             # build metrics files, store in output, then load as table in each sample
             # build here so download all is available from start
 
+            #get bed sets for each pool
+            scheme_bed_file = ""
+            gene_bed_file = ""
+            if os.path.exists(full_primer_scheme_dir):
+                #Finds all files in the output folder
+                for (dirpath, dirnames, filenames) in os.walk(full_primer_scheme_dir):
+                    for name in filenames:
+                        if fnmatch.fnmatch(name, '*.scheme.bed'):
+                            scheme_bed_file = os.path.join(dirpath,name)
+                        if fnmatch.fnmatch(name, '*.genes.bed'):
+                            gene_bed_file = os.path.join(dirpath,name)
+            sys.stderr.write("gene_bed_file: {}\n".format(gene_bed_file))
+
+            if os.path.isfile(scheme_bed_file):
+                tmp_1 = []
+                tmp_2 = []
+                bed_1 = []
+                bed_2 = []
+                with open(scheme_bed_file, 'r') as f:
+                    for l in f:
+                        l = l.strip('\n')
+                        l = l.split('\t')
+                        if "alt" in l[3]:
+                            continue
+                        if l[4][-1] == '1':
+                            tmp_1.append(int(l[1]))
+                            tmp_1.append(int(l[2]))
+                        elif l[4][-1] == '2':
+                            tmp_2.append(int(l[1]))
+                            tmp_2.append(int(l[2]))
+                        else:
+                            sys.stderr.write("bed format unknown: {}\n, please contact developers\n".format(l[-1]))
+
+                tmp_1.sort()
+                tmp_2.sort()
+
+                for i in range(0,len(tmp_1)-3+1,4):
+                    bed_1.append((tmp_1[i], tmp_1[i+3]))
+                for i in range(0,len(tmp_2)-3+1,4):
+                    bed_2.append((tmp_2[i], tmp_2[i+3]))
+
+                P1, P2 = np.array(bed_1), np.array(bed_2)
+
+                amp_dic = {}
+                amp_count = 1
+                amp_total = 0
+                for i, j in P1:
+                    amp_dic[amp_count] = {}
+                    amp_dic[amp_count]["bounds"] = [i, j]
+                    amp_dic[amp_count]["depth"] = []
+                    amp_count += 2
+                    amp_total += 1
+
+                amp_count = 2
+                for i, j in P2:
+                    amp_dic[amp_count] = {}
+                    amp_dic[amp_count]["bounds"] = [i, j]
+                    amp_dic[amp_count]["depth"] = []
+                    amp_count += 2
+                    amp_total += 1
+
+            # get genes in reference if available
+            gene_dic = {}
+            if os.path.isfile(gene_bed_file):
+                sys.stderr.write("gene_bed_file found!\n")
+                with open(gene_bed_file, 'r') as f:
+                    for l in f:
+                        l = l.strip('\n')
+                        l = l.split('\t')
+                        if len(l) > 1:
+                            ref = l[0]
+                            start = int(l[1])
+                            stop = int(l[2])
+                            name = l[3]
+                            gene_dic[name] = {}
+                            gene_dic[name]["bounds"] = [start, stop]
+                            gene_dic[name]["ref"] = ref
+            else:
+                sys.stderr.write("gene_bed_file NOT found!\n")
+
+            # Process per sample
             for folder in sample_folders:
                 sample_name = folder.split("/")[-1]
                 sample_table = [["Metric", "Value"], ["Sample", sample_name]]
@@ -1414,81 +1498,28 @@ def output(job_name):
                 meta[sample_name]["fastq_qual_std"] = round(fastq_qual_std, 2)
                 sample_table.append(["Read quality stdev", round(fastq_qual_std, 2)])
 
-                #get bed sets for each pool
-                if os.path.exists(full_primer_scheme_dir):
-                    #Finds all files in the output folder
-                    for (dirpath, dirnames, filenames) in os.walk(full_primer_scheme_dir):
-                        for name in filenames:
-                            if fnmatch.fnmatch(name, '*.scheme.bed'):
-                                scheme_bed_file = os.path.join(dirpath,name)
-                                break
-
-                if os.path.isfile(scheme_bed_file):
-                    tmp_1 = []
-                    tmp_2 = []
-                    bed_1 = []
-                    bed_2 = []
-                    with open(scheme_bed_file, 'r') as f:
-                        for l in f:
-                            l = l.strip('\n')
-                            l = l.strip('\t')
-                            l = l.split('\t')
-                            print(l)
-                            if "alt" in l[3]:
-                                continue
-                            if l[4][-1] == '1':
-                                tmp_1.append(int(l[1]))
-                                tmp_1.append(int(l[2]))
-                            elif l[4][-1] == '2':
-                                tmp_2.append(int(l[1]))
-                                tmp_2.append(int(l[2]))
-                            else:
-                                sys.stderr.write("bed format unknown: {}\n, please contact developers\n".format(l[-1]))
-
-                    tmp_1.sort()
-                    tmp_2.sort()
-
-                    for i in range(0,len(tmp_1)-3+1,4):
-                        bed_1.append((tmp_1[i], tmp_1[i+3]))
-                    for i in range(0,len(tmp_2)-3+1,4):
-                        bed_2.append((tmp_2[i], tmp_2[i+3]))
-
-                    P1, P2 = np.array(bed_1), np.array(bed_2)
-
-                    amp_dic = {}
-                    amp_count = 1
-                    amp_total = 0
-                    for i, j in P1:
-                        amp_dic[amp_count] = {}
-                        amp_dic[amp_count]["bounds"] = [i, j]
-                        amp_dic[amp_count]["depth"] = []
-                        amp_count += 2
-                        amp_total += 1
-
-                    amp_count = 2
-                    for i, j in P2:
-                        amp_dic[amp_count] = {}
-                        amp_dic[amp_count]["bounds"] = [i, j]
-                        amp_dic[amp_count]["depth"] = []
-                        amp_count += 2
-                        amp_total += 1
 
                 # mean of 2 means
                 # meta[sample_name]["pool_1_depths"]
+                index_depth = []
                 D1 = []
                 with open(meta[sample_name]["pool_1_depths"], 'r') as d1:
                     for l in d1:
                         l = l.strip("\n")
                         l = l.split("\t")
                         D1.append(int(l[3]))
+                        index_depth.append(int(l[3]))
 
                 # meta[sample_name]["pool_2_depths"]
                 D2 = []
+                i = 0
                 with open(meta[sample_name]["pool_2_depths"], 'r') as d2:
                     for l in d2:
                         l = l.strip("\n")
                         l = l.split("\t")
                         D2.append(int(l[3]))
+                        index_depth[i] += int(l[3])
+                        i += 1
 
                 total_mean_cov_list = []
                 for amp in amp_dic:
@@ -1588,6 +1619,31 @@ def output(job_name):
                 sample_table.append(["Called Bases", genome_called])
                 sample_table.append(["N bases", genome_N_count])
                 sample_table.append(["% called", genome_called_fraction])
+
+                if len(gene_dic) > 1:
+                    orf_list_fractions = []
+                    gene_N_total = 0
+                    gene_length_total = 0
+                    for name in gene_dic:
+                        i, j = gene_dic[name]["bounds"]
+                        gene_seq = genome_seq[i:j]
+                        gene_length = len(gene_seq)
+                        gene_length_total += gene_length
+                        gene_N_count = gene_seq.count('N')
+                        gene_N_total += gene_N_count
+                        gene_called = gene_length - gene_N_count
+                        gene_called_fraction = round(gene_called / gene_length, 4) * 100
+                        orf_list_fractions.append([name, gene_called_fraction])
+
+                    orfs_called = gene_length_total - gene_N_total
+                    orfs_called_fraction = round(orfs_called / gene_length_total, 4) * 100
+                    sample_table.append(["Fraction of ORF regions called", orfs_called_fraction])
+
+                    sample_table.append(["Fraction of ORF regions called, by gene:", ""])
+                    for name, gene_called_fraction in orf_list_fractions:
+                        sample_table.append([name, gene_called_fraction])
+                else:
+                    sys.stderr.write("gene_dic not found\n")
 
 
                 meta[sample_name]["table"] = sample_table
