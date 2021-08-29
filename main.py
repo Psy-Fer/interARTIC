@@ -1482,6 +1482,7 @@ def output(job_name):
                         l = l.split("\t")
                         D1.append(int(l[3]))
 
+                # meta[sample_name]["pool_2_depths"]
                 D2 = []
                 with open(meta[sample_name]["pool_2_depths"], 'r') as d2:
                     for l in d2:
@@ -1503,17 +1504,91 @@ def output(job_name):
                 meta[sample_name]["total_mean_cov"] = total_mean_cov
                 sample_table.append(["Total mean coverage", total_mean_cov])
 
+                failed_amps = []
+                # print per amplicon
                 for i in range(1, amp_total +1):
                     D = amp_dic[i]["depth"]
                     D_mean = round(sum(D) / len(D))
                     sample_table.append(["Amplicon {} mean coverage".format(i), D_mean])
+                    if D_mean < 20:
+                        failed_amps.append(i)
 
+                # failed amplicons
+                fail_str = ""
+                fail_amp_count = 0
+                if len(failed_amps) > 0:
+                    head = True
+                    for i in failed_amps:
+                        if head:
+                            fail_str = fail_str + "Amplicon_" + str(i)
+                            fail_amp_count += 1
+                            head = False
+                        else:
+                            fail_str = fail_str + ", Amplicon_" + str(i)
+                            fail_amp_count += 1
 
+                sample_table.append(["N failed amplicons (<20x)", fail_amp_count])
+                sample_table.append(["Failed amplicons", fail_str])
 
-                # meta[sample_name]["pool_2_depths"]
                 # meta[sample_name]["pass_vcf"]
+                pass_vcf_count = 0
+                pass_SNV = 0
+                pass_indel = 0
+                pass_vcf_table = []
+                with gzip.open(meta[sample_name]["pass_vcf"], "rt") as f:
+                    for l in f:
+                        if l[:2] == "##":
+                            continue
+                        if l[0] == "#":
+                            l = l[1:].strip('\n')
+                            # sys.stderr.write("header = {}\n".format(l))
+                            l = l.split('\t')
+                            header = l
+                            pass_vcf_table.append(["CHROM", "POS", "REF", "ALT", "QUAL", "FILTER", "DEPTH"])
+                            continue
+                        l = l.strip('\n')
+                        l = l.split('\t')
+                        row = dict(zip(header, l))
+                        depth = int(row["INFO"].split(";")[0].split("=")[1])
+                        pass_vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
+                        pass_vcf_count += 1
+                        if len(row["REF"]) > 1 or len(row["ALT"]) > 1:
+                            pass_indel += 1
+                        else:
+                            pass_SNV += 1
+
+                sample_table.append(["Total pass variants", pass_vcf_count])
+                sample_table.append(["Pass SNV", pass_SNV])
+                sample_table.append(["Pass indel", pass_indel])
+
+
                 # meta[sample_name]["fail_vcf"]
+
+
                 # meta[sample_name]["consensus"]
+                # NOTE: Currently only works with single reference
+                genome_seq = ""
+                with open(meta[sample_name]["consensus"], 'r') as fa:
+                    for l in fa:
+                        l = l.strip("\n")
+                        if l[0] == ">":
+                            genome_name = l
+                        else:
+                            genome_seq = genome_seq + l
+
+                genome_size = len(genome_seq)
+                # genome_primer_size
+                genome_N_count = genome_seq.count('N')
+                genome_called = genome_size - genome_N_count
+                genome_called_fraction = round(genome_called / genome_size, 4) * 100
+
+
+                sample_table.append(["Genome size", genome_size])
+                # sample_table.append(["Genome primer coverage size", genome_primer_size])
+                sample_table.append(["Called Bases", genome_called])
+                sample_table.append(["N bases", genome_N_count])
+                sample_table.append(["% called", genome_called_fraction])
+
 
                 meta[sample_name]["table"] = sample_table
                 meta["sample_folders"] = sample_folders
