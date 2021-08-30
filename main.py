@@ -217,6 +217,7 @@ def executeJob(self, job_name, gather_cmd, guppyplex_cmd, demult_cmd, min_cmd, p
 
         print("JOB CMD {} RETURNED: {}".format(cmd, returnCode))
 
+
     self.update_state(state='FINISHED', meta={'current': 100, 'status': 'Finishing', 'result': returnCode}) #Don't know if this is actually used
     return {'current': 100, 'total': 100, 'status': 'Task completed!', 'result': returnCode}
 
@@ -1522,6 +1523,7 @@ def output(job_name):
                         i += 1
 
                 total_mean_cov_list = []
+                total_median_cov_list = []
                 for amp in amp_dic:
                     if amp % 2 == 0:
                         dlist = D2
@@ -1530,9 +1532,13 @@ def output(job_name):
                     i, j = amp_dic[amp]["bounds"]
                     amp_dic[amp]["depth"] = dlist[i:j]
                     total_mean_cov_list.append(round(sum(dlist[i:j]) / len(dlist[i:j]), 2))
+                    total_median_cov_list.append(round(np.median(dlist[i:j]), 2))
 
                 total_mean_cov = round(sum(total_mean_cov_list) / len(total_mean_cov_list))
+                total_median_cov = round(np.median(total_median_cov_list))
+                meta[sample_name]["total_median_cov"] = total_median_cov
                 meta[sample_name]["total_mean_cov"] = total_mean_cov
+                sample_table.append(["Total median coverage", total_median_cov])
                 sample_table.append(["Total mean coverage", total_mean_cov])
 
                 failed_amps = []

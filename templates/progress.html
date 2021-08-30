@@ -64,6 +64,7 @@
 			<a type=button class="button is-danger is-light is-medium" id="abort" name='{{ job_name }}'>Abort Job</a>
 
 			<button id="direct_to_output" class="button float-left submit-button" style="display:none;">Go to output</button>
+			<h1 id="processing" class="title is-5" style="display:none;">Processing output data...</h1>
 			<br>
 
 				<h1 id='status'> <h1><br>
@@ -124,6 +125,7 @@
 			<script type="text/javascript">
 				document.getElementById("direct_to_output").onclick = function () {
 					location.href = "/output/{{ job_name }}";
+                    document.getElementById('processing').style.display = "block";
 				};
 			</script>
 
