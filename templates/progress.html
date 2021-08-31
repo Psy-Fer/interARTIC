@@ -61,9 +61,12 @@
 				};
 			</script> -->
 			<br><br>
-			<a type=button class="button is-danger is-light is-medium" id="abort" name='{{ job_name }}'>Abort Job</a>
+            <div>
+			    <a type=button class="button is-danger is-light is-medium" id="abort" name='{{ job_name }}'>Abort Job</a>
+			    <a type=button class="button is-success is-light is-medium" id="success" name='{{ job_name }}' style="display:none;">Success!</a>
 
-			<button id="direct_to_output" class="button float-left submit-button" style="display:none;">Go to output</button>
+            </div><br>
+			<button id="direct_to_output" class="button float-left submit-button" style="display:none;">Go to output</button><br>
 			<h1 id="processing" class="title is-5" style="display:none;">Processing output data...</h1>
 			<br>
 
@@ -305,6 +308,7 @@
 					document.getElementById('direct_to_output').style.display = "block";
 					document.getElementById('jobPlace').style.display = "none";
 					document.getElementById('jobComplete').style.display = "block";
+                    document.getElementById('success').style.display = "block";
 				}
 				else {
 					console.log(frac);
