@@ -1668,7 +1668,7 @@ def output(job_name):
                     orfs_called_fraction = round(orfs_called / gene_length_total, 4) * 100
                     sample_table.append(["Fraction of ORF regions called", orfs_called_fraction])
 
-                    sample_table.append(["Fraction of ORF regions called, by gene:", ""])
+                    sample_table.append(["Fraction of ORF regions called, by gene", ""])
                     for name, gene_called_fraction in orf_list_fractions:
                         sample_table.append([name, gene_called_fraction])
                 else:
