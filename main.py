@@ -1572,6 +1572,8 @@ def output(job_name):
                 pass_SNV = 0
                 pass_indel = 0
                 pass_vcf_table = []
+                pass_variant_fraction = []
+                pass_variant_pos_list = []
                 with gzip.open(meta[sample_name]["pass_vcf"], "rt") as f:
                     for l in f:
                         if l[:2] == "##":
@@ -1587,6 +1589,9 @@ def output(job_name):
                         l = l.split('\t')
                         row = dict(zip(header, l))
                         depth = int(row["INFO"].split(";")[0].split("=")[1])
+                        pass_variant_pos_list.append(int(row["POS"]))
+                        frac = round((depth / index_depth[int(row["POS"])]) * 100, 2)
+                        pass_variant_fraction.append(frac)
                         pass_vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
                         pass_vcf_count += 1
                         if len(row["REF"]) > 1 or len(row["ALT"]) > 1:
@@ -1597,6 +1602,24 @@ def output(job_name):
                 sample_table.append(["Total pass variants", pass_vcf_count])
                 sample_table.append(["Pass SNV", pass_SNV])
                 sample_table.append(["Pass indel", pass_indel])
+                sample_table.append(["Read support % for pass variants", ", ".join([str(i) for i in pass_variant_fraction])])
+
+                if len(gene_dic) > 1:
+                    gene_pass_variant_count = []
+                    for name in gene_dic:
+                        gene_count = 0
+                        i, j = gene_dic[name]["bounds"]
+                        for k in pass_variant_pos_list:
+                            if k >= i and k < j:
+                                gene_count += 1
+                        gene_pass_variant_count.append([name, gene_count])
+
+                    sample_table.append(["Pass variants per gene", ""])
+                    for name, gene_count in gene_pass_variant_count:
+                        sample_table.append([name, gene_count])
+
+
+
 
 
                 # meta[sample_name]["fail_vcf"]
