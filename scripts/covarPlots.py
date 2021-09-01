@@ -249,6 +249,7 @@ def plot(args, bed_1, bed_2, vcfx_snv=None, vcfy_snv=None, vcfx_id=None, vcfy_id
     """
     Plot everything separate or at one
     """
+    plt.switch_backend('Agg')
     save_path = ""
     sample_name = ""
     fig, ax = plt.subplots()
