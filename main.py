@@ -1705,6 +1705,7 @@ def output(job_name):
         html_fasta_tar = meta["html_fasta_tar"]
 
     if request.method == "POST":
+        plt.switch_backend('Agg')
         # sys.stderr.write("sample_num (START):{}\n".format(current_sample_num))
         if request.form.get("select_sample"):
             sample = request.form.get('sample_folder')
