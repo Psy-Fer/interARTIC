@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>Troubleshooting - InterARTIC Documentation</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">InterARTIC Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href="index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="installation.html" class="nav-link">Installation</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="usage.html" class="nav-link">Usage</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="troubleshooting.html" class="nav-link">Troubleshooting</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="primers.html" class="nav-link">Custom Primers</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="snakeballing.html" class="nav-link">Software Packaging</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a rel="prev" href="usage.html" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="primers.html" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#troubleshooting" class="nav-link">Troubleshooting</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#submitted-job-not-running" class="nav-link">Submitted job not running</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#missing-job-on-home-page" class="nav-link">Missing job on Home Page</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#on-fedora-minimal-builds" class="nav-link">On Fedora minimal builds</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#any-other-errors" class="nav-link">Any other errors</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="troubleshooting">Troubleshooting</h1>
+<div class="toc">
+<ul>
+<li><a href="#troubleshooting">Troubleshooting</a><ul>
+<li><a href="#submitted-job-not-running">Submitted job not running</a><ul>
+<li><a href="#job-not-running-after-submission">Job not running after submission</a></li>
+<li><a href="#usage-errors">Usage errors</a></li>
+</ul>
+</li>
+<li><a href="#missing-job-on-home-page">Missing job on Home Page</a></li>
+<li><a href="#on-fedora-minimal-builds">On Fedora minimal builds</a><ul>
+<li><a href="#runsh-line-7-ps-command-not-found">./run.sh: line 7: ps: command not found</a></li>
+<li><a href="#binpython37-error-while-loading-shared-libraries-libnslso1-cannot-open-shared-object-file-no-such-file-or-directory">bin/python3.7: error while loading shared libraries: libnsl.so.1: cannot open shared object file: No such file or directory</a></li>
+</ul>
+</li>
+<li><a href="#any-other-errors">Any other errors</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="submitted-job-not-running">Submitted job not running</h2>
+<h3 id="job-not-running-after-submission">Job not running after submission</h3>
+<p>This may be because there are too many Celery tasks running in the background. To rectify this, enter: </p>
+<pre><code>ps aux | grep celery
+kill -9 &lt;process ID&gt;    # where process ID is the number in the second column
+                        # repeat this until all celery processes have been removed
+</code></pre>
+<h3 id="usage-errors">Usage errors</h3>
+<p>If a usage error is printing in the progress page, this may mean that a particular command has not been implemented, or the read file you have submitted has not been formatted correctly.</p>
+<p>An example of a usage error is:</p>
+<pre><code>usage: artic [-h] [-v] 
+</code></pre>
+<p>To rectify this, first check that the read file you have submitted has been formatted correctly i.e. with no header. More information can be found on the usage page of this documentation.</p>
+<p>If this does not fix the issue, please let the developers know via GitHub so that the command can be implemented.</p>
+<h2 id="missing-job-on-home-page">Missing job on Home Page</h2>
+<p>If a job is missing from the home page, wait a few seconds and refresh the page.</p>
+<h2 id="on-fedora-minimal-builds">On Fedora minimal builds</h2>
+<h3 id="runsh-line-7-ps-command-not-found">./run.sh: line 7: ps: command not found</h3>
+<pre><code>dnf install -y procps
+</code></pre>
+<h3 id="binpython37-error-while-loading-shared-libraries-libnslso1-cannot-open-shared-object-file-no-such-file-or-directory">bin/python3.7: error while loading shared libraries: libnsl.so.1: cannot open shared object file: No such file or directory</h3>
+<p><code>sudo dnf install libnsl</code></p>
+<h2 id="any-other-errors">Any other errors</h2>
+<p>If there are any other errors, please let the developers know via GitHub so that we can look into it for you.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

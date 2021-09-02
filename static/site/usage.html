@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>Usage - InterARTIC Documentation</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">InterARTIC Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href="index.html" class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="installation.html" class="nav-link">Installation</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="usage.html" class="nav-link">Usage</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="troubleshooting.html" class="nav-link">Troubleshooting</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="primers.html" class="nav-link">Custom Primers</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="snakeballing.html" class="nav-link">Software Packaging</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a rel="prev" href="installation.html" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="troubleshooting.html" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#usage" class="nav-link">Usage</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#configuring-interartic" class="nav-link">Configuring interARTIC</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#adding-a-job" class="nav-link">Adding a job</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#parameter-descriptions" class="nav-link">Parameter Descriptions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#progress-page" class="nav-link">Progress Page</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#output-page" class="nav-link">Output Page</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="usage">Usage</h1>
+<div class="toc">
+<ul>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#configuring-interartic">Configuring interARTIC</a><ul>
+<li><a href="#structure-of-input-data">Structure of input data</a></li>
+<li><a href="#sample-barcode-manifest-file">Sample-barcode manifest file</a></li>
+</ul>
+</li>
+<li><a href="#adding-a-job">Adding a job</a></li>
+<li><a href="#parameter-descriptions">Parameter Descriptions</a><ul>
+<li><a href="#basic-parameters">Basic Parameters</a><ul>
+<li><a href="#advanced-parameters">Advanced Parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#progress-page">Progress Page</a><ul>
+<li><a href="#what-happens-if-an-error-occurs-during-the-run">What happens if an error occurs during the run?</a></li>
+<li><a href="#what-happens-when-a-job-is-completed">What happens when a job is completed?</a></li>
+</ul>
+</li>
+<li><a href="#output-page">Output Page</a><ul>
+<li><a href="#data-visualisation">Data visualisation</a></li>
+<li><a href="#variants-found">Variants Found</a></li>
+<li><a href="#files-produced">Files Produced</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="configuring-interartic">Configuring interARTIC</h2>
+<p>You only need to configure InterARTIC the first time you use it. The configuration details are saved for all future runs.</p>
+<ul>
+<li>
+<p>On the interARTIC web interface, click on <code>Set locations of input data</code>.</p>
+</li>
+<li>
+<p>Fill the first two fields:</p>
+</li>
+</ul>
+<p><strong>1. Location of your input data.</strong> This should be an absolute path of a directory. Usually, this should simply be the location where MinKNOW writes data from sequencing runs on your machine. On a GridION/PromethION the default location is the <code>/data</code> folder. If you use a MinION on a laptop, the current default location is  <code>/var/lib/minknow/data/</code> (although this may change for future versions of MinKNOW). Alternatively, you can provide a path to a custom directory where you have chosen to copy your sequencing data.</p>
+<p><strong>2. Location of your sample-barcode .csv files.</strong> This should be an absolute path of a directory. InterARTIC expects you to put the sample-barcode .csv manifest files directly inside this directory (not inside any sub directories).</p>
+<ul>
+<li>Click <code>confirm</code> to save the settings.</li>
+</ul>
+<h3 id="structure-of-input-data">Structure of input data</h3>
+<p>For interARTIC to work smoothly, the directory structure of the nanopore sequencing data as well as the file structure of sample-barcode .csv manifest files are very important. <strong>InterARTIC assumes that the sequencing data is organised in the default structure created by MinKNOW with live base-calling enabled - if this is how you ran your experiment, there is no need to rename or restructure the data generated by MinKNOW.</strong></p>
+<p>Assuming the input data directory mentioned above is set to <code>/data</code> (default for GridION / PromethION) and two nanopore sequencing experiments have been run, the directory structure should look like this:</p>
+<pre><code>/data/
+    experiment_group_1/
+        sample_id_1/
+            uuid_1/
+                # nanopore sequencing data here
+    experiment_group_2/
+        sample_id_2/
+            uuid_2/
+                # nanopore sequencing data here
+
+</code></pre>
+<p>Note that, this directory structure that includes the <em>experiment_group</em>, <em>sample_id</em> and the <em>uuid</em> (currently  {start_time}<em>{device_ID}</em>{flow_cell_id}_{short_protocol_run_id} for this <em>uuid</em>) are produced by MinKNOW.</p>
+<p>Inside the <em>uuid</em> directory, the .fastq files, .fast5 files and the sequencing summary file should be available as in the example below:</p>
+<pre><code>uuid/
+    fast5_pass/
+        A_10.fast5
+        A_11.fast5
+    fast5_fail/
+        A_0.fast5
+        A_1.fast5
+    fastq_pass/
+        B_0.fastq
+        B_1.fastq
+    fastq_fail/
+        B_10.fastq
+        B_11.fastq
+    sequencing_summary.txt
+</code></pre>
+<p>Note that this is how MinKNOW currently produces data when live basecalling is enabled. If your data is not named in this format, please rename the corresponding directories/files to: <code>fast5_pass</code>, <code>fastq_pass</code>, sequencing_summary.txt.</p>
+<p>If you wish to analyse some custom data that is not organised in the above structure, you will need to create a directory structure that adheres to the above structure (give alpha-numeric names of your choice for <code>experiment_group</code>, <code>sample_id</code> and the <code>uid</code>) and rename the files accordingly. For <em>medaka</em> pipeline, only the <em>.fastq</em> files are required. You can simply place one or more <em>.fastq</em> files under a subdirectory named <em>fastq_pass</em>. For nanopolish pipeline,have to place <em>.fastq</em> file/s in  <em>fastq_pass</em>, the corresponding fast5 file/s under <code>fast5_pass</code> and the sequencing_summary file under the name sequencing_summary.txt. The <em>fast5_fail</em> and <em>fastq_fail</em> directories are not required by either pipeline.</p>
+<h3 id="sample-barcode-manifest-file">Sample-barcode manifest file</h3>
+<p>If your experiment contains multiple samples that were barcoded and run on a single flow cell, InterARTIC requires a sample-barcode manifest file in .csv format that links sample names to the barcode numbers. <strong>This is the only necessary input file that is not automatically generated by MinKNOW and must be created manually by the user. </strong> This must be placed in the sample-barcodes directory specified during the configuration step above.</p>
+<p>An example manifest .csv file for a dataset with four multiplexed samples using native barcodes is below:</p>
+<pre><code>sample1,NB03
+sample2,NB04
+sample3,NB05
+sample4,NB06
+</code></pre>
+<p>For rapid barcodes, this typically RBXX instead of NBXX.</p>
+<h2 id="adding-a-job">Adding a job</h2>
+<p>To begin the process of adding a job, click the 'Add Job' button located underneath the Jobs Queue on the home page. This will direct you to the parameter selection page where you can set up your job.</p>
+<p>Input the necessary parameters (see Parameter Descriptions below). Required parameters are denoted with an asterix (*).</p>
+<h2 id="parameter-descriptions">Parameter Descriptions</h2>
+<p>You can customise the parameters by filling the respective text boxes, radio buttons or check boxes. For text boxes, only alpha-numeric characters and underscore are allowed, except that forward slashes are allowed for fields representing paths.</p>
+<h3 id="basic-parameters">Basic Parameters</h3>
+<ul>
+<li><strong>Job name:</strong> A unique name for your job, so you may identify your output files with it.</li>
+<li><strong>Input directory:</strong> Your nanopore experiment directory.<ul>
+<li>When you click on the text box (need to double click on certain browsers), a list will appear that lists the contents inside <code>/data</code> directory you set during the configuration.</li>
+<li>You can select the experiment directory from this list.</li>
+</ul>
+</li>
+<li><strong>Single or Multiple samples:</strong> Select the appropriate option for your experiment.</li>
+<li><strong>Sample-barcode metadata file:</strong> This is applicable only if you selected multiple samples as the previous option.</li>
+<li>When you click on the field (double click on certain browsers) a list will appear that lists the contents inside the sample-barcode directory  you set during the configuration.</li>
+<li>You can select the correct .csv file for your experiment.</li>
+<li>
+<p><strong>Output folder:</strong> This is an optional field.</p>
+<ul>
+<li>If left empty, an output directory called <code>output</code> will be created inside the <code>experiment_group</code> directory.</li>
+<li>If you provide a name, a directory under that name will be created inside the <code>experiment_group</code> directory.</li>
+<li>You can also provide an absolute path for a custom location (for instance, if you do not have write access to the <code>experiment_group</code> directory). If you do this, ensure that the parent directory exists.<ul>
+<li>For example, if you are inputting this directory path <code>/path/to/file/hello/world</code> as the output directory path, the folder “hello” must already exist for the “world” folder to be created.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Override existing data:</strong> Select this if your output directory already contains files in it that must be overwritten</p>
+</li>
+<li>WARNING: all files inside the output directory will be deleted. Please be careful.</li>
+<li><strong>Virus:</strong>. Select the pre-set viruses (corona virus and Ebola at the moment) that are bundled with interARTIC or <em>custom</em> for analysing your own virus.</li>
+<li><strong>Primer scheme:</strong> If a pre-set virus is selected in the previous step, the pre-set primer schemes bundled with interARTIC for that virus will appear, which you can select based on what you used for your nanopore sequencing run.</li>
+<li><strong>Primer scheme directory:</strong> This is auto  filled if you selected a pre-set virus and a primer scheme. If you are analysing a custom virus or using a custom primer scheme, enter the directory path to where your custom primer schemes are located.</li>
+<li>
+<p><strong>Primer scheme name:</strong> This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise give the primer scheme name that adheres to the format virus_name/version (e.g.,nCoV-2019/V1)..</p>
+<ul>
+<li>Inside the directory location pointed by primer_scheme_directory/primer_scheme_name, the corresponding reference (.fasta file) and the primer .bed files should exist. See the examples at https://github.com/Psy-Fer/interARTIC/tree/master/primer-schemes/artic</li>
+</ul>
+</li>
+<li>
+<p><strong>Library preparation method:</strong> Enter what you used for sample preparation.</p>
+<ul>
+<li>This is only used for folder-naming purposes.</li>
+</ul>
+</li>
+<li><strong>Pipeline:</strong> Select the pipeline within ARTIC that you wish to run your data files through (nanopolish or medaka currently).</li>
+</ul>
+<h4 id="advanced-parameters">Advanced Parameters</h4>
+<ul>
+<li><strong>Minimum length:</strong> This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise set this to the minimum read length that should be used for the analysis, based on your primer lengths.</li>
+<li><strong>Maximum length:</strong> This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise set this to the maximum read length that should be used for the analysis, based on your primer lengths.</li>
+<li><strong>Thread usage/:</strong> Change the pre-filled values if you wish, based on the number of cores in your system you want to utilise. Note that not all tools inside the ARTIC pipeline are multi-threaded and thread efficient.</li>
+<li><strong>Normalise depth:</strong> This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise, select the read depth (coverage) that you to which your data should be normalised.</li>
+</ul>
+<p>After filling in the parameters carefully, click on the “Submit Job(s)” button. You will be redirected to the progress page after clicking this button.</p>
+<h2 id="progress-page">Progress Page</h2>
+<p>The progress page displays the stream of standard error output being produced by your job run. Here you can see which commands are currently running and any errors that occur. Each job run has its own progress page which can be accessed via the home page or parameters page by clicking on the job name in the jobs queue.</p>
+<p>For each job, the progress page will display:</p>
+<ul>
+<li>The job name</li>
+<li>The job's place in queue</li>
+<li>An 'Abort Job' button</li>
+<li>The overall progress of the job in the form of a progress bar and the number of steps remaining in the pipeline</li>
+<li>A 'View Job Parameters here' button</li>
+<li>The current standard output obtained from the job</li>
+</ul>
+<p>The 'View Job Parameters here' button, when clicked, will display the job's basic parameters that have been entered by the user.</p>
+<p>The 'Abort Job' button can be used to terminate the job. A confirmation window will appear when you click on the abort button. If you continue, you will then be asked to confirm whether you wish to delete the files created by the job. After this, you will then be directed back to the home page.</p>
+<h3 id="what-happens-if-an-error-occurs-during-the-run">What happens if an error occurs during the run?</h3>
+<p>If an <strong>error</strong> occurs during a run, a <strong>red</strong> notification will appear. You can either let the job continue to run, or click the ‘Re-run’ button. Harmless errors sometimes occur in the ARTIC pipeline, so it may be worth waiting for the run to finish and then assessing your output. Clicking the ‘Re-run’ button will allow you to abort the currently running job and re-run the job with edited parameters.</p>
+<p>A confirmation window will appear when you click on the ‘Re-run’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job.  You will then be redirected to the parameters page where the information from the job in question will be automatically filled in. You can make any changes necessary, and the new job will be added to the end of the queue following submission.</p>
+<h3 id="what-happens-when-a-job-is-completed">What happens when a job is completed?</h3>
+<p>When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page. The job will also be moved to the 'Completed Jobs' list on the home page where you can click on the job name and be redirected to the output page for that job.</p>
+<h2 id="output-page">Output Page</h2>
+<p>The Output Page is for data visualisation to enable a fast quality check of the sample and to see the called variants. At the bottom of the page, there is a 'Go to Progress' button which will redirect you to the progress page of the job if you click on it.</p>
+<h4 id="data-visualisation">Data visualisation</h4>
+<p>This section enables you to preview coverage depth profiles and locations if detected variants across a viral genome, for each sample, based on the outputs of the completed pipeline. To download a data plot, click on the 'Download' hyperlink in the lower-left corner of the plot of interest. If no <code>&lt;sample_name&gt;.pass.vcf.gz</code> files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important.</p>
+<h4 id="variants-found">Variants Found</h4>
+<p>Beneath each of the graphs, a summarised version of the <code>&lt;sample_name&gt;.pass.vcf.gz</code> file is displayed in the form of a table. Each row corresponds to a different variant found and they are ordered in increasing numerical order based on their position in the viral genome.</p>
+<h3 id="files-produced">Files Produced</h3>
+<p>To manually inspect the produced vcf files, consensus sequence or any intermediate data, open a file browser and traverse to the output directory. This is the directory called <code>output</code> in the experiment directory by default, or whatever you set during the parameter setting up step above.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
