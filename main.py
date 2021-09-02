@@ -30,7 +30,7 @@ import numpy as np
 
 VERSION = "0.3"
 ARTIC_VERSION = "1.2.1"
-DOCS = "static/site/index.html"
+DOCS = "/static/site/index.html"
 print(DOCS)
 
 pd.set_option('display.width', 1000)
