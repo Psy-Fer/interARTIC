@@ -78,6 +78,14 @@ INTERARTIC_LOG=$LOG_LOCATION/interartic.log
 CELERY_LOG=$LOG_LOCATION/celery.log
 REALPATH=$(dirname $(readlink -f $0))
 
+
+ARCH=$(uname -m)
+if [[ ${ARCH} = "aarch64" ]]
+then
+    export OPENBLAS_CORETYPE=ARMV8
+fi
+
+
 export PYTHONNOUSERSITE=1
 unset PYTHONHOME
 unset PYTHONPATH
