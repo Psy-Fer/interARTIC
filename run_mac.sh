@@ -91,7 +91,7 @@ OS=$(uname -s)
 
 if [ "${OS}" != "Darwin"  ];
 then
-    die "This binary package is for Darwin (MacOS). You O/S  is ${OS}. Trying to launch anyway - anticipating a crash!"
+    echo "This binary package is for Darwin (MacOS). You O/S  is ${OS}. Trying to launch anyway - anticipating a crash!"
 fi
 
 if [[ ${ARCH} != "x86_64"  && ${ARCH} != "aarch64" && ${ARCH} != "arm64"  ]];
