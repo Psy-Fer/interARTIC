@@ -35,7 +35,7 @@ die() {
 REDIS_PORT=7777
 WEB_ADDR=127.0.0.1
 WEB_PORT=5000
-LOG_LOCATION=`pwd`
+LOG_LOCATION=$(pwd)
 
 
 usage() {
@@ -80,29 +80,42 @@ if [ -z "${REDIS_PORT}" ] || [ -z "${WEB_PORT}" ] || [ -z "${WEB_ADDR}" ]; then
     usage
 fi
 
-REDIS_LOG=$LOG_LOCATION/redis.log
-INTERARTIC_LOG=$LOG_LOCATION/interartic.log
-CELERY_LOG=$LOG_LOCATION/celery.log
-REALPATH=$(dirname $0)
-readlink $0 && REALPATH=$(dirname $(readlink $0))
+REDIS_LOG="${LOG_LOCATION}/redis.log"
+INTERARTIC_LOG="${LOG_LOCATION}/interartic.log"
+CELERY_LOG="${LOG_LOCATION}/celery.log"
+REALPATH=$(dirname "$0")
+readlink "$0" && REALPATH=$(dirname "$(readlink "$0")")
+
+ARCH=$(uname -m)
+OS=$(uname -s)
+
+if [ "${OS}" != "Darwin"  ];
+then
+    die "This binary package is for Darwin (MacOS). You O/S  is ${OS}. Trying to launch anyway - anticipating a crash!"
+fi
+
+if [[ ${ARCH} != "x86_64"  && ${ARCH} != "aarch64" && ${ARCH} != "arm64"  ]];
+then
+    echo "Unsupported architecture ${ARCH}. Trying to launch anyway - anticipating a crash!"
+fi
 
 export PYTHONNOUSERSITE=1
 unset PYTHONHOME
 unset PYTHONPATH
 
-cd $REALPATH
+cd "${REALPATH}"
 echo "Starting redis server on port $REDIS_PORT. Log location: $REDIS_LOG"
-( bin/redis-server --port $REDIS_PORT &> $REDIS_LOG || die "Launching redis server on port $REDIS_PORT failed. See $REDIS_LOG" ) &
+( bin/redis-server --port ${REDIS_PORT} &> "${REDIS_LOG}" || die "Launching redis server on port $REDIS_PORT failed. See $REDIS_LOG" ) &
 sleep 1
 echo "Starting interartic on $WEB_ADDR:$WEB_PORT. Log location: $INTERARTIC_LOG"
-( bin/python3.7 main.py $REDIS_PORT -a $WEB_ADDR -p $WEB_PORT &>  $INTERARTIC_LOG || die "Launching interartic on $WEB_ADDR:$WEB_PORT failed. See $INTERARTIC_LOG") &
+( bin/python3.7 main.py ${REDIS_PORT} -a ${WEB_ADDR} -p ${WEB_PORT} &>  "${INTERARTIC_LOG}" || die "Launching interartic on $WEB_ADDR:$WEB_PORT failed. See $INTERARTIC_LOG") &
 sleep 1
 echo "Starting celery. Log location: $CELERY_LOG"
-( export PATH=`pwd`/artic_bin/bin:`pwd`/scripts:$PATH; bin/python3.7m bin/celery worker -A main.celery -b redis://localhost:$REDIS_PORT/0 --result-backend redis://localhost:$REDIS_PORT/0 --concurrency=1 --loglevel=info &> $CELERY_LOG || die "Launching celery failed. See $CELERY_LOG" ) &
+( export PATH="$(pwd)/artic_bin/bin:$(pwd)/scripts:${PATH}"; bin/python3.7m bin/celery worker -A main.celery -b redis://localhost:${REDIS_PORT}/0 --result-backend redis://localhost:${REDIS_PORT}/0 --concurrency=1 --loglevel=info &> "${CELERY_LOG}" || die "Launching celery failed. See ${CELERY_LOG}" ) &
 sleep 1
 echo ""
 echo "InterARTIC is now running on your machine :)"
-echo "To launch InterARTIC web interface visit http://127.0.0.1:$WEB_PORT on your browser"
+echo "To launch InterARTIC web interface visit http://127.0.0.1:${WEB_PORT} on your browser"
 echo "To keep your InterARTIC active this terminal must remain open."
 echo "To terminate InterARTIC type CTRL-C or close the terminal."
 wait
