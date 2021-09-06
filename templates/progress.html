@@ -304,18 +304,18 @@
 				var errors = document.getElementById('errorNum').innerText.trim();
 				if (errors != 0) {
 					console.log(frac);
+					document.getElementById('abort').style.display = "block";
+					document.getElementById('direct_to_output').style.display = "block";
+					document.getElementById('jobPlace').style.display = "none";
+					document.getElementById('jobComplete').style.display = "block";
+				}
+				else {
+					console.log(frac);
 					document.getElementById('abort').style.display = "none";
 					document.getElementById('direct_to_output').style.display = "block";
 					document.getElementById('jobPlace').style.display = "none";
 					document.getElementById('jobComplete').style.display = "block";
                     document.getElementById('success').style.display = "block";
-				}
-				else {
-					console.log(frac);
-					document.getElementById('abort').style.display = "block";
-					document.getElementById('direct_to_output').style.display = "block";
-					document.getElementById('jobPlace').style.display = "none";
-					document.getElementById('jobComplete').style.display = "block";
 				}
 			}
 		}
