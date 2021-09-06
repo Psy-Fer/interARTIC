@@ -109,6 +109,8 @@ schemes['nCoV_2019_artic_V4_scheme_name'] = "nCoV-2019/V4"
 schemes['IturiEBOV_artic_V1_scheme'] = os.path.join(primer_folder, "artic")
 schemes['IturiEBOV_artic_V1_scheme_name'] = "IturiEBOV/V1"
 
+
+
 @app.route('/getCheckTasksUrl', methods = ['POST'])
 def getCheckTasksUrl():
     return jsonify({}), 202, {'Location': url_for('checkTasks')}
@@ -251,7 +253,7 @@ def killJob(self, job_name):
     return 1
 
 @celery.task(bind=True)
-def getVersions(self):
+def getVersions(self, from_file=False):
 
     root = os.path.join(os.path.dirname(os.path.realpath(__file__)))
     bin_path = os.path.join(root, "artic_bin", "bin")
@@ -280,38 +282,54 @@ def getVersions(self):
         for cmd in cmd_list:
             os.system(cmd)
 
-    if os.path.isfile(version_file):
-        # remove and re-make
-        logger.info("File found and deleting")
-        os.remove(version_file)
-        logger.info("File being re-made")
-        _versions()
+    if not from_file:
+        if os.path.isfile(version_file):
+            # remove and re-make
+            logger.info("File found and deleting")
+            os.remove(version_file)
+            logger.info("File being re-made")
+            _versions()
 
-    if not os.path.isfile(version_file):
-        logger.info("File not found, building..")
-        _versions()
+        if not os.path.isfile(version_file):
+            logger.info("File not found, building..")
+            _versions()
 
-    # final check to see if the file was made
-    if not os.path.isfile(version_file):
-        # error making file
-        logger.info("File STILL not found, error")
-        flash("WARNING: Could not construct software version table in: {}".format(version_file))
+        # final check to see if the file was made
+        if not os.path.isfile(version_file):
+            # error making file
+            logger.info("File STILL not found, error")
+            flash("WARNING: Could not construct software version table in: {}".format(version_file))
 
+        if os.path.isfile(version_file):
+            # read file
+            logger.info("Reading file")
+            with open(version_file, 'r') as f:
+                for l in f:
+                    l = l.strip("\n")
+                    l = l.split(" ")
+                    if len(l) > 1:
+                        name = l[0]
+                        version = l[1]
+                        if name in list(version_dic.keys()):
+                            if version == "1:":
+                                continue
+                            version_dic[name] = version
+    else:
+        if os.path.isfile(version_file):
+            # read file
+            logger.info("Reading file")
+            with open(version_file, 'r') as f:
+                for l in f:
+                    l = l.strip("\n")
+                    l = l.split(" ")
+                    if len(l) > 1:
+                        name = l[0]
+                        version = l[1]
+                        if name in list(version_dic.keys()):
+                            if version == "1:":
+                                continue
+                            version_dic[name] = version
 
-    if os.path.isfile(version_file):
-        # read file
-        logger.info("Reading file")
-        with open(version_file, 'r') as f:
-            for l in f:
-                l = l.strip("\n")
-                l = l.split(" ")
-                if len(l) > 1:
-                    name = l[0]
-                    version = l[1]
-                    if name in list(version_dic.keys()):
-                        if version == "1:":
-                            continue
-                        version_dic[name] = version
     return version_dic
 
 
@@ -404,8 +422,16 @@ def home():
 @app.route("/about")
 def about():
     # Get version info to display on about page
-    res = getVersions.apply_async()
-    version_dic = res.get()
+    tasks_running = False
+    for job in qSys.queue.getItems():
+        if job.task_id:
+            tasks_running = True
+    if tasks_running:
+        res = getVersions(from_file=True)
+        version_dic = res
+    else:
+        res = getVersions.delay()
+        version_dic = res.get()
 
     return render_template("about.html", VERSION_DIC=version_dic, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
 
