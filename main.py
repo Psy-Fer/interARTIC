@@ -417,16 +417,22 @@ def check_special_characters(func):
         return error dic handled after call
         """
         def _detect_special_characer(pass_string, filename=False):
+            ret = False
             if filename:
                 # regex= re.compile('^[a-zA-Z0-9._/-]+$')
-                f = ''.join(e for e in pass_string if e.isalnum() or e in [".", "-", "_", "/"])
+                char_set = set("<>,?:;|}{][+=)(*&^%$#@! ")
+                for e in pass_string:
+                    if e in char_set:
+                        sys.stderr.write("this character fails: {}\n".format(e))
+                        ret = True
             else:
                 # regex= re.compile('^[a-zA-Z0-9_/-]+$')
-                f = ''.join(e for e in pass_string if e.isalnum() or e in ["-", "_", "/"])
-            if (f == pass_string):
-                ret = False
-            else:
-                ret = True
+                char_set = set("<>,?:;|}{][+=)(*&^%$#@! ")
+                for e in pass_string:
+                    if e in char_set:
+                        sys.stderr.write("this character fails: {}\n".format(e))
+                        ret = True
+
             return ret
         # gets names of arguments
         args_name = inspect.getargspec(func)[0]
