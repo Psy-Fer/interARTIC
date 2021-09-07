@@ -1294,6 +1294,10 @@ def output(job_name):
         plots_found = False
         vcf_found = False
         fasta_found = False
+        fastq_found = False
+        fail_vcf_found = False
+        depths2_found = False
+        depths1_found = False
         sample = ""
         total_samples = ""
         current_sample_num = 0
@@ -1310,6 +1314,12 @@ def output(job_name):
                             sample_folders.append(i)
                     sample_name = dirpath.split("/")[-1]
                     meta[sample_name] = {}
+                    meta[sample_name]["vcf_found"] = False
+                    meta[sample_name]["fasta_found"] = False
+                    meta[sample_name]["fastq_found"] = False
+                    meta[sample_name]["fail_vcf"] = False
+                    meta[sample_name]["pool_2_depths"] = False
+                    meta[sample_name]["pool_1_depths"] = False
                     for name in filenames:
                         #finds barplot pngs
                         if fnmatch.fnmatch(name, '*CoVarPlot.png'):
@@ -1320,14 +1330,18 @@ def output(job_name):
                             vcfs[sample_name] = (os.path.join(dirpath,name))
                             meta[sample_name]["pass_vcf"] = (os.path.join(dirpath,name))
                             vcf_found = True
+                            meta[sample_name]["vcf_found"] = True
                         #finds consensus.fasta
                         if fnmatch.fnmatch(name, '*.consensus.fasta'):
                             fastas[sample_name] = os.path.join(dirpath,name)
                             meta[sample_name]["consensus"] = (os.path.join(dirpath,name))
                             fasta_found = True
+                            meta[sample_name]["fasta_found"] = True
                         # nano_fastq_pass-NB04.fastq
                         if fnmatch.fnmatch(name, '*.fastq'):
                             meta[sample_name]["fastq"] = os.path.join(dirpath,name)
+                            fastq_found = True
+                            meta[sample_name]["fastq_found"] = True
                         # nano_fastq_pass-NB04.fastq.index
                         # nano_fastq_pass-NB04.fastq.index.gzi
                         # nano_fastq_pass-NB04.fastq.index.fai
@@ -1348,14 +1362,20 @@ def output(job_name):
                         # nano_sample4_NB04.fail.vcf
                         if fnmatch.fnmatch(name, '*.fail.vcf'):
                             meta[sample_name]["fail_vcf"] = os.path.join(dirpath,name)
+                            fail_vcf_found = True
+                            meta[sample_name]["fail_vcf"] = True
                         # nano_sample4_NB04.pass.vcf.gz
                         # nano_sample4_NB04.pass.vcf.gz.tbi
                         # nano_sample4_NB04.coverage_mask.txt.nCoV-2019_2.depths
                         if fnmatch.fnmatch(name, '*_2.depths'):
                             meta[sample_name]["pool_2_depths"] = os.path.join(dirpath,name)
+                            depths2_found = True
+                            meta[sample_name]["depths2_found"] = True
                         # nano_sample4_NB04.coverage_mask.txt.nCoV-2019_1.depths
                         if fnmatch.fnmatch(name, '*_1.depths'):
                             meta[sample_name]["pool_1_depths"] = os.path.join(dirpath,name)
+                            depths1_found = True
+                            meta[sample_name]["depths1_found"] = True
                         # nano_sample4_NB04.coverage_mask.txt
                         # nano_sample4_NB04.preconsensus.fasta
                         # nano_sample4_NB04.consensus.fasta
@@ -1494,110 +1514,114 @@ def output(job_name):
                 fq_len_list = []
                 read_qual_list = []
                 q_list = []
-                with open(meta[sample_name]["fastq"], 'r') as fq:
-                    for l in fq:
-                        if fq_count in [1, 3]:
-                            fq_count += 1
-                            continue
-                        elif fq_count == 2:
-                            seq = l.strip("\n")
-                            fq_count += 1
-                            fq_reads += 1
-                            fq_len_list.append(len(seq))
-                            continue
-                        elif fq_count == 4:
-                            quals = l.strip("\n")
-                            x = 0
-                            for i in quals:
-                                x += ord(i)
-                            avg_qual = x / len(quals)
-                            read_qual_list.append(round(avg_qual - 33, 2))
-                            fq_count = 1
-                # fastq read count
-                meta[sample_name]["fastq_count"] = fq_reads
-                sample_table.append(["Pass read count", fq_reads])
-                # fastq read length mean
-                fastq_len_mean = np.mean(fq_len_list)
-                fastq_len_std = np.std(fq_len_list)
-                meta[sample_name]["fastq_len_mean"] = round(fastq_len_mean)
-                sample_table.append(["Read length mean", round(fastq_len_mean)])
-                meta[sample_name]["fastq_len_std"] = round(fastq_len_std, 2)
-                sample_table.append(["Read length stdev", round(fastq_len_std, 2)])
-                # fastq quality mean
-                fastq_qual_mean = np.mean(read_qual_list)
-                fastq_qual_std = np.std(read_qual_list)
-                meta[sample_name]["fastq_qual_mean"] = round(fastq_qual_mean, 2)
-                sample_table.append(["Read quality mean", round(fastq_qual_mean, 2)])
-                meta[sample_name]["fastq_qual_std"] = round(fastq_qual_std, 2)
-                sample_table.append(["Read quality stdev", round(fastq_qual_std, 2)])
+                if meta[sample_name]["fastq_found"]:
+                    with open(meta[sample_name]["fastq"], 'r') as fq:
+                        for l in fq:
+                            if fq_count in [1, 3]:
+                                fq_count += 1
+                                continue
+                            elif fq_count == 2:
+                                seq = l.strip("\n")
+                                fq_count += 1
+                                fq_reads += 1
+                                fq_len_list.append(len(seq))
+                                continue
+                            elif fq_count == 4:
+                                quals = l.strip("\n")
+                                x = 0
+                                for i in quals:
+                                    x += ord(i)
+                                avg_qual = x / len(quals)
+                                read_qual_list.append(round(avg_qual - 33, 2))
+                                fq_count = 1
+                    # fastq read count
+                    meta[sample_name]["fastq_count"] = fq_reads
+                    sample_table.append(["Pass read count", fq_reads])
+                    # fastq read length mean
+                    fastq_len_mean = np.mean(fq_len_list)
+                    fastq_len_std = np.std(fq_len_list)
+                    meta[sample_name]["fastq_len_mean"] = round(fastq_len_mean)
+                    sample_table.append(["Read length mean", round(fastq_len_mean)])
+                    meta[sample_name]["fastq_len_std"] = round(fastq_len_std, 2)
+                    sample_table.append(["Read length stdev", round(fastq_len_std, 2)])
+                    # fastq quality mean
+                    fastq_qual_mean = np.mean(read_qual_list)
+                    fastq_qual_std = np.std(read_qual_list)
+                    meta[sample_name]["fastq_qual_mean"] = round(fastq_qual_mean, 2)
+                    sample_table.append(["Read quality mean", round(fastq_qual_mean, 2)])
+                    meta[sample_name]["fastq_qual_std"] = round(fastq_qual_std, 2)
+                    sample_table.append(["Read quality stdev", round(fastq_qual_std, 2)])
 
 
                 # mean of 2 means
                 # meta[sample_name]["pool_1_depths"]
                 index_depth = []
                 D1 = []
-                with open(meta[sample_name]["pool_1_depths"], 'r') as d1:
-                    for l in d1:
-                        l = l.strip("\n")
-                        l = l.split("\t")
-                        D1.append(int(l[3]))
-                        index_depth.append(int(l[3]))
+                if meta[sample_name]["depths1_found"] and meta[sample_name]["depths2_found"]:
+                    with open(meta[sample_name]["pool_1_depths"], 'r') as d1:
+                        for l in d1:
+                            l = l.strip("\n")
+                            l = l.split("\t")
+                            D1.append(int(l[3]))
+                            index_depth.append(int(l[3]))
 
-                # meta[sample_name]["pool_2_depths"]
-                D2 = []
-                i = 0
-                with open(meta[sample_name]["pool_2_depths"], 'r') as d2:
-                    for l in d2:
-                        l = l.strip("\n")
-                        l = l.split("\t")
-                        D2.append(int(l[3]))
-                        index_depth[i] += int(l[3])
-                        i += 1
+                    # meta[sample_name]["pool_2_depths"]
+                    D2 = []
+                    i = 0
+                    with open(meta[sample_name]["pool_2_depths"], 'r') as d2:
+                        for l in d2:
+                            l = l.strip("\n")
+                            l = l.split("\t")
+                            D2.append(int(l[3]))
+                            index_depth[i] += int(l[3])
+                            i += 1
 
-                total_mean_cov_list = []
-                total_median_cov_list = []
-                for amp in amp_dic:
-                    if amp % 2 == 0:
-                        dlist = D2
-                    else:
-                        dlist = D1
-                    i, j = amp_dic[amp]["bounds"]
-                    amp_dic[amp]["depth"] = dlist[i:j]
-                    total_mean_cov_list.append(round(sum(dlist[i:j]) / len(dlist[i:j]), 2))
-                    total_median_cov_list.append(round(np.median(dlist[i:j]), 2))
 
-                total_mean_cov = round(sum(total_mean_cov_list) / len(total_mean_cov_list))
-                total_median_cov = round(np.median(total_median_cov_list))
-                meta[sample_name]["total_median_cov"] = total_median_cov
-                meta[sample_name]["total_mean_cov"] = total_mean_cov
-                sample_table.append(["Total median coverage", total_median_cov])
-                sample_table.append(["Total mean coverage", total_mean_cov])
+                    total_mean_cov_list = []
+                    total_median_cov_list = []
+                    for amp in amp_dic:
+                        if amp % 2 == 0:
+                            dlist = D2
+                        else:
+                            dlist = D1
+                        i, j = amp_dic[amp]["bounds"]
+                        amp_dic[amp]["depth"] = dlist[i:j]
+                        total_mean_cov_list.append(round(sum(dlist[i:j]) / len(dlist[i:j]), 2))
+                        total_median_cov_list.append(round(np.median(dlist[i:j]), 2))
+
+                    total_mean_cov = round(sum(total_mean_cov_list) / len(total_mean_cov_list))
+                    total_median_cov = round(np.median(total_median_cov_list))
+                    meta[sample_name]["total_median_cov"] = total_median_cov
+                    meta[sample_name]["total_mean_cov"] = total_mean_cov
+                    sample_table.append(["Total median coverage", total_median_cov])
+                    sample_table.append(["Total mean coverage", total_mean_cov])
 
                 failed_amps = []
                 # print per amplicon
-                for i in range(1, amp_total +1):
-                    D = amp_dic[i]["depth"]
-                    D_mean = round(sum(D) / len(D))
-                    sample_table.append(["Amplicon {} mean coverage".format(i), D_mean])
-                    if D_mean < 20:
-                        failed_amps.append(i)
+                if os.path.isfile(scheme_bed_file):
+                    for i in range(1, amp_total +1):
+                        D = amp_dic[i]["depth"]
+                        D_mean = round(sum(D) / len(D))
+                        sample_table.append(["Amplicon {} mean coverage".format(i), D_mean])
+                        if D_mean < 20:
+                            failed_amps.append(i)
 
-                # failed amplicons
-                fail_str = ""
-                fail_amp_count = 0
-                if len(failed_amps) > 0:
-                    head = True
-                    for i in failed_amps:
-                        if head:
-                            fail_str = fail_str + "Amplicon_" + str(i)
-                            fail_amp_count += 1
-                            head = False
-                        else:
-                            fail_str = fail_str + ", Amplicon_" + str(i)
-                            fail_amp_count += 1
+                    # failed amplicons
+                    fail_str = ""
+                    fail_amp_count = 0
+                    if len(failed_amps) > 0:
+                        head = True
+                        for i in failed_amps:
+                            if head:
+                                fail_str = fail_str + "Amplicon_" + str(i)
+                                fail_amp_count += 1
+                                head = False
+                            else:
+                                fail_str = fail_str + ", Amplicon_" + str(i)
+                                fail_amp_count += 1
 
-                sample_table.append(["N failed amplicons (<20x)", fail_amp_count])
-                sample_table.append(["Failed amplicons", fail_str])
+                    sample_table.append(["N failed amplicons (<20x)", fail_amp_count])
+                    sample_table.append(["Failed amplicons", fail_str])
 
                 # meta[sample_name]["pass_vcf"]
                 pass_vcf_count = 0
@@ -1606,49 +1630,50 @@ def output(job_name):
                 pass_vcf_table = []
                 pass_variant_fraction = []
                 pass_variant_pos_list = []
-                with gzip.open(meta[sample_name]["pass_vcf"], "rt") as f:
-                    for l in f:
-                        if l[:2] == "##":
-                            continue
-                        if l[0] == "#":
-                            l = l[1:].strip('\n')
-                            # sys.stderr.write("header = {}\n".format(l))
+                if meta[sample_name]["vcf_found"]:
+                    with gzip.open(meta[sample_name]["pass_vcf"], "rt") as f:
+                        for l in f:
+                            if l[:2] == "##":
+                                continue
+                            if l[0] == "#":
+                                l = l[1:].strip('\n')
+                                # sys.stderr.write("header = {}\n".format(l))
+                                l = l.split('\t')
+                                header = l
+                                pass_vcf_table.append(["CHROM", "POS", "REF", "ALT", "QUAL", "FILTER", "DEPTH"])
+                                continue
+                            l = l.strip('\n')
                             l = l.split('\t')
-                            header = l
-                            pass_vcf_table.append(["CHROM", "POS", "REF", "ALT", "QUAL", "FILTER", "DEPTH"])
-                            continue
-                        l = l.strip('\n')
-                        l = l.split('\t')
-                        row = dict(zip(header, l))
-                        depth = int(row["INFO"].split(";")[0].split("=")[1])
-                        pass_variant_pos_list.append(int(row["POS"]))
-                        frac = round((depth / index_depth[int(row["POS"])]) * 100, 2)
-                        pass_variant_fraction.append(frac)
-                        pass_vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
-                        pass_vcf_count += 1
-                        if len(row["REF"]) > 1 or len(row["ALT"]) > 1:
-                            pass_indel += 1
-                        else:
-                            pass_SNV += 1
+                            row = dict(zip(header, l))
+                            depth = int(row["INFO"].split(";")[0].split("=")[1])
+                            pass_variant_pos_list.append(int(row["POS"]))
+                            frac = round((depth / index_depth[int(row["POS"])]) * 100, 2)
+                            pass_variant_fraction.append(frac)
+                            pass_vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
+                            pass_vcf_count += 1
+                            if len(row["REF"]) > 1 or len(row["ALT"]) > 1:
+                                pass_indel += 1
+                            else:
+                                pass_SNV += 1
 
-                sample_table.append(["Total pass variants", pass_vcf_count])
-                sample_table.append(["Pass SNV", pass_SNV])
-                sample_table.append(["Pass indel", pass_indel])
-                sample_table.append(["Read support % for pass variants", ", ".join([str(i) for i in pass_variant_fraction])])
+                    sample_table.append(["Total pass variants", pass_vcf_count])
+                    sample_table.append(["Pass SNV", pass_SNV])
+                    sample_table.append(["Pass indel", pass_indel])
+                    sample_table.append(["Read support % for pass variants", ", ".join([str(i) for i in pass_variant_fraction])])
 
-                if len(gene_dic) > 1:
-                    gene_pass_variant_count = []
-                    for name in gene_dic:
-                        gene_count = 0
-                        i, j = gene_dic[name]["bounds"]
-                        for k in pass_variant_pos_list:
-                            if k >= i and k < j:
-                                gene_count += 1
-                        gene_pass_variant_count.append([name, gene_count])
+                    if len(gene_dic) > 1:
+                        gene_pass_variant_count = []
+                        for name in gene_dic:
+                            gene_count = 0
+                            i, j = gene_dic[name]["bounds"]
+                            for k in pass_variant_pos_list:
+                                if k >= i and k < j:
+                                    gene_count += 1
+                            gene_pass_variant_count.append([name, gene_count])
 
-                    sample_table.append(["Pass variants per gene", ""])
-                    for name, gene_count in gene_pass_variant_count:
-                        sample_table.append([name, gene_count])
+                        sample_table.append(["Pass variants per gene", ""])
+                        for name, gene_count in gene_pass_variant_count:
+                            sample_table.append([name, gene_count])
 
 
 
@@ -1660,51 +1685,52 @@ def output(job_name):
                 # meta[sample_name]["consensus"]
                 # NOTE: Currently only works with single reference
                 genome_seq = ""
-                with open(meta[sample_name]["consensus"], 'r') as fa:
-                    for l in fa:
-                        l = l.strip("\n")
-                        if l[0] == ">":
-                            genome_name = l
-                        else:
-                            genome_seq = genome_seq + l
+                if meta[sample_name]["fasta_found"]:
+                    with open(meta[sample_name]["consensus"], 'r') as fa:
+                        for l in fa:
+                            l = l.strip("\n")
+                            if l[0] == ">":
+                                genome_name = l
+                            else:
+                                genome_seq = genome_seq + l
 
-                genome_size = len(genome_seq)
-                # genome_primer_size
-                genome_N_count = genome_seq.count('N')
-                genome_called = genome_size - genome_N_count
-                genome_called_fraction = round(genome_called / genome_size, 4) * 100
+                    genome_size = len(genome_seq)
+                    # genome_primer_size
+                    genome_N_count = genome_seq.count('N')
+                    genome_called = genome_size - genome_N_count
+                    genome_called_fraction = round(genome_called / genome_size, 4) * 100
 
 
-                sample_table.append(["Genome size", genome_size])
-                # sample_table.append(["Genome primer coverage size", genome_primer_size])
-                sample_table.append(["Called Bases", genome_called])
-                sample_table.append(["N bases", genome_N_count])
-                sample_table.append(["% called", genome_called_fraction])
+                    sample_table.append(["Genome size", genome_size])
+                    # sample_table.append(["Genome primer coverage size", genome_primer_size])
+                    sample_table.append(["Called Bases", genome_called])
+                    sample_table.append(["N bases", genome_N_count])
+                    sample_table.append(["% called", genome_called_fraction])
 
-                if len(gene_dic) > 1:
-                    orf_list_fractions = []
-                    gene_N_total = 0
-                    gene_length_total = 0
-                    for name in gene_dic:
-                        i, j = gene_dic[name]["bounds"]
-                        gene_seq = genome_seq[i:j]
-                        gene_length = len(gene_seq)
-                        gene_length_total += gene_length
-                        gene_N_count = gene_seq.count('N')
-                        gene_N_total += gene_N_count
-                        gene_called = gene_length - gene_N_count
-                        gene_called_fraction = round(gene_called / gene_length, 4) * 100
-                        orf_list_fractions.append([name, gene_called_fraction])
+                    if len(gene_dic) > 1:
+                        orf_list_fractions = []
+                        gene_N_total = 0
+                        gene_length_total = 0
+                        for name in gene_dic:
+                            i, j = gene_dic[name]["bounds"]
+                            gene_seq = genome_seq[i:j]
+                            gene_length = len(gene_seq)
+                            gene_length_total += gene_length
+                            gene_N_count = gene_seq.count('N')
+                            gene_N_total += gene_N_count
+                            gene_called = gene_length - gene_N_count
+                            gene_called_fraction = round(gene_called / gene_length, 4) * 100
+                            orf_list_fractions.append([name, gene_called_fraction])
 
-                    orfs_called = gene_length_total - gene_N_total
-                    orfs_called_fraction = round(orfs_called / gene_length_total, 4) * 100
-                    sample_table.append(["Fraction of ORF regions called", orfs_called_fraction])
+                        orfs_called = gene_length_total - gene_N_total
+                        orfs_called_fraction = round(orfs_called / gene_length_total, 4) * 100
+                        sample_table.append(["Fraction of ORF regions called", orfs_called_fraction])
 
-                    sample_table.append(["Fraction of ORF regions called, by gene", ""])
-                    for name, gene_called_fraction in orf_list_fractions:
-                        sample_table.append([name, gene_called_fraction])
-                else:
-                    sys.stderr.write("gene_dic not found\n")
+                        sample_table.append(["Fraction of ORF regions called, by gene", ""])
+                        for name, gene_called_fraction in orf_list_fractions:
+                            sample_table.append([name, gene_called_fraction])
+                    else:
+                        sys.stderr.write("gene_dic not found\n")
 
 
                 meta[sample_name]["table"] = sample_table
