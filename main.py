@@ -832,6 +832,8 @@ def parameters():
                                         errors=errors,folders=folders, csvs=csvs, csv_name=csv_file,
                                         other_primer_type=other_primer_type, primer_select=primer_select,
                                         schemes=schemes, override_data=override_data, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
+            # this takes the first encountered (so fastq_pass or a barcode folder depending on how the user demuxed or not)
+            # It looks at sdName above, not filenames!!!! so here when it splits, it keeps all BUT the sdName, so it gets the containing parent directory
             tmp_path = tmp_folder_list[0].split("/")[:-1]
             path = "/".join(tmp_path)
             os.chdir(path)
