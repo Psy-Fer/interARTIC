@@ -1647,9 +1647,37 @@ def output(job_name):
                             l = l.strip('\n')
                             l = l.split('\t')
                             row = dict(zip(header, l))
-                            depth = int(row["INFO"].split(";")[0].split("=")[1])
+                            # how to calculate variant depths and frequencies
+                            # medaka: depth = AC, VAF=AC/DP (AC/BAM depth for CoVarPlots)
+                            # nanopolish: depth = BaseCalledReadsWithVariant, VAF=BaseCalledReadsWithVariant / BAM depth, or BaseCalledFraction
+                            var_depth = 0
+                            DP = 0
+                            np_frac = 0
+                            for i in row["INFO"].split(";"):
+                                # sys.stderr.write("vcf_INFO: {}\n".format(i))
+                                if len(i) > 0:
+                                    name, result = i.split("=")
+                                    if name == "AC":
+                                        var_depth = int(result.split(",")[-1])
+                                    elif name == "BaseCalledReadsWithVariant":
+                                        var_depth = int(result)
+                                    elif name == "DP":
+                                        DP = int(result)
+                                    elif name == "TotalReads":
+                                        DP = index_depth[int(row["POS"])]
+                                    elif name == "BaseCalledFraction":
+                                        np_frac = float(result)
+
+                            # depth = int(row["INFO"].split(";")[0].split("=")[1])
+                            depth = DP
                             pass_variant_pos_list.append(int(row["POS"]))
-                            frac = round((depth / index_depth[int(row["POS"])]) * 100, 2)
+                            if np_frac > 0:
+                                frac = round(np_frac * 100, 2)
+                            elif DP > 0:
+                                frac = round((var_depth / DP) * 100, 2)
+                            else:
+                                sys.stderr.write("VCF depth fields not found\n")
+                            # frac = round((depth / index_depth[int(row["POS"])]) * 100, 2)
                             pass_variant_fraction.append(frac)
                             pass_vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
                             pass_vcf_count += 1
@@ -1826,7 +1854,20 @@ def output(job_name):
                         # k = ["{}: {}".format(key, row[key]) for key in row.keys()]
                         # sys.stderr.write(",".join(k))
                         # sys.stderr.write("\n")
-                        depth = int(row["INFO"].split(";")[0].split("=")[1])
+                        var_depth = 0
+                        DP = 0
+                        np_frac = 0
+                        for i in row["INFO"].split(";"):
+                            if len(i) > 0:
+                                name, result = i.split("=")
+                                if name == "AC":
+                                    var_depth = int(result.split(",")[-1])
+                                elif name == "BaseCalledReadsWithVariant":
+                                    var_depth = int(result)
+
+                        # depth = int(row["INFO"].split(";")[0].split("=")[1])
+                        depth = var_depth
+                        # depth = int(row["INFO"].split(";")[0].split("=")[1])
                         vcf_table.append([row["CHROM"], int(row["POS"]), row["REF"], row["ALT"], float(row["QUAL"]), row["FILTER"], depth])
 
                 df = pd.DataFrame(vcf_table[1:], columns=vcf_table[0])
