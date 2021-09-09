@@ -346,11 +346,11 @@ class Job:
             else:
                 # if medaka is chosen
                 if self._pipeline == "medaka":
-                    minion_cmd = minion_cmd + "; echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + "../" + self._job_name + "_fastq_pass.fastq " + dir_path + "/ 2>> " + self._output_folder + "/all_cmds_log.txt"
+                    minion_cmd = minion_cmd + "; echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + self._job_name + "_fastq_pass.fastq " + dir_path + "/ 2>> " + self._output_folder + "/all_cmds_log.txt"
                     minion_cmd = minion_cmd + "; echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****RUNNING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; cd " + dir_path + "; artic minion --minimap2 --medaka --medaka-model r941_min_high_g360 --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file " + self._job_name + "_fastq_pass.fastq " + self._primer_scheme + " \"" + self._job_name + "\"" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                 # if nanopolish is chosen
                 elif self._pipeline == "nanopolish":
-                    minion_cmd = minion_cmd + "; echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + "../" + self._job_name + "_fastq_pass.fastq " + dir_path + "/ 2>> " + self._output_folder + "/all_cmds_log.txt"
+                    minion_cmd = minion_cmd + "; echo '*****MOVING FILES INTO CORRECT FOLDERS!*****\n'; mv " + self._job_name + "_fastq_pass.fastq " + dir_path + "/ 2>> " + self._output_folder + "/all_cmds_log.txt"
                     minion_cmd = minion_cmd + "; echo '*****DEMULTIPLEX/PORECHOP COMMAND COMPLETE!*****\n*****RUNNING MINION COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; cd " + dir_path + "; artic minion --normalise " + self._normalise + " --threads " + self._num_threads + " --scheme-directory " + self._primer_scheme_dir + " --read-file " + self._job_name + "_fastq_pass.fastq --fast5-directory " + self._input_folder + "/fast5_pass --sequencing-summary " + self._input_folder + "/*sequencing_summary*.txt " + self._primer_scheme + " " + self._job_name + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
         # if multiple samples in input
         elif self._num_samples == "multiple":
