@@ -1271,9 +1271,9 @@ def abort_delete(job_name):
 
 @app.route("/delete/<job_name>", methods = ["GET", "POST"])
 def delete(job_name):
-    images = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_plots/' + job_name
-    print(images)
-    os.system('rm -r ' + images + '*' )
+    # images = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_plots/' + job_name
+    # print(images)
+    # os.system('rm -r ' + images + '*' )
     qSys.removeCompletedJob(job_name)
     return redirect(url_for("home"))
 
