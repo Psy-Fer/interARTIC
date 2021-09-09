@@ -1293,6 +1293,7 @@ def output(job_name):
         vcfs = {}
         fastas = {}
         meta = {}
+        meta_data_files = {}
         plots_found = False
         vcf_found = False
         fasta_found = False
@@ -1553,7 +1554,12 @@ def output(job_name):
                     sample_table.append(["Read quality mean", round(fastq_qual_mean, 2)])
                     meta[sample_name]["fastq_qual_std"] = round(fastq_qual_std, 2)
                     sample_table.append(["Read quality stdev", round(fastq_qual_std, 2)])
-
+                else:
+                    sample_table.append(["Pass read count", "NA"])
+                    sample_table.append(["Read length mean", "NA"])
+                    sample_table.append(["Read length stdev", "NA"])
+                    sample_table.append(["Read quality mean", "NA"])
+                    sample_table.append(["Read quality stdev", "NA"])
 
                 # mean of 2 means
                 # meta[sample_name]["pool_1_depths"]
@@ -1597,6 +1603,9 @@ def output(job_name):
                     meta[sample_name]["total_mean_cov"] = total_mean_cov
                     sample_table.append(["Total median coverage", total_median_cov])
                     sample_table.append(["Total mean coverage", total_mean_cov])
+                else:
+                    sample_table.append(["Total median coverage", "NA"])
+                    sample_table.append(["Total mean coverage", "NA"])
 
                 failed_amps = []
                 # print per amplicon
@@ -1624,7 +1633,10 @@ def output(job_name):
 
                     sample_table.append(["N failed amplicons (<20x)", fail_amp_count])
                     sample_table.append(["Failed amplicons", fail_str])
-
+                else:
+                    sample_table.append(["Amplicon {} mean coverage".format(i), "NA"])
+                    sample_table.append(["N failed amplicons (<20x)", "NA"])
+                    sample_table.append(["Failed amplicons", "NA"])
                 # meta[sample_name]["pass_vcf"]
                 pass_vcf_count = 0
                 pass_SNV = 0
@@ -1708,6 +1720,12 @@ def output(job_name):
 
 
 
+                else:
+                    sample_table.append(["Total pass variants", "NA"])
+                    sample_table.append(["Pass SNV", "NA"])
+                    sample_table.append(["Pass indel", "NA"])
+                    sample_table.append(["Read support % for pass variants", "NA"])
+                    sample_table.append(["Pass variants per gene", "NA"])
 
                 # meta[sample_name]["fail_vcf"]
 
@@ -1761,22 +1779,87 @@ def output(job_name):
                             sample_table.append([name, gene_called_fraction])
                     else:
                         sys.stderr.write("gene_dic not found\n")
+                else:
+                    sample_table.append(["Genome size", "NA"])
+                    sample_table.append(["Called Bases", "NA"])
+                    sample_table.append(["N bases", "NA"])
+                    sample_table.append(["% called", "NA"])
+                    sample_table.append(["Fraction of ORF regions called", "NA"])
+                    sample_table.append(["Fraction of ORF regions called, by gene", "NA"])
 
 
+                sample_meta_file = os.path.join(output_folder, folder, "{}.metadata.tsv".format(sample_name))
+                meta_data_files[sample_name] = sample_meta_file
+                with open(sample_meta_file, 'w') as w:
+                    for i, j in sample_table:
+                        w.write("\t".join([str(i), str(j)]))
+                        w.write("\n")
+
+                # add current sample to meta
                 meta[sample_name]["table"] = sample_table
-                meta["sample_folders"] = sample_folders
-                meta["plots"] = plots
-                meta["vcfs"] = vcfs
-                meta["fastas"] = fastas
-                meta["plots_found"] = plots_found
-                meta["vcf_found"] = vcf_found
-                meta["fasta_found"] = fasta_found
-                meta["sample_dic"] = sample_dic
-                meta["total_samples"] = total_samples
-                meta["current_sample_num"] = current_sample_num
-                meta["html_fasta_all"] = html_fasta_all
-                meta["html_fasta_tar"] = html_fasta_tar
-                job.metadata = meta
+
+
+            # build meta data tables all samples
+            header = []
+            h_tmp = []
+            h_max = 0
+            for folder in sample_folders:
+                sample_name = folder.split("/")[-1]
+                if sample_name in meta:
+                    sample_table = meta[sample_name]["table"]
+                    for i in sample_table[1:]:
+                        j, k = i
+                        h_tmp.append(j)
+                    if len(h_tmp) > h_max:
+                        header = h_tmp
+                        h_max = len(h_tmp)
+                    h_tmp = []
+            combined_meta_file = os.path.join(output_folder, "{}.combined.metadata.tsv".format(job_name))
+            with open(combined_meta_file, "w") as w:
+                w.write("\t".join(header))
+                w.write("\n")
+                for folder in sample_folders:
+                    sample_name = folder.split("/")[-1]
+                    if sample_name in meta:
+                        sample_table = meta[sample_name]["table"]
+                        table_heads = []
+                        values = []
+                        for i in sample_table[1:]:
+                            j, k = i
+                            table_heads.append(str(j))
+                            values.append(str(k))
+                        row = dict(zip(table_heads, values))
+                        for head in header:
+                            if head in row:
+                                w.write(row[head])
+                                w.write("\t")
+                            else:
+                                w.write("\t")
+                    w.write("\n")
+            meta_tmp_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_meta/' + job_name
+            if not os.path.isdir(meta_tmp_path):
+                mkdir = "mkdir -p " + meta_tmp_path
+                os.system(mkdir)
+            cmd = "cp {} {}".format(combined_meta_file, meta_tmp_path)
+            os.system(cmd)
+            combined_meta_html = "/static/tmp_meta/" + job_name + "/{}.combined.metadata.tsv".format(job_name)
+
+            meta["sample_folders"] = sample_folders
+            meta["plots"] = plots
+            meta["vcfs"] = vcfs
+            meta["fastas"] = fastas
+            meta["plots_found"] = plots_found
+            meta["vcf_found"] = vcf_found
+            meta["fasta_found"] = fasta_found
+            meta["sample_dic"] = sample_dic
+            meta["total_samples"] = total_samples
+            meta["current_sample_num"] = current_sample_num
+            meta["html_fasta_all"] = html_fasta_all
+            meta["html_fasta_tar"] = html_fasta_tar
+            meta["combined_meta_html"] = combined_meta_html
+            job.metadata = meta
+
+
     else:
         meta = job.metadata
         sample_folders = meta["sample_folders"]
@@ -1791,6 +1874,7 @@ def output(job_name):
         current_sample_num = meta["current_sample_num"]
         html_fasta_all = meta["html_fasta_all"]
         html_fasta_tar = meta["html_fasta_tar"]
+        combined_meta_html = meta["combined_meta_html"]
 
     if request.method == "POST":
         # sys.stderr.write("sample_num (START):{}\n".format(current_sample_num))
@@ -1940,7 +2024,7 @@ def output(job_name):
         return render_template("output.html", job_name=job_name, output_folder=output_folder, vcf_table=vcf_table_html, plot=html_plot, fasta=html_fasta,
                                fasta_tar=html_fasta_tar, fasta_all=html_fasta_all, plots_found=plots_found, vcf_found=vcf_found, fasta_found=fasta_found,
                                sample_folders=sample_folders, sample_folder=sample, current_sample_num=current_sample_num, total_samples=total_samples,
-                               meta_table_html=meta_table_html, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
+                               meta_table_html=meta_table_html, combined_meta_html=combined_meta_html, VERSION=VERSION, ARTIC_VERSION=ARTIC_VERSION, DOCS=DOCS)
     # sys.stderr.write("running regular return\n")
     sample = request.form.get('sample_folder')
     if sample == '':

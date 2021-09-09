@@ -75,6 +75,11 @@
              {% if fasta_all %}
                   <a class="button is-small" type=button name="dload_fasta_all" id="dload_fasta_all" value="Download all consensus as a single .fasta file" href="{{fasta_all}}" download>Download all consensus as a single .fasta file</a>
              {% endif %}
+         </div><br>
+         <div>
+             {% if combined_meta_html %}
+                  <a class="button is-small" type=button name="dload_meta_all" id="dload_meta_all" value="Download QC tables for all samples (.tsv)" href="{{combined_meta_html}}" download>Download QC tables for all samples (.tsv)</a>
+             {% endif %}
          </div><br><br>
 
           <h1 class="title is-4"> Data Visualisation </h1>
