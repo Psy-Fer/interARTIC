@@ -1408,21 +1408,23 @@ def output(job_name):
             if os.path.isfile(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"):
                 os.remove(os.path.dirname(os.path.realpath(__file__)) + "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar")
             sys.stderr.write("building tars and all files\n")
-            for sample in fastas.keys():
-                fasta = fastas[sample]
-                fasta_file = fasta.split("/")[-1]
-                fasta_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name
-                if not os.path.isdir(fasta_path):
-                    mkdir = "mkdir -p " + fasta_path
-                    os.system(mkdir)
-                cp_fasta = "cp " + fasta + " " + fasta_path
-                os.system(cp_fasta)
-                cmd = "cat " + fasta + " >> " + os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name + ".fasta"
-                os.system(cmd)
-            html_fasta_all = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"
-            cmd = "tar -cf " + fasta_path + ".tar -C " + fasta_path + " ."
-            os.system(cmd)
-            html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
+            if fasta_found:
+                if len(fastas) > 0:
+                    for sample in fastas.keys():
+                        fasta = fastas[sample]
+                        fasta_file = fasta.split("/")[-1]
+                        fasta_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name
+                        if not os.path.isdir(fasta_path):
+                            mkdir = "mkdir -p " + fasta_path
+                            os.system(mkdir)
+                        cp_fasta = "cp " + fasta + " " + fasta_path
+                        os.system(cp_fasta)
+                        cmd = "cat " + fasta + " >> " + os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_fastas/' + job_name + "/all_" + job_name + ".fasta"
+                        os.system(cmd)
+                    html_fasta_all = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".fasta"
+                    cmd = "tar -cf " + fasta_path + ".tar -C " + fasta_path + " ."
+                    os.system(cmd)
+                    html_fasta_tar = "/static/tmp_fastas/" + job_name + "/all_" + job_name + ".tar"
 
             # build metrics files, store in output, then load as table in each sample
             # build here so download all is available from start
