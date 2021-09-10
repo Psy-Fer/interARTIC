@@ -453,7 +453,23 @@
                         <label class="subtitle is-5" for="guppyplex">Demultiplexing: *</label>
                             <div class="tooltip"> (info)
                                 <span class="tooltiptext">- If your samples have been demultiplex by guppy or live basecalling in MinKNOW, check this box.<br><br>
-                                                          - If your samples have not been demultiplexed, porechop will be used to demultiplex the reads</span>
+                                                          - If your samples have not been demultiplexed, porechop will be used to demultiplex the reads
+                                                          <b>Data structure:</b><br>
+                                                          <b>MinKNOW default:</b><br>
+                                                          selected_folder/run-name/runid/fastq_pass/barcode01<br>
+                                                          selected_folder/run-name/runid/fastq_pass/barcode02<br>
+                                                          selected_folder/run-name/runid/fastq_pass/...<br>
+                                                          selected_folder/run-name/runid/fast5_pass/barcode01<br>
+                                                          selected_folder/run-name/runid/fast5_pass/barcode02<br>
+                                                          selected_folder/run-name/runid/fast5_pass/...<br>
+                                                          ...<br>
+                                                          or<br>
+                                                          <b>guppy_barcoder default:</b><br>
+                                                          selected_folder/run-name/runid/barcode01<br>
+                                                          selected_folder/run-name/runid/barcode02<br>
+                                                          selected_folder/run-name/runid/...<br>
+                                                          selected_folder/run-name/runid/fast5_pass<br>
+                                                          ...<br><br></span>
                             </div><br><br>
                         <input type="checkbox" id="guppyplex" name="guppyplex">
                          <label for="guppyplex">Already demultiplexed with guppy?</label><br><br>
