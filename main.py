@@ -808,7 +808,7 @@ def parameters():
                         tmp_folder_list.append(os.path.join(dName, fileName))
             if len(tmp_folder_list) == 0:
                 queueList = []
-                flash("Warning: No fastq files found in {}".format(input_folder))
+                flash("Warning: Could not locate fastq files in {}. Check the file names, demultiplexing options and the directory structure is compatible".format(input_folder))
                 errors = {}
                 if qSys.queue.empty():
                     return render_template("parameters.html", job_name=job_name, queue=None,
