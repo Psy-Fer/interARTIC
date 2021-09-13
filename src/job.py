@@ -404,6 +404,8 @@ class Job:
             # sys.stderr.write(primer_path)
             # sys.stderr.write("\n")
             dir_path = self._output_folder + "/" + self._primer_type + "_sample1_" + self._run_name + "_" + self._job_name + "_single_" + self._pipeline
+            sys.stderr.write(dir_path)
+            sys.stderr.write("\n")
             for dName, sdName, fList in os.walk(primer_path):
                 for fileName in fList:
                     # sys.stderr.write(fileName)
@@ -432,10 +434,20 @@ class Job:
             file_start = self._job_name
             for (dirpath, dirnames, filenames) in os.walk(dir_path):
                 for name in filenames:
+                    sys.stderr.write(name)
+                    sys.stderr.write("\n")
                     if fnmatch.fnmatch(name, '*1.depths'):
                         depth1 = os.path.join(dirpath, name)
+                        sys.stderr.write("Found depth1!!!")
+                        sys.stderr.write("\n")
+                        sys.stderr.write(depth1)
+                        sys.stderr.write("\n")
                     if fnmatch.fnmatch(name, '*2.depths'):
                         depth2 = os.path.join(dirpath, name)
+                        sys.stderr.write("Found depth2!!!")
+                        sys.stderr.write("\n")
+                        sys.stderr.write(depth2)
+                        sys.stderr.write("\n")
             # depth1 = "{}/{}.coverage_mask.txt.{}_1.depths".format(dir_path, file_start, virus)
             # depth2 = "{}/{}.coverage_mask.txt.{}_2.depths".format(dir_path, file_start, virus)
             vcf_file = "{}/{}.pass.vcf.gz".format(dir_path, file_start)
