@@ -34,7 +34,7 @@ Pre-compiled binary releases are provided for Linux and MacOS for easy setup. Th
   - *aarch64*: Binaries for aarch64 should work any Linux distribution with *GLIBC 2.23* or higher. Currently, only the nanopolish pipeline is available for _aarch64_ and we have tested on Ubuntu 16 and Ubuntu 18.04 (using Rock64, Jetson Xavier and Jetson Nano single board computers).  For aarch64, run the same commands as above except the *wget* command, that should be now replaced with:
 
     ```
-    wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.4-beta/interartic-v0.4-beta-linux-aarch64-binaries.tar.gz -O interartic_bin.tar.gz
+    wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.4/interartic-v0.4-linux-aarch64-binaries.tar.gz -O interartic_bin.tar.gz
 
     ```
 
@@ -44,7 +44,7 @@ Pre-compiled binary releases are provided for Linux and MacOS for easy setup. Th
   We provide a pre-compiled binary release for macOS on x86_64. Newer mac with M1 ARM chip can still run these binaries opaqly through Rosetta. Open a terminal and execute the following commands:
 
   ```bash
-  curl https://github.com/Psy-Fer/interARTIC/releases/download/v0.4-beta/interartic-v0.4-beta-macos-x86-64-binaries.tar.gz -o interartic_bin.tar.gz -L
+  curl https://github.com/Psy-Fer/interARTIC/releases/download/v0.4/interartic-v0.4-macos-x86-64-binaries.tar.gz -o interartic_bin.tar.gz -L
   xattr -dr com.apple.quarantine interartic_bin.tar.gz  #to prevent the macOS's gatekeeper from being blocking our binaries, required if you download through a web browser, but just in case
   tar xf interartic_bin.tar.gz
   cd interartic_bin
