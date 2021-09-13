@@ -121,7 +121,7 @@ Output data generated from interARTIC (version 0.2-beta) for the above two examp
 
 # interARTIC usage
 
-Before running interARTIC on your own nanopore samples, please refer to the detailed guide [here](https://psy-fer.github.io/interARTIC/usage/).
+Before running interARTIC on your own nanopore samples, please refer to the detailed guide [here](https://psy-fer.github.io/interARTIC/usage/). If you want to run interARTIC on custom primer schemes or viruses, refer to the instructions [here](https://psy-fer.github.io/interARTIC/primers/)
 
 # Troubleshooting
 
@@ -130,7 +130,7 @@ See [here](https://psy-fer.github.io/interARTIC/troubleshooting/) for troublesho
 
 # Building from source
 
-Building from source is not straightforward, due to the dependency hell of Python versions (circumventing this hell was one of the motivations for developing interARTIC). Step-by-step instructions for building from source are given [here](https://psy-fer.github.io/interARTIC/installation/).
+Building from source is not straightforward, due to the dependency hell of Python versions (circumventing this hell was one of the motivations for developing interARTIC). Step-by-step instructions for building from source are given [here](https://psy-fer.github.io/interARTIC/installation/). Any one who wants to build a docker image for interARTIC can do so by following instructions [here](https://psy-fer.github.io/interARTIC/installation/#installation-using-docker), though it is highly redundant.
 
 # Snake Charming
 
