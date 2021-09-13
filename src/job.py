@@ -404,25 +404,25 @@ class Job:
             # sys.stderr.write(primer_path)
             # sys.stderr.write("\n")
             dir_path = self._output_folder + "/" + self._primer_type + "_sample1_" + self._run_name + "_" + self._job_name + "_single_" + self._pipeline
-            for dName, sdName, fList in os.walk(primer_path):
-                for fileName in fList:
-                    # sys.stderr.write(fileName)
-                    # sys.stderr.write("\n")
-                    if fnmatch.fnmatch(fileName, "*.scheme.bed"):
-                        # sys.stderr.write("MATCH!!!!")
-                        # sys.stderr.write("\n")
-                        bed_file = os.path.join(dName, fileName)
-            # sys.stderr.write("bed_file: ")
-            # sys.stderr.write(bed_file)
-            # sys.stderr.write("\n")
-
-            with open(bed_file, 'r') as b:
-                for l in b:
-                    l = l.strip("\n")
-                    l = l.strip("\t")
-                    l = l.split("\t")
-                    virus = l[-1][:-2]
-                    break
+            # for dName, sdName, fList in os.walk(primer_path):
+            #     for fileName in fList:
+            #         # sys.stderr.write(fileName)
+            #         # sys.stderr.write("\n")
+            #         if fnmatch.fnmatch(fileName, "*.scheme.bed"):
+            #             # sys.stderr.write("MATCH!!!!")
+            #             # sys.stderr.write("\n")
+            #             bed_file = os.path.join(dName, fileName)
+            # # sys.stderr.write("bed_file: ")
+            # # sys.stderr.write(bed_file)
+            # # sys.stderr.write("\n")
+            #
+            # with open(bed_file, 'r') as b:
+            #     for l in b:
+            #         l = l.strip("\n")
+            #         l = l.strip("\t")
+            #         l = l.split("\t")
+            #         virus = l[-1][:-2]
+            #         break
             # sys.stderr.write("virus: ")
             # sys.stderr.write(virus)
             # sys.stderr.write("\n")
@@ -456,25 +456,25 @@ class Job:
             # sys.stderr.write("primer_path: ")
             # sys.stderr.write(primer_path)
             # sys.stderr.write("\n")
-            for dName, sdName, fList in os.walk(primer_path):
-                for fileName in fList:
-                    sys.stderr.write(fileName)
-                    sys.stderr.write("\n")
-                    if fnmatch.fnmatch(fileName, "*.scheme.bed"):
-                        sys.stderr.write("MATCH!!!!")
-                        sys.stderr.write("\n")
-                        bed_file = os.path.join(dName, fileName)
-
-            # sys.stderr.write("bed_file: ")
-            # sys.stderr.write(bed_file)
-            # sys.stderr.write("\n")
-            with open(bed_file, 'r') as b:
-                for l in b:
-                    l = l.strip("\n")
-                    l = l.strip("\t")
-                    l = l.split("\t")
-                    virus = l[-1][:-2]
-                    break
+            # for dName, sdName, fList in os.walk(primer_path):
+            #     for fileName in fList:
+            #         sys.stderr.write(fileName)
+            #         sys.stderr.write("\n")
+            #         if fnmatch.fnmatch(fileName, "*.scheme.bed"):
+            #             sys.stderr.write("MATCH!!!!")
+            #             sys.stderr.write("\n")
+            #             bed_file = os.path.join(dName, fileName)
+            #
+            # # sys.stderr.write("bed_file: ")
+            # # sys.stderr.write(bed_file)
+            # # sys.stderr.write("\n")
+            # with open(bed_file, 'r') as b:
+            #     for l in b:
+            #         l = l.strip("\n")
+            #         l = l.strip("\t")
+            #         l = l.split("\t")
+            #         virus = l[-1][:-2]
+            #         break
             # sys.stderr.write("virus: ")
             # sys.stderr.write(virus)
             # sys.stderr.write("\n")
