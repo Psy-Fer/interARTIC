@@ -501,12 +501,20 @@ class Job:
                     # sys.stderr.write(sample_name+"\n")
                     #create directory for barcode with naming system
                     dir_path = self._output_folder + "/" + self._primer_type + "_" + sample_name + "_" + self._run_name + "_" + self._job_name + "_" + barcode + "_" + self._pipeline
+                    sys.stderr.write(dir_path)
+                    sys.stderr.write("\n")
                     for (dirpath, dirnames, filenames) in os.walk(dir_path):
                         for name in filenames:
+                            sys.stderr.write(name)
+                            sys.stderr.write("\n")
                             if fnmatch.fnmatch(name, '*1.depths'):
                                 depth1 = os.path.join(dirpath, name)
+                                sys.stderr.write(depth1)
+                                sys.stderr.write("\n")
                             if fnmatch.fnmatch(name, '*2.depths'):
                                 depth2 = os.path.join(dirpath, name)
+                                sys.stderr.write(depth2)
+                                sys.stderr.write("\n")
                     file_start = self._job_name + "_" + sample_name + "_" + barcode
                     # depth1 = "{}/{}.coverage_mask.txt.{}_1.depths".format(dir_path, file_start, virus)
                     # depth2 = "{}/{}.coverage_mask.txt.{}_2.depths".format(dir_path, file_start, virus)
@@ -517,6 +525,7 @@ class Job:
                         plot_cmd = plot_cmd + " ;echo 'ERROR: depth2 file not found! Plots not generated'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                     if len(vcf_file) < 1:
                         plot_cmd = plot_cmd + " ;echo 'ERROR: vcf_file file not found! Plots not generated'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+
                     if depth1 and depth2 and vcf_file:
                         plot_cmd = plot_cmd + "; covarPlots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
 
