@@ -59,7 +59,7 @@ uuid/
 
 Note that this is how MinKNOW currently produces data when live basecalling is enabled. If your data is not named in this format, please rename the corresponding directories/files to: `fast5_pass`, `fastq_pass`, sequencing_summary.txt.
 
-If you wish to analyse some custom data that is not organised in the above structure, you will need to create a directory structure that adheres to the above structure (give alpha-numeric names of your choice for `experiment_group`, `sample_id` and the `uid`) and rename the files accordingly. For *medaka* pipeline, only the *.fastq* files are required. You can simply place one or more *.fastq* files under a subdirectory named *fastq_pass*. For nanopolish pipeline,have to place *.fastq* file/s in  *fastq_pass*, the corresponding fast5 file/s under `fast5_pass` and the sequencing_summary file under the name sequencing_summary.txt. The *fast5_fail* and *fastq_fail* directories are not required by either pipeline.
+If you wish to analyse some custom data that is not organised in the above structure, you will need to create a directory structure that adheres to the above structure (give alpha-numeric names of your choice for `experiment_group`, `sample_id` and the `uid`) and rename the files accordingly. For *medaka* pipeline, only the *.fastq* files are required. You can simply place one or more *.fastq* files under a subdirectory named *fastq_pass*. For the nanopolish pipeline, you have to place *.fastq* file/s in  *fastq_pass*, the corresponding fast5 file/s under `fast5_pass` and the sequencing_summary file under the name sequencing_summary.txt. The *fast5_fail* and *fastq_fail* directories are not required by either pipeline.
 
 
 ### Sample-barcode manifest file
@@ -147,28 +147,26 @@ The 'Abort Job' button can be used to terminate the job. A confirmation window w
 
 ### What happens if an error occurs during the run?
 
-If an **error** occurs during a run, a **red** notification will appear. You can either let the job continue to run, or click the ‘Re-run’ button. Harmless errors sometimes occur in the ARTIC pipeline, so it may be worth waiting for the run to finish and then assessing your output. Clicking the ‘Re-run’ button will allow you to abort the currently running job and re-run the job with edited parameters.
+If an **error** occurs during a run, a **red** notification will appear. You can either let the job continue to run, or click the ‘Abort’ button. Harmless errors sometimes occur in the ARTIC pipeline, so it may be worth waiting for the run to finish and then assessing your output.
 
-A confirmation window will appear when you click on the ‘Re-run’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job.  You will then be redirected to the parameters page where the information from the job in question will be automatically filled in. You can make any changes necessary, and the new job will be added to the end of the queue following submission.
+A confirmation window will appear when you click on the ‘Abort’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job.
 
 ### What happens when a job is completed?
 
-When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page. The job will also be moved to the 'Completed Jobs' list on the home page where you can click on the job name and be redirected to the output page for that job.
+When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page. This may take 10 or more seconds depending on how many samples were sequenced. The job will also be moved to the 'Completed Jobs' list on the home page where you can click on the job name and be redirected to the output page for that job.
 
 ## Output Page
 
-The Output Page is for data visualisation to enable a fast quality check of the sample and to see the called variants. At the bottom of the page, there is a 'Go to Progress' button which will redirect you to the progress page of the job if you click on it.
+The Output Page is for data visualisation to enable a fast quality check of the sample and to see the called variants. Fasta files and QC metrics can be downloaded with the corresponding buttons. At the bottom of the page, there is a 'Go to Progress' button which will redirect you to the progress page of the job if you click on it.
 
 
 #### Data visualisation
 
-
-This section enables you to preview coverage depth profiles and locations if detected variants across a viral genome, for each sample, based on the outputs of the completed pipeline. To download a data plot, click on the 'Download' hyperlink in the lower-left corner of the plot of interest. If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important.
+This section enables you to preview coverage depth profiles and locations if detected variants across a viral genome, for each sample, based on the outputs of the completed pipeline. To download a data plot, right-click on the image and select 'Save image as...', or find the .png file located in the corresponding sample output folder. If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important.
 
 #### Variants Found
 
 Beneath each of the graphs, a summarised version of the ```<sample_name>.pass.vcf.gz``` file is displayed in the form of a table. Each row corresponds to a different variant found and they are ordered in increasing numerical order based on their position in the viral genome.
-
 
 
 ### Files Produced

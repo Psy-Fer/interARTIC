@@ -146,7 +146,7 @@ MN908947.3	644	666	SARS-CoV-2_3_LEFT	1	+
 MN908947.3	1017	1044	SARS-CoV-2_3_RIGHT	1	-
 ```
 
-The artic nomenclature has changed and they have added an extra field.
+The artic nomenclature has changed and they have added an extra field for `direction`
 
 Currently it is best to design primer-schemes similar to the first 3 examples here for now.
 
@@ -171,7 +171,6 @@ To use a custom primer scheme in InterARTIC, (ie, one not included in the defaul
 Then in the "Please enter your custom primer here:" field, ender the name of your primer-scheme (can be anything). This will be used in the output folder naming method.
 
 Then enter the `--scheme-directory` path into the `Primer scheme directory: ` field
-
 
 Then the `virus/version` info into the `Name of primer scheme:` field.
 

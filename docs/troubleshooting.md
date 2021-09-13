@@ -6,7 +6,7 @@
 
 ### Job not running after submission
 
-This may be because there are too many Celery tasks running in the background. To rectify this, enter: 
+This may be because there are too many Celery tasks running in the background. To rectify this, enter:
 
 ```
 ps aux | grep celery
@@ -21,7 +21,7 @@ If a usage error is printing in the progress page, this may mean that a particul
 An example of a usage error is:
 
 ```
-usage: artic [-h] [-v] 
+usage: artic [-h] [-v]
 ```
 
 To rectify this, first check that the read file you have submitted has been formatted correctly i.e. with no header. More information can be found on the usage page of this documentation.
@@ -31,6 +31,7 @@ If this does not fix the issue, please let the developers know via GitHub so tha
 ## Missing job on Home Page
 
 If a job is missing from the home page, wait a few seconds and refresh the page.
+If it is in the processing queue and not showing up, a sure way to find it is to click `add jobb` on the Home page and find the job in the left panel
 
 ## On Fedora minimal builds
 
