@@ -25,7 +25,7 @@ Pre-compiled binary releases are provided for Linux and MacOS for easy setup. Th
   - *x86_64*: Binaries for _x86_64_ should work on any Linux distribution as long as *GLIBC 2.17* (and basic shared libraries such as *pthreads*) or higher and `/usr/bin/env` are present. We have tested on Ubuntu (versions 14, 16, 18 and 20), CentOS, Debian, Fedora, Arch Linux, Gentoo Linux and openSUSE. These binaries are also verified to work on Windows 10 through Windows Subsystem for Linux. Open a bash terminal and execute the following commands:
 
     ```bash
-    wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.3/interartic-v0.3-linux-x86-64-binaries.tar.gz -O interartic_bin.tar.gz
+    wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.4/interartic-v0.4-linux-x86-64-binaries.tar.gz -O interartic_bin.tar.gz
     tar xf interartic_bin.tar.gz
     cd interartic_bin
     ./run.sh
