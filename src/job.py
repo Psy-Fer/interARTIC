@@ -440,11 +440,11 @@ class Job:
             # depth2 = "{}/{}.coverage_mask.txt.{}_2.depths".format(dir_path, file_start, virus)
             vcf_file = "{}/{}.pass.vcf.gz".format(dir_path, file_start)
             if len(depth1) < 1:
-                plot_cmd = plot_cmd + "ERROR: depth1 file not found! Plots not generated" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                plot_cmd = plot_cmd + " ;echo 'ERROR: depth1 file not found! Plots not generated'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
             if len(depth2) < 1:
-                plot_cmd = plot_cmd + "ERROR: depth2 file not found! Plots not generated" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                plot_cmd = plot_cmd + " ;echo 'ERROR: depth2 file not found! Plots not generated'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
             if len(vcf_file) < 1:
-                plot_cmd = plot_cmd + "ERROR: vcf_file file not found! Plots not generated" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                plot_cmd = plot_cmd + " ;echo 'ERROR: vcf_file file not found! Plots not generated'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
 
             if depth1 and depth2 and vcf_file:
                 plot_cmd = plot_cmd + "; covarPlots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
@@ -458,11 +458,11 @@ class Job:
             # sys.stderr.write("\n")
             for dName, sdName, fList in os.walk(primer_path):
                 for fileName in fList:
-                    sys.stderr.write(fileName)
-                    sys.stderr.write("\n")
+                    # sys.stderr.write(fileName)
+                    # sys.stderr.write("\n")
                     if fnmatch.fnmatch(fileName, "*.scheme.bed"):
-                        sys.stderr.write("MATCH!!!!")
-                        sys.stderr.write("\n")
+                        # sys.stderr.write("MATCH!!!!")
+                        # sys.stderr.write("\n")
                         bed_file = os.path.join(dName, fileName)
             #
             # # sys.stderr.write("bed_file: ")
@@ -500,11 +500,11 @@ class Job:
                     # depth2 = "{}/{}.coverage_mask.txt.{}_2.depths".format(dir_path, file_start, virus)
                     vcf_file = "{}/{}.pass.vcf.gz".format(dir_path, file_start)
                     if len(depth1) < 1:
-                        plot_cmd = plot_cmd + "ERROR: depth1 file not found! Plots not generated" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        plot_cmd = plot_cmd + " ;echo 'ERROR: depth1 file not found! Plots not generated'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                     if len(depth2) < 1:
-                        plot_cmd = plot_cmd + "ERROR: depth2 file not found! Plots not generated" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        plot_cmd = plot_cmd + " ;echo 'ERROR: depth2 file not found! Plots not generated'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                     if len(vcf_file) < 1:
-                        plot_cmd = plot_cmd + "ERROR: vcf_file file not found! Plots not generated" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
+                        plot_cmd = plot_cmd + " ;echo 'ERROR: vcf_file file not found! Plots not generated'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt"
                     if depth1 and depth2 and vcf_file:
                         plot_cmd = plot_cmd + "; covarPlots.py -v {} -d1 {} -d2 {} -b {}".format(vcf_file, depth1, depth2, bed_file) + " >> " + self._output_folder + "/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt"
 
