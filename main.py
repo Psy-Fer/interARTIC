@@ -1370,12 +1370,12 @@ def output(job_name):
                         # nano_sample4_NB04.pass.vcf.gz
                         # nano_sample4_NB04.pass.vcf.gz.tbi
                         # nano_sample4_NB04.coverage_mask.txt.nCoV-2019_2.depths
-                        if fnmatch.fnmatch(name, '*_2.depths'):
+                        if fnmatch.fnmatch(name, '*2.depths'):
                             meta[sample_name]["pool_2_depths"] = os.path.join(dirpath,name)
                             depths2_found = True
                             meta[sample_name]["depths2_found"] = True
                         # nano_sample4_NB04.coverage_mask.txt.nCoV-2019_1.depths
-                        if fnmatch.fnmatch(name, '*_1.depths'):
+                        if fnmatch.fnmatch(name, '*1.depths'):
                             meta[sample_name]["pool_1_depths"] = os.path.join(dirpath,name)
                             depths1_found = True
                             meta[sample_name]["depths1_found"] = True
