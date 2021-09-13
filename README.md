@@ -13,9 +13,9 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 A video tutorial of setting up and running InterARTIC: https://youtu.be/odLa3sXCoTQ
 
-## Step 1: Initiating InterARTIC
+## Step 1: Setting up InterARTIC
 
-Pre-compiled binary releases are provided for Linux and MacOS for easy installation. The linux binaries can be run on Windows using [Windows Subsystem for Linux (WSL)](https://www.windowscentral.com/install-windows-subsystem-linux-windows-10). Download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest) for your operating system and architecture, extract the tar ball and run the provided *run.sh* script by following the instructions below.
+Pre-compiled binary releases are provided for Linux and MacOS for easy setup. The linux binaries can be run on Windows using [Windows Subsystem for Linux (WSL)](https://www.windowscentral.com/install-windows-subsystem-linux-windows-10). Download the [latest release](https://github.com/Psy-Fer/interARTIC/releases/latest) for your operating system and architecture, extract the tar ball and run the provided *run.sh* script by following the instructions below.
 
 
 * Linux/Windows
@@ -138,7 +138,7 @@ Developers interested in learning how we create portable binary releases, read o
 
 # Updating interARTIC
 
-To update interARTIC to the latest version, simply delete the directory containing the old interARTIC binaries and obtain the latest version by following the same steps under installation above.
+To update interARTIC to the latest version, simply delete the directory containing the old interARTIC binaries and obtain the latest version by following the same steps under setting up above.
 
 # Acknowledgement
 
