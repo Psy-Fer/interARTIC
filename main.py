@@ -1830,13 +1830,13 @@ def output(job_name):
                             j, k = i
                             table_heads.append(str(j))
                             values.append(str(k))
-                        row = dict(zip(table_heads, values))
-                        for head in header:
-                            if head in row:
-                                w.write(row[head])
-                                w.write("\t")
-                            else:
-                                w.write("\t")
+                        for C, thead in enumerate(table_heads):
+                            if C < len(header):
+                                if header[C] == thead:
+                                    w.write(values[C])
+                                    w.write("\t")
+                                else:
+                                    w.write("\t")
                     w.write("\n")
             meta_tmp_path = os.path.dirname(os.path.realpath(__file__)) + '/static/tmp_meta/' + job_name
             if not os.path.isdir(meta_tmp_path):
