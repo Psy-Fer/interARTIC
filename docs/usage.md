@@ -55,7 +55,50 @@ uuid/
         B_10.fastq
         B_11.fastq
     sequencing_summary.txt
+    ...
 ```
+
+If you had live demultiplexing on during the run, the following folder structure is also valid, but be sure to select the `Already demultiplex with guppy?` option
+
+```
+uuid/
+    fast5_pass/
+        barcode01/
+            A_1.fast5
+            A_1.fast5
+        barcode02/
+            A_1.fast5
+            A_1.fast5
+        ...
+    fast5_fail/
+        barcode01/
+            A_1.fast5
+            A_1.fast5
+        barcode02/
+            A_1.fast5
+            A_1.fast5
+        ...
+    fastq_pass/
+        barcode01/
+            A_1.fastq
+            A_1.fastq
+        barcode02/
+            A_1.fastq
+            A_1.fastq
+        ...
+    fastq_fail/
+        barcode01/
+            A_1.fastq
+            A_1.fastq
+        barcode02/
+            A_1.fastq
+            A_1.fastq
+        ...
+    sequencing_summary.txt
+    ...
+```
+
+If you called with guppy_barcoder instead, then the structure is the same as above, but withoput the fastq/fast5_pass/fail directories, and the barcode## directories directly under the uuid directory. Again, ensure that the `Already demultiplex with guppy?` is selected for this structure.
 
 Note that this is how MinKNOW currently produces data when live basecalling is enabled. If your data is not named in this format, please rename the corresponding directories/files to: `fast5_pass`, `fastq_pass`, sequencing_summary.txt.
 
@@ -68,6 +111,9 @@ If your experiment contains multiple samples that were barcoded and run on a sin
 
 An example manifest .csv file for a dataset with four multiplexed samples using native barcodes is below:
 
+For Native ligation barcodes (NBXX):
+
+`sample-group-1.csv`
 ```
 sample1,NB03
 sample2,NB04
@@ -75,8 +121,17 @@ sample3,NB05
 sample4,NB06
 ```
 
-For rapid barcodes, this typically RBXX instead of NBXX.
+For Rapid barcodes (RBXX):
 
+`sample-group-1.csv`
+```
+sample1,RB03
+sample2,RB04
+sample3,RB05
+sample4,RB06
+```
+
+The reason for usage of NB/RB is historical, for easy compatbility with other software.
 
 ## Adding a job
 
@@ -87,18 +142,18 @@ Input the necessary parameters (see Parameter Descriptions below). Required para
 
 ## Parameter Descriptions
 
-You can customise the parameters by filling the respective text boxes, radio buttons or check boxes. For text boxes, only alpha-numeric characters and underscore are allowed, except that forward slashes are allowed for fields representing paths.
+You can customise the parameters by filling the respective text boxes, radio buttons or check boxes. For text boxes, only utf-8 alpha-numeric characters and underscore are allowed, except that forward slashes `/` are allowed for fields representing paths. No Space characters are allowed.
 
 ### Basic Parameters
 
 * **Job name:** A unique name for your job, so you may identify your output files with it.
 * **Input directory:** Your nanopore experiment directory.
-    * When you click on the text box (need to double click on certain browsers), a list will appear that lists the contents inside `/data` directory you set during the configuration.
+    * When you click on the text box (need to double click on certain browsers), a list will appear that lists the contents inside the `/data` directory you set during the configuration.
     * You can select the experiment directory from this list.
 * **Single or Multiple samples:** Select the appropriate option for your experiment.
-* **Sample-barcode metadata file:** This is applicable only if you selected multiple samples as the previous option.
-   *  When you click on the field (double click on certain browsers) a list will appear that lists the contents inside the sample-barcode directory  you set during the configuration.
-   *  You can select the correct .csv file for your experiment.
+* **Sample-barcode metadata file:** This is applicable only if you selected multiple samples in the previous option.
+   *  When you click on the field (double click on certain browsers) a list will appear that lists the contents inside the `sample-barcode` directory you set during the configuration.
+   *  You can select the corresponding .csv file for your experiment.
 * **Output folder:** This is an optional field.
     * If left empty, an output directory called `output` will be created inside the `experiment_group` directory.
     * If you provide a name, a directory under that name will be created inside the `experiment_group` directory.
@@ -107,12 +162,13 @@ You can customise the parameters by filling the respective text boxes, radio but
 
 * **Override existing data:** Select this if your output directory already contains files in it that must be overwritten
    *   WARNING: all files inside the output directory will be deleted. Please be careful.
-* **Virus:**. Select the pre-set viruses (corona virus and Ebola at the moment) that are bundled with interARTIC or *custom* for analysing your own virus.
-* **Primer scheme:** If a pre-set virus is selected in the previous step, the pre-set primer schemes bundled with interARTIC for that virus will appear, which you can select based on what you used for your nanopore sequencing run.
-* **Primer scheme directory:** This is auto  filled if you selected a pre-set virus and a primer scheme. If you are analysing a custom virus or using a custom primer scheme, enter the directory path to where your custom primer schemes are located.
-* **Primer scheme name:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise give the primer scheme name that adheres to the format virus_name/version (e.g.,nCoV-2019/V1)..
+* **Virus:**. Select the pre-set viruses (SARS-CoV-2 and Ebola viruses at the moment) that are bundled with interARTIC or *custom* for analysing your own virus or custom scheme.
+* **Primer scheme:** If a pre-set virus is selected in the previous step, the pre-set primer schemes bundled with interARTIC for that virus will appear, which you can select based on what you used for your nanopore sequencing run. (Please contact us at GitHub to add your favourite virus and schemes)
+* **Primer scheme top directory:** This is auto filled if you selected a pre-set virus and a primer scheme. If you are analysing a custom virus or using a custom primer scheme, enter the directory path to where your custom primer schemes are located.
+* **Name of primer scheme:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise give the primer scheme name that adheres to the format virus_name/version (e.g.,nCoV-2019/V1)..
     * Inside the directory location pointed by primer_scheme_directory/primer_scheme_name, the corresponding reference (.fasta file) and the primer .bed files should exist. See the examples at https://github.com/Psy-Fer/interARTIC/tree/master/primer-schemes/artic
 
+* **Demultiplexing:** Already demultiplexed with guppy? select this to skip the demux step.
 * **Library preparation method:** Enter what you used for sample preparation.
     * This is only used for folder-naming purposes.
 * **Pipeline:** Select the pipeline within ARTIC that you wish to run your data files through (nanopolish or medaka currently).
@@ -122,9 +178,9 @@ You can customise the parameters by filling the respective text boxes, radio but
 
 * **Minimum length:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise set this to the minimum read length that should be used for the analysis, based on your primer lengths.
 * **Maximum length:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise set this to the maximum read length that should be used for the analysis, based on your primer lengths.
-* **Thread usage/:** Change the pre-filled values if you wish, based on the number of cores in your system you want to utilise. Note that not all tools inside the ARTIC pipeline are multi-threaded and thread efficient.
+* **Thread usage:** Change the pre-filled values if you wish, based on the number of cores in your system you want to utilise. Note that not all tools inside the ARTIC pipeline are multi-threaded and thread efficient.
 * **Normalise depth:** This is auto filled if you selected a pre-set virus and a primer scheme. Otherwise, select the read depth (coverage) that you to which your data should be normalised.
-
+* **Step start (DEBUG):** This is used for dev debugging. If you already have a run completed by InterARTIC, but InterARTIC was restarted (losing the link to the ouput page), you can add the job again, with the exact same (and I mean it, EXACTLY the same) parameters, and you can choose which step to start the processing from. If the run has not been demultiplexed, select `3` to start the run from the last step, making the plots (the safest step) to quickly get to the output screens. If It was already Demultiplexed, start from step `2`. If none of this makes sense, please ask the devs for help, and leave this field blank
 
 After filling in the parameters carefully, click on the “Submit Job(s)” button. You will be redirected to the progress page after clicking this button.
 
@@ -147,13 +203,13 @@ The 'Abort Job' button can be used to terminate the job. A confirmation window w
 
 ### What happens if an error occurs during the run?
 
-If an **error** occurs during a run, a **red** notification will appear. You can either let the job continue to run, or click the ‘Abort’ button. Harmless errors sometimes occur in the ARTIC pipeline, so it may be worth waiting for the run to finish and then assessing your output.
+If an **error** occurs during a run, a **red** notification will appear. You can either let the job continue to run, or click the ‘Abort’ button. Harmless errors sometimes occur in the ARTIC pipeline (such as longshot failing), so it may be worth waiting for the run to finish and then assessing your output. If you have a negative control, it will fail, though in most cases won't make it past the QC/demux steps. The rest of the samples should be analysed just fine and display on the output page.
 
 A confirmation window will appear when you click on the ‘Abort’ button asking you to confirm that you wish to abort the current job and whether to delete the files created by the job.
 
 ### What happens when a job is completed?
 
-When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page. This may take 10 or more seconds depending on how many samples were sequenced. The job will also be moved to the 'Completed Jobs' list on the home page where you can click on the job name and be redirected to the output page for that job.
+When a job is completed, a ‘Go to Output’ button will appear at the top of the page. Click the button to be redirected to the output page. This may take 10 or more seconds depending on how many samples were sequenced. The job will also be moved to the 'Completed Jobs' list on the home page where you can click on the job name and be redirected to the progress page for that job.
 
 ## Output Page
 
@@ -162,7 +218,7 @@ The Output Page is for data visualisation to enable a fast quality check of the 
 
 #### Data visualisation
 
-This section enables you to preview coverage depth profiles and locations if detected variants across a viral genome, for each sample, based on the outputs of the completed pipeline. To download a data plot, right-click on the image and select 'Save image as...', or find the .png file located in the corresponding sample output folder. If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these graph/s cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard output section is important.
+This section enables you to preview coverage depth profiles and locations if detected variants across a viral genome, for each sample, based on the outputs of the completed pipeline. To download a data plot, right-click on the image and select 'Save image as...'. If that does not work, right click the image and select 'Open image in new tab', then try the 'Save image as...' method again. Otherwise find the .png file located in the corresponding sample output folder. If no ```<sample_name>.pass.vcf.gz``` files are found in the output folder, the message “Vcf graph could not be made: No pass.vfc.gz file/s found in the output folder.” will be displayed. As no files of the suitable format have been found, these outputs cannot be produced. This may be due to errors or problems during the pipeline, so checking error messages in the progress page's standard error output section is important.
 
 #### Variants Found
 

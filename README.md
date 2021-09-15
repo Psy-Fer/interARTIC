@@ -1,6 +1,6 @@
 # InterARTIC
 
-InterARTIC is an interactive web application designed to simplify the use of the [ARTIC bioinformatics pipelines](https://github.com/artic-network/artic-ncov2019) for nanopore sequencing analysis on viral genomes. InterARTIC was initally designed and tested for analysis of SARS-CoV-2, but is suitable for analysis of any virus and/or amplicon scheme, including a user's own custom amplicons. InterARTIC spports both the Nanopolish and Medaka pipeline alternatives from ARTIC, with full parameter customisation enabled through a simple graphical interface.
+InterARTIC is an interactive web application designed to simplify the use of the [ARTIC bioinformatics pipelines](https://github.com/artic-network/artic-ncov2019) for nanopore sequencing analysis on viral genomes. InterARTIC was initally designed and tested for analysis of SARS-CoV-2, but is suitable for analysis of any virus and/or amplicon scheme, including a user's own custom amplicons. InterARTIC supports both the Nanopolish and Medaka pipeline alternatives from ARTIC, with parameter customisation enabled through a simple graphical interface.
 
 <img src="docs/homepage.svg" width="60%">
 
@@ -31,7 +31,7 @@ Pre-compiled binary releases are provided for Linux and MacOS for easy setup. Th
     ./run.sh
     ```
 
-  - *aarch64*: Binaries for aarch64 should work any Linux distribution with *GLIBC 2.23* or higher. Currently, only the nanopolish pipeline is available for _aarch64_ and we have tested on Ubuntu 16 and Ubuntu 18.04 (using Rock64, Jetson Xavier and Jetson Nano single board computers).  For aarch64, run the same commands as above except the *wget* command, that should be now replaced with:
+  - *aarch64*: Binaries for aarch64 should work on any Linux distribution with *GLIBC 2.23* or higher. Currently, only the nanopolish pipeline is available for _aarch64_ and we have tested on Ubuntu 16 and Ubuntu 18.04 (using Rock64, Jetson Xavier and Jetson Nano single board computers).  For aarch64, run the same commands as above except the *wget* command, that should be now replaced with:
 
     ```
     wget https://github.com/Psy-Fer/interARTIC/releases/download/v0.4/interartic-v0.4-linux-aarch64-binaries.tar.gz -O interartic_bin.tar.gz
@@ -41,17 +41,17 @@ Pre-compiled binary releases are provided for Linux and MacOS for easy setup. Th
 
 * macOS
 
-  We provide a pre-compiled binary release for macOS on x86_64. Newer mac with M1 ARM chip can still run these binaries opaqly through Rosetta. Open a terminal and execute the following commands:
+  We provide a pre-compiled binary release for macOS on x86_64. Newer mac with M1 ARM chip can still run these binaries opaquely through Rosetta. Open a terminal and execute the following commands:
 
   ```bash
   curl https://github.com/Psy-Fer/interARTIC/releases/download/v0.4/interartic-v0.4-macos-x86-64-binaries.tar.gz -o interartic_bin.tar.gz -L
-  xattr -dr com.apple.quarantine interartic_bin.tar.gz  #to prevent the macOS's gatekeeper from being blocking our binaries, required if you download through a web browser, but just in case
+  xattr -dr com.apple.quarantine interartic_bin.tar.gz  #to prevent the macOS's gatekeeper from blocking our binaries, required if you download through a web browser, but just in case
   tar xf interartic_bin.tar.gz
   cd interartic_bin
   ./run.sh
   ```
 
-**IMPORTANT: Make sure the interARTIC binaries reside at a location with no white characters.**
+**IMPORTANT: Make sure the interARTIC binaries reside at a location with no white space characters.**
 
 The *run.sh* script has now launched a new interactive interARTIC session. To see your session, visit [http://127.0.0.1:5000](http://127.0.0.1:5000) on your web browser. Here, you can configure and run your next job using the graphical interface. Make sure you keep the terminal open to keep your interARTIC session running.
 
@@ -69,7 +69,7 @@ rm FLFL031920_sample_data.tar.gz
 ```
 
 Once extracted, you should see two directories:
-1. *FLFL031920* containing a data from a nanopore sequencing run of 10 multiplexed SARS-CoV-2 isolates, performed on an ONT GridION. The *.fast5* files, *.fastq* files and the sequencing summary file are amongst the extracted data. This example dataset follows the same directory structure of a nanopore sequencing run with live base-calling enabled.
+1. *FLFL031920* containing data from a nanopore sequencing run of 10 multiplexed SARS-CoV-2 isolates, performed on an ONT GridION. The *.fast5* files, *.fastq* files and the sequencing summary file are among the extracted data. This example dataset follows the same directory structure of a nanopore sequencing run with live base-calling enabled.
 2. *sample-barcodes* containing a *.csv* manifest file that matches sample names to sample barcodes.
 
 For detailed information on the input data structure and *.csv* manifest file, please visit the InterARTIC usage guide [here](https://psy-fer.github.io/interARTIC/usage/).

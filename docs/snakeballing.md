@@ -1,7 +1,7 @@
 
 # Software packaging (aka "snake charming")
 
-InterARTIC development involved the use of the Python programming language and depends on several third-party Python modules and software written predominantly in Python (e.g., *Flash*, *Celery*, *ARTIC* tools, etc). The Python ecosystem (including the language itself, in addition to Python libraries) has limited backward compatibility. As a result, Python software is often compatible only with the exact version of the Python interpreter and library versions it was developed with (sometimes specific even to the minor version level).
+InterARTIC development involved the use of the Python programming language and depends on several third-party Python modules and software written predominantly in Python (e.g., *Flask*, *Celery*, *ARTIC* tools, etc). The Python ecosystem (including the language itself, in addition to Python libraries) has limited backward compatibility. As a result, Python software is often compatible only with the exact version of the Python interpreter and library versions it was developed with (sometimes specific even to the minor version level).
 
 Python virtual environments and Anaconda are designed to resolve issues related to version compatibility but - at least in our experience - software installation via these methods can be complicated, especially for novice users. To experience the headache yourself, try to install InterARTIC and its dependencies from the scratch by following the instructions [here](https://psy-fer.github.io/interARTIC/installation).
 
@@ -23,7 +23,7 @@ In summary, if the relevant Python interpreter, all the modules and third party 
 3. Now clone the interARTIC repository and copy the relevant scripts and data.
 
     ```bash
-    git clone https://github.com/Psy-Fer/interARTIC.git
+    git clone git@github.com:Psy-Fer/interARTIC.git
     mv interARTIC/templates interARTIC/scripts interARTIC/static interARTIC/src interARTIC/primer-schemes interARTIC/run.sh interARTIC/main.py interARTIC/config.init interartic_bin/
     ```
 
@@ -50,31 +50,31 @@ In summary, if the relevant Python interpreter, all the modules and third party 
 5. Now the interARTIC environment is done, but the hard part is the artic pipeline which needs a different python environment. Now let us grab compiled binaries for artic and its dependencies through conda repositories.
 
     i. In the same virtual machine install an older miniconda.
-    
+
     ```bash
     rm -rf ~/miniconda3/
     wget https://repo.anaconda.com/miniconda/Miniconda3-4.3.11-Linux-x86_64.sh
     ./Miniconda3-4.3.11-Linux-x86_64.sh -b -p $HOME/miniconda3
     rm Miniconda3-4.3.11-Linux-x86_64.sh
     ```
-        
+
     ii. Now clone the artic repository.
-    
+
     ```bash
     cd ..
-    git clone https://github.com/artic-network/artic-ncov2019.git
+    git clone git@github.com:artic-network/artic-ncov2019.git
     cd artic-ncov2019 && git checkout 7e359dae37d894b40ae7e35c3582f14244ef4d36
     cd ..
     ```
-        
+
     iii. Grab the dependencies for artic through conda. This will take ages.
-    
+
     ```bash
     ~/miniconda3/bin/conda env create -f artic-ncov2019/environment.yml
     ```
-        
+
     iv. Move the relavent binaries and library modules.
-    
+
     ```bash
     cd interartic_bin
     mkdir artic_bin
@@ -82,15 +82,15 @@ In summary, if the relevant Python interpreter, all the modules and third party 
     mv ~/miniconda3/envs/artic-ncov2019/lib artic_bin/
     rm -rf artic_bin/lib/node_modules
     ```
-        
+
     v. Cleanup pycaches.
-    
+
     ```bash
     find ./ -name __pycache__ -type d | xargs rm -r
     ```
-        
+
     vi. Hard coded paths such as `/home/user/miniconda3/envs/artic-ncov2019/bin/python3.6` must be replaced with `/usr/bin/env python3.6`. Some ugly and lazy example grep commands to patch these:
-    
+
     ```bash
     cd artic_bin/bin
     grep -l "#\!/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python3.6" * | while read p; do
@@ -108,18 +108,18 @@ In summary, if the relevant Python interpreter, all the modules and third party 
       sed -i "s/\/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/perl/\/usr\/bin\/env perl/g" $p;  
     done
     ```
-        
+
     vii. Hard coded paths such as `exec' /home/user/miniconda3/envs/artic-ncov2019/bin/python/` must be replaced with  `exec' /usr/bin/env python`.
-    
+
     ```bash
     grep -l "exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin/python" * | while read p; do
     echo $p;
     sed -i  "s/exec' \/home\/hasindu\/miniconda3\/envs\/artic\-ncov2019\/bin\/python/exec' \/usr\/bin\/env python/g" $p;  
     done
     ```
-        
+
 6. Now tarball everything. That is create the snakeball!
-    
+
     ```bash
     cd ../../../
     tar zcvf interartic_bin.tar.gz interartic_bin
@@ -128,9 +128,9 @@ In summary, if the relevant Python interpreter, all the modules and third party 
 7. Extract on another Linux computer and thoroughly test.
 
 
-    Look at the [run.sh](https://github.com/Psy-Fer/interARTIC/blob/master/run.sh) to see how this is run. Important points from the _run.sh_ script are briefly explained below:
+    Look at [run.sh](https://github.com/Psy-Fer/interARTIC/blob/master/run.sh) to see how this is run. Important points from the _run.sh_ script are briefly explained below:
 
-    Following are some important environmental variables in the _run.sh_ that are used to isolate the Pythons inside interARTIC from loading wrong modules from user local directories (prevention of snake entagnglements!).
+    Following are some important environmental variables in the _run.sh_ that are used to isolate the different Pythons inside interARTIC from loading the wrong modules from user local directories (prevention of snake entagnglements!).
 
 
     ```bash

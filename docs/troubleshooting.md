@@ -31,7 +31,7 @@ If this does not fix the issue, please let the developers know via GitHub so tha
 ## Missing job on Home Page
 
 If a job is missing from the home page, wait a few seconds and refresh the page.
-If it is in the processing queue and not showing up, a sure way to find it is to click `add jobb` on the Home page and find the job in the left panel
+If it is in the processing queue and not showing up, a sure way to find it is to click `add job` on the Home page and find the job in the left panel
 
 ## On Fedora minimal builds
 

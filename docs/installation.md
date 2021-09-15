@@ -2,7 +2,7 @@
 
 [TOC]
 
-This page has the instructions to build interARTIC from the source, which is tedious. If your system is a common Linux distribution (including Windows Subsystem for Linux), follow steps [here](https://github.com/Psy-Fer/interARTIC#quick-start) to easily install interARTIC using pre-compiled binaries.
+This page has the instructions to build interARTIC from the source, which is tedious. If your system is a common Linux distribution (including Windows Subsystem for Linux) or even macOS, follow the steps [here](https://github.com/Psy-Fer/interARTIC#quick-start) to easily install interARTIC using pre-compiled binaries.
 
 ## Dependencies
 
@@ -17,13 +17,13 @@ Your operating system's command line will be used to install the dependencies an
 
 * For Mac OS: Type “terminal” into your spotlight search, then hit Return.
 * For Windows: Type “Ubuntu” into your search bar in the Start menu, then hit Enter (you need to have an Ubuntu distribution installed via Windows Subsystem for Linux. See [here](https://linuxhint.com/install_ubuntu_windows_10_wsl/) for steps.
-* For Linux: Enter the keyboard shortcut: Ctrl+Alt+T.
+* For Linux: Enter the keyboard shortcut: `Ctrl`+`Alt`+`T`.
 
 If these instructions don't work on your operating system, google how to open command line on your operating system and software version.
 
 ## Installing Python and pip
 
-In order to use interARTIC, you’ll need Python and its package manager pip installed on your system. Python and associated libraries has limited compatibility across different versions and thus we recommend using a Python 3.7 virtual environment.
+In order to use interARTIC, you’ll need Python and its package manager pip installed on your system. Python and associated libraries have limited compatibility across different versions and thus we recommend using a Python 3.7 virtual environment.
 
 ### Linux users (distributions supporting apt)
 
@@ -53,7 +53,7 @@ pip --version		# or this can be pip3 --version
 
 If Python is not installed, follow [this link](https://www.python.org/downloads/) and follow the instructions there.
 
-* This application uses Python3 as the default, not Python2.
+* This application uses `Python3` as the default, not `Python2`.
 
 If you have just installed Python, it will likely have also installed pip. Check that it is installed.
 
@@ -85,7 +85,7 @@ The ARTIC pipeline has to be installed via conda.
 
 If you do not have conda installed, we suggest installing miniconda.
 The miniconda installation guide can be found [here](https://docs.conda.io/en/latest/miniconda.html)
-We suggest you undergo the 'Regular Installation' process.
+We suggest you follow the 'Regular Installation' process.
 
 After installing conda, enter the following into your command prompt to install ARTIC:
 
@@ -111,13 +111,12 @@ conda deactivate
 Follow [this link](https://artic.readthedocs.io/en/latest/installation/) to access the documentation for installing Artic.
 
 
-
 ## Installing interARTIC
 
 Clone the repository from github by entering the following commands into your terminal.
 
 ```
-git clone https://github.com/Psy-Fer/interARTIC
+git clone git@github.com:Psy-Fer/interARTIC.git
 cd interARTIC
 ```
 
@@ -136,7 +135,7 @@ Alternatively, you can follow [this link](https://redis.io/topics/quickstart) to
 
 ## Launching interARTIC
 
-Now launch a new terminal and go inside the interARTIC-venv virtual environment we created above by calling `source interARTIC-venv/bin/activate`.  interARTIC can be launched by running the provided `run-dev.sh` script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below.
+Now launch a new terminal and activate the interARTIC-venv virtual environment we created above by calling `source interARTIC-venv/bin/activate`.  interARTIC can be launched by running the provided `run-dev.sh` script (see Automatic launch below). If something goes wrong, follow the steps under Manual launch below.
 
 ### Automatic launch
 
@@ -173,9 +172,9 @@ conda activate artic-ncov2019; celery worker -A main.celery -b redis://localhost
 
 ### Job Concurrency
 
-By default, job concurrency is turned off and the automatic and manual launchs will allow one job to be run at a time.
+By default, job concurrency is turned off and the automatic and manual launches will allow one job to be run at a time.
 
-If you wish to **turn concurrency on** and run multiple jobs at a time, then please follow the steps under Manual launch above except that now you should not pass `--concurrency=1` to celery.
+If you wish to **turn concurrency on** and run multiple jobs at a time, then please follow the steps under Manual launch above except that now you should not pass `--concurrency=1` to celery. Alternatively you can increase concurrency to the desired upper limit of concurrent jobs you would like. eg, `--concurrency=4` for 4 jobs
 
 ## Launching interARTIC web interface
 

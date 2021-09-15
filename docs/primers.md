@@ -2,6 +2,10 @@
 
 The underlying artic pipeline of InterARTIC allows a user to use any primer scheme designed for viruses, given a few rules are followed, both in formatting, and folder structure. Here we will descibe these rules, how to build the required files, and how to use them with InterARTIC.
 
+Please read the artic [primer-scheme.md](https://github.com/artic-network/fieldbioinformatics/blob/master/docs/primer-schemes.md) file for the most up to date descriptions of these formats.
+
+The following is tailoured towards using InterARTIC with these primer-schemes. All credit to the artic team for building such a wonderful set of tools and protocols.
+
 In the examples, we use nCoV-2019 as the virus name, and it's best to be consistent with naming conventions across both folder and files. We did not write the artic pipeline, and some assumptions on naming are made in the tools. If you are using a different virus, name the files in the same manner, so `my-virus.bed`, `my-virus.scheme.bed` for example.
 
 The following files are required for the underlying artic pipeline:
@@ -148,7 +152,6 @@ MN908947.3	1017	1044	SARS-CoV-2_3_RIGHT	1	-
 
 The artic nomenclature has changed and they have added an extra field for `direction`
 
-Currently it is best to design primer-schemes similar to the first 3 examples here for now.
 
 ## Why the structure and naming matter
 
@@ -160,6 +163,28 @@ artic minion ... --scheme-directory ~/primer-schemes/artic nCoV-2019/V1 sample-n
 
 Where `nCoV-2019/V1` and  `sample-name` are positinal arguments.
 As you can see, the `--scheme-directory` is the top directory, then the positional argument `nCoV-2019/V1` sets the virus and version as directory names. Thus the structure shown above, of `scheme/virus/version` needs to be in that format.
+
+## Optional \*.genes.bed file
+
+The optional `*.genes.bed` file is used for the QC table (and in the future, CoVar Plots). It allows for extra information to be given regarding coverage of the various regions within a genome, as well as variants contained. If the file is not provided, the extra fields will not be provided.
+
+Here is an example, the `nCoV-2019.genes.bed`
+
+Genome_name, start, stop, name
+
+```
+MN908947.3	265	21555	ORF1ab
+MN908947.3	21562	25384	S
+MN908947.3	25392	26220	ORF3a
+MN908947.3	26244	26472	ORF4
+MN908947.3	26522	27191	M
+MN908947.3	27201	27387	ORF6
+MN908947.3	27393	27759	ORF7a
+MN908947.3	27755	27887	ORF7b
+MN908947.3	27893	28259	ORF8
+MN908947.3	28273	29533	ORF9
+MN908947.3	29557	29674	ORF10
+```
 
 ## Using custom primer scheme in InterARTIC
 
