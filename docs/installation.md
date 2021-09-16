@@ -116,7 +116,7 @@ Follow [this link](https://artic.readthedocs.io/en/latest/installation/) to acce
 Clone the repository from github by entering the following commands into your terminal.
 
 ```
-git clone git@github.com:Psy-Fer/interARTIC.git
+git clone https://github.com/Psy-Fer/interARTIC.git
 cd interARTIC
 ```
 
