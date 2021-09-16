@@ -23,7 +23,7 @@ In summary, if the relevant Python interpreter, all the modules and third party 
 3. Now clone the interARTIC repository and copy the relevant scripts and data.
 
     ```bash
-    git clone git@github.com:Psy-Fer/interARTIC.git
+    git clone https://github.com/Psy-Fer/interARTIC.git
     mv interARTIC/templates interARTIC/scripts interARTIC/static interARTIC/src interARTIC/primer-schemes interARTIC/run.sh interARTIC/main.py interARTIC/config.init interartic_bin/
     ```
 
@@ -62,7 +62,7 @@ In summary, if the relevant Python interpreter, all the modules and third party 
 
     ```bash
     cd ..
-    git clone git@github.com:artic-network/artic-ncov2019.git
+    git clone https://github.com/artic-network/artic-ncov2019.git
     cd artic-ncov2019 && git checkout 7e359dae37d894b40ae7e35c3582f14244ef4d36
     cd ..
     ```
