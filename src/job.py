@@ -210,16 +210,16 @@ class Job:
                     if fnmatch.fnmatch(fileName, "*.fastq*"):
                         dir_list.append(dName)
                         break
-            sys.stderr.write("dirlist:" + ", ".join(dir_list)+"\n")
+            # sys.stderr.write("dirlist:" + ", ".join(dir_list)+"\n")
 
             if self._pipeline == "medaka":
                 #open csv file
-                sys.stderr.write("Starting medaka guppyplex command" + "\n")
+                # sys.stderr.write("Starting medaka guppyplex command" + "\n")
                 with open(self._csv_file,'rt')as f:
                     data = csv.reader(f)
                     for row in data:
                         barcode = row[1]
-                        sys.stderr.write(barcode + "\n")
+                        # sys.stderr.write(barcode + "\n")
                         bc_count = 0
                         barcode_pass_dir = ""
                         barcode_dir = ""
@@ -236,9 +236,9 @@ class Job:
                                 sys.stderr.write("barcode PASS directory not found. Either directory structure is broken/changed, or the barcode does not exist for this dataset.\n")
                                 continue
                         elif bc_count == 0:
-                            sys.stderr.write("barcode directory not found. Either directory structure is broken/changed, or the barcode does not exist for this dataset.\n")
+                            # sys.stderr.write("barcode directory not found. Either directory structure is broken/changed, or the barcode does not exist for this dataset.\n")
                             continue
-                        sys.stderr.write(barcode_dir + "\n")
+                        # sys.stderr.write(barcode_dir + "\n")
                         guppyplex_cmd = guppyplex_cmd + " echo '*****RUNNING GUPPYPLEX COMMAND*****'" + " >> " + self._output_folder + "/all_cmds_log.txt 2>> " + self._output_folder + "/all_cmds_log.txt; artic guppyplex --min-length " + self._min_length + " --max-length " + self._max_length + " --prefix " + self._job_name + " --directory " + barcode_dir + " --output " + self._output_folder + "/" + self._job_name + "_fastq_pass-" + barcode + ".fastq " + " >> " + self._output_folder +"/all_cmds_log.txt 2>>" + self._output_folder + "/all_cmds_log.txt;"
             # if job is running nanopolish
             elif self._pipeline == "nanopolish":
