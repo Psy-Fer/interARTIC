@@ -96,6 +96,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-level="2"><a href="#optional-genesbed-file" class="nav-link">Optional *.genes.bed file</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#using-custom-primer-scheme-in-interartic" class="nav-link">Using custom primer scheme in InterARTIC</a>
               <ul class="nav flex-column">
               </ul>
@@ -109,6 +113,8 @@
 
 <h1 id="custom-primers">Custom Primers</h1>
 <p>The underlying artic pipeline of InterARTIC allows a user to use any primer scheme designed for viruses, given a few rules are followed, both in formatting, and folder structure. Here we will descibe these rules, how to build the required files, and how to use them with InterARTIC.</p>
+<p>Please read the artic <a href="https://github.com/artic-network/fieldbioinformatics/blob/master/docs/primer-schemes.md">primer-scheme.md</a> file for the most up to date descriptions of these formats.</p>
+<p>The following is tailoured towards using InterARTIC with these primer-schemes. All credit to the artic team for building such a wonderful set of tools and protocols.</p>
 <p>In the examples, we use nCoV-2019 as the virus name, and it's best to be consistent with naming conventions across both folder and files. We did not write the artic pipeline, and some assumptions on naming are made in the tools. If you are using a different virus, name the files in the same manner, so <code>my-virus.bed</code>, <code>my-virus.scheme.bed</code> for example.</p>
 <p>The following files are required for the underlying artic pipeline:</p>
 <pre><code>nCoV-2019.reference.fasta
@@ -222,13 +228,28 @@ MN908947.3  644 666 SARS-CoV-2_3_LEFT   1   +
 MN908947.3  1017    1044    SARS-CoV-2_3_RIGHT  1   -
 </code></pre>
 <p>The artic nomenclature has changed and they have added an extra field for <code>direction</code></p>
-<p>Currently it is best to design primer-schemes similar to the first 3 examples here for now.</p>
 <h2 id="why-the-structure-and-naming-matter">Why the structure and naming matter</h2>
 <p>When the primer scheme is used within the artic minion command, it is in the following form: (<code>...</code> is other commands)</p>
 <pre><code>artic minion ... --scheme-directory ~/primer-schemes/artic nCoV-2019/V1 sample-name
 </code></pre>
 <p>Where <code>nCoV-2019/V1</code> and  <code>sample-name</code> are positinal arguments.
 As you can see, the <code>--scheme-directory</code> is the top directory, then the positional argument <code>nCoV-2019/V1</code> sets the virus and version as directory names. Thus the structure shown above, of <code>scheme/virus/version</code> needs to be in that format.</p>
+<h2 id="optional-genesbed-file">Optional *.genes.bed file</h2>
+<p>The optional <code>*.genes.bed</code> file is used for the QC table (and in the future, CoVar Plots). It allows for extra information to be given regarding coverage of the various regions within a genome, as well as variants contained. If the file is not provided, the extra fields will not be provided.</p>
+<p>Here is an example, the <code>nCoV-2019.genes.bed</code></p>
+<p>Genome_name, start, stop, name</p>
+<pre><code>MN908947.3  265 21555   ORF1ab
+MN908947.3  21562   25384   S
+MN908947.3  25392   26220   ORF3a
+MN908947.3  26244   26472   ORF4
+MN908947.3  26522   27191   M
+MN908947.3  27201   27387   ORF6
+MN908947.3  27393   27759   ORF7a
+MN908947.3  27755   27887   ORF7b
+MN908947.3  27893   28259   ORF8
+MN908947.3  28273   29533   ORF9
+MN908947.3  29557   29674   ORF10
+</code></pre>
 <h2 id="using-custom-primer-scheme-in-interartic">Using custom primer scheme in InterARTIC</h2>
 <p>To use a custom primer scheme in InterARTIC, (ie, one not included in the defaults provided) first select <code>Custom</code> in the virus selection panel:</p>
 <p><img alt="custom selection" src="custom_1.jpg" /></p>

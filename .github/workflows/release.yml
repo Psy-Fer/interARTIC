@@ -1,0 +1,27 @@
+---
+name: "tagged-release"
+
+on:
+  push:
+    branches: [ master, dev ]
+  # push:
+    # tags:
+      # - "v*"
+
+jobs:
+  linux_x86-64:
+    name: Linux x86-64
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: package
+      run: |
+        export ARCH=x86-64 && export OS=linux
+        VERSION_OLD=0.4 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
+        test/update.sh
+    # - uses: "marvinpinto/action-automatic-releases@latest"
+      # with:
+        # repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        # prerelease: false
+        # files: |
+          # *.tar.gz
