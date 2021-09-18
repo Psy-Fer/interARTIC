@@ -12,7 +12,8 @@
 set -e 
 set -x
 
-VERSION_NEW=`git describe --tags`
+VERSION_NEW=0.4.1
+# VERSION_NEW=`git describe --tags` 
 
 wget ${LINK} -O interartic_bin.tar.gz
 
