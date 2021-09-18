@@ -37,9 +37,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: test
       run: |
-      export ARCH=x86-64 && export OS=macos
-      VERSION_OLD=0.4.1 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
-      test/update.sh
+        export ARCH=x86-64 && export OS=macos
+        VERSION_OLD=0.4.1 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
+        test/update.sh
     # - uses: "marvinpinto/action-automatic-releases@latest"
       # with:
         # repo_token: "${{ secrets.GITHUB_TOKEN }}"
