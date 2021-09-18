@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # VERSION_OLD=0.4
-# VERSION_NEW=0.4.2
 # LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
 
 # ARCH=x86-64
@@ -30,7 +29,7 @@ fi
 mv interARTIC/LICENSE interartic_bin/LICENSE.interartic.txt
 rm -rf interARTIC
 
-tar zcf interartic-v${VERSION_NEW}-${OS}-${ARCH}-binaries.tar.gz interartic_bin
+tar zcf interartic-${VERSION_NEW}-${OS}-${ARCH}-binaries.tar.gz interartic_bin
 rm -rf interartic_bin
 
 exit 0
