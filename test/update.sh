@@ -9,13 +9,13 @@
 # OS=linux
 # #os=macos
 
-set -e 
+set -e
 set -x
 
-VERSION_NEW=0.4.1
-# VERSION_NEW=`git describe --tags` 
+#VERSION_NEW=0.4.1
+VERSION_NEW=`git describe --tags`
 
-wget ${LINK} -O interartic_bin.tar.gz -q 
+wget ${LINK} -O interartic_bin.tar.gz -q
 tar xf interartic_bin.tar.gz
 rm interartic_bin.tar.gz
 rm -rf interartic_bin/templates interartic_bin/scripts interartic_bin/static interartic_bin/src interartic_bin/primer-schemes interartic_bin/*.sh interartic_bin/*.py interartic_bin/LICENSE.interartic.txt
