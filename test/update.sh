@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # VERSION_OLD=0.4
-# VERSION_NEW=0.4.1
+# VERSION_NEW=0.4.2
 # LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
 
 # ARCH=x86-64
@@ -12,7 +12,6 @@
 set -e
 set -x
 
-#VERSION_NEW=0.4.1
 VERSION_NEW=`git describe --tags`
 
 wget ${LINK} -O interartic_bin.tar.gz -q
