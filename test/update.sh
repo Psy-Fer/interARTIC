@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# VERSION_OLD=0.4
 # LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
 
 # ARCH=x86-64
