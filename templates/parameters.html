@@ -39,6 +39,7 @@
   visibility: visible;
   opacity: 1;
 }
+
 </style>
 <head>
     <meta charset="utf-8">
@@ -479,16 +480,32 @@
                            </script>
                          {% endif %}
 
+                         <script>
+                           function rapid_warning(id) {
+                             if (id == "rapid") {
+                                 document.getElementById("warn_rapid").style.display = "block";
+                                 }
+                             else {
+                                 document.getElementById("warn_rapid").style.display = "none";
+                                 }
+                             }
+                         </script>
+
                         <label class="subtitle is-5" for="barcode_type">Which library preparation method was used: *</label><br><br>
-                        <input type="radio" id="native" name="barcode_type" value="native" onclick="setParams()">
+                        <input type="radio" id="native" name="barcode_type" value="native" onclick="setParams(), rapid_warning(id)">
                         <label for="native">Ligation library prep (eg SQK-LSK109)</label><br>
-                        <input type="radio" id="rapid" name="barcode_type" value="rapid" onclick="setParams()">
+                        <input type="radio" id="rapid" name="barcode_type" value="rapid" onclick="setParams(),rapid_warning(id)">
                         <label for="rapid">Rapid library prep (eg SQK-RBK004)</label><br><br>
                         {% if barcode_type %}
                          <script>
                              document.getElementById("{{barcode_type}}").checked = true
                          </script>
                         {% endif %}
+                        <!-- <div class="alert warning" id="warn_rapid" style="display:none"> -->
+                        <div id="warn_rapid" style="display:none">
+                            <b>Warning:</b> ARTIC protocols were not originally designed for compatibility with Rapid barcoding. It is not recommended to use rapid barcoding with short (eg ~400bp) amplicons.
+                        </div><br>
+
 
 
                 <label class="subtitle is-5" for="pipeline"> Select a pipeline to run: *</label>
