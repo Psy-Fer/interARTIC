@@ -28,7 +28,7 @@ import pandas as pd
 import numpy as np
 
 
-VERSION = "0.4.3"
+VERSION = "0.4.4"
 ARTIC_VERSION = "1.2.1"
 DOCS = "/static/site/index.html"
 print(DOCS)

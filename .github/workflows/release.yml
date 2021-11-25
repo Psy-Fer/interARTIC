@@ -17,12 +17,12 @@ jobs:
     - name: package x86
       run: |
         export ARCH=x86-64 && export OS=linux
-        VERSION_OLD=0.4.2 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
+        VERSION_OLD=0.4.3 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
         test/update.sh
     - name: package aarch64
       run: |
         export ARCH=aarch64 && export OS=linux
-        VERSION_OLD=0.4.2 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
+        VERSION_OLD=0.4.3 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
         test/update.sh
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
@@ -39,7 +39,7 @@ jobs:
     - name: package x86
       run: |
         export ARCH=x86-64 && export OS=macos
-        VERSION_OLD=0.4.2 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
+        VERSION_OLD=0.4.3 && export LINK=https://github.com/Psy-Fer/interARTIC/releases/download/v${VERSION_OLD}/interartic-v${VERSION_OLD}-${OS}-${ARCH}-binaries.tar.gz
         test/update.sh
     - uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')

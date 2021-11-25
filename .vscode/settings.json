@@ -1,0 +1,7 @@
+{
+    "terminal.integrated.profiles.linux": {
+      "bash": {
+        "path": "/c/Windows/system32/bash",
+      }
+    }
+  }
