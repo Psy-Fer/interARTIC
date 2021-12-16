@@ -6,6 +6,8 @@ InterARTIC is an interactive web application designed to simplify the use of the
 
 [![GitHub Downloads](https://img.shields.io/github/downloads/Psy-Fer/interARTIC/total?logo=GitHub)](https://github.com/Psy-Fer/interARTIC/releases)
 
+#### Publication: [InterARTIC: an interactive web application for whole-genome nanopore sequencing analysis of SARS-CoV-2 and other viruses](https://doi.org/10.1093/bioinformatics/btab846)
+
 #### Pre-print: [InterARTIC: an interactive web application for whole-genome nanopore sequencing analysis of SARS-CoV-2 and other viruses](https://www.biorxiv.org/content/10.1101/2021.04.21.440861v2)
 
 
