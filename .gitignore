@@ -9,3 +9,4 @@ dump.rdb
 *.index*
 **/redis-stable
 site/
+src/.DS_Store
