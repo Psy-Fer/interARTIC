@@ -11,6 +11,23 @@ InterARTIC is an interactive web application designed to simplify the use of the
 #### Pre-print: [InterARTIC: an interactive web application for whole-genome nanopore sequencing analysis of SARS-CoV-2 and other viruses](https://www.biorxiv.org/content/10.1101/2021.04.21.440861v2)
 
 
+Please cite the following when using *interARTIC* in your publications:
+
+> James M Ferguson, Hasindu Gamaarachchi, Thanh Nguyen, Alyne Gollon, Stephanie Tong, Chiara Aquilina-Reid, Rachel Bowen-James, Ira W Deveson, InterARTIC: an interactive web application for whole-genome nanopore sequencing analysis of SARS-CoV-2 and other viruses, Bioinformatics, Volume 38, Issue 5, March 2022, Pages 1443–1446, https://doi.org/10.1093/bioinformatics/btab846
+
+```
+@article{ferguson2022interartic,
+  title={InterARTIC: an interactive web application for whole-genome nanopore sequencing analysis of SARS-CoV-2 and other viruses},
+  author={Ferguson, James M and Gamaarachchi, Hasindu and Nguyen, Thanh and Gollon, Alyne and Tong, Stephanie and Aquilina-Reid, Chiara and Bowen-James, Rachel and Deveson, Ira W},
+  journal={Bioinformatics},
+  volume={38},
+  number={5},
+  pages={1443--1446},
+  year={2022},
+  publisher={Oxford University Press}
+}
+```
+
 # Quick start
 
 A video tutorial of setting up and running InterARTIC: https://youtu.be/RCArn-xOkHg
@@ -60,12 +77,12 @@ The *run.sh* script has now launched a new interactive interARTIC session. To se
 
 ## Step 2: Downloading test dataset
 
-Open a new terminal to download and extract the [example test dataset](https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download). The commands below will extract the dataset to */data*, assuming */data* exists on the computer (`sudo mkdir /data`, if not) and you have write permission to */data* (`sudo chmod 777 /data`, if not). The */data* folder is the default location for sequencing outputs on an ONT GridION or PromethION device, but on your own machine you may use a custom location such as */home/username/data* if you wish (hint: you may use the `pwd` command on your terminal to get the path of your current working directory).
+Open a new terminal to download and extract the [example test dataset](https://seq.bioinf.science/interartic-corona). The commands below will extract the dataset to */data*, assuming */data* exists on the computer (`sudo mkdir /data`, if not) and you have write permission to */data* (`sudo chmod 777 /data`, if not). The */data* folder is the default location for sequencing outputs on an ONT GridION or PromethION device, but on your own machine you may use a custom location such as */home/username/data* if you wish (hint: you may use the `pwd` command on your terminal to get the path of your current working directory).
 
 ```bash
 cd /data
-wget https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download -O FLFL031920_sample_data.tar.gz
-#if you do not have wget: curl -o FLFL031920_sample_data.tar.gz -L https://cloudstor.aarnet.edu.au/plus/s/srVo6NEicclqQNE/download
+wget https://seq.bioinf.science/interartic-corona -O FLFL031920_sample_data.tar.gz
+#if you do not have wget: curl -o FLFL031920_sample_data.tar.gz -L https://seq.bioinf.science/interartic-corona
 tar xf FLFL031920_sample_data.tar.gz
 rm FLFL031920_sample_data.tar.gz
 ```
@@ -111,15 +128,15 @@ Click `Add Job` on the interARTIC web interface. Then fill the fields as given i
 | **virus**       | *SARS-CoV-2 (nCoV-2019)*    |  |
 | **Select your primer scheme**      | *Eden V1 (2500bp)*    | our example test dataset used Eden V1 primers |
 | **library preparation method**     | *Ligation library prep (eg SQK-LSK109)*              | our example test dataset used ligation barcodes |
-| **Select a pipeline to run**  | *Both*   | we will test both medka and nanopolish pipelines, which will run one after the other  |
+| **Select a pipeline to run**  | *Both*   | we will test both medaka and nanopolish pipelines, which will run one after the other  |
 
 Now click `Submit job(s)` and you should see the pipeline running :)
 
 ![parameters page](docs/params.svg)
 
-Another example dataset containing ebola virus samples that you can use to directly test interARTIC can be downloaded from [here](https://cloudstor.aarnet.edu.au/plus/s/9afW5kgWy1w8ZpQ/download). The relavent options for this data set are *Multiple samples*, *ebola-barcodes.csv*, *IturiEBOV*, *Artic V1* and *Ligation library prep (eg SQK-LSK109)*.
+Another example dataset containing ebola virus samples that you can use to directly test interARTIC can be downloaded from [here](https://seq.bioinf.science/interartic-ebola). The relavent options for this data set are *Multiple samples*, *ebola-barcodes.csv*, *IturiEBOV*, *Artic V1* and *Ligation library prep (eg SQK-LSK109)*.
 
-Output data generated from interARTIC (version 0.2-beta) for the above two example data set can be downloaded for your reference from [here](https://cloudstor.aarnet.edu.au/plus/s/SxayJLoxhQrMqil/download).
+Output data generated from interARTIC (version 0.2-beta) for the above two example data set can be downloaded for your reference from [here](https://seq.bioinf.science/interartic-testout).
 
 # interARTIC usage
 
